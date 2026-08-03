@@ -150,6 +150,7 @@ PROJECT_APPS = [
 THIRD_PARTY_APPS = [
     "corsheaders",
     "rest_framework",
+    "drf_yasg", 
 ]
 
 
@@ -164,3 +165,51 @@ CORS_ALLOW_CREDENTIALS = True
 # 3000 포트는 프론트엔드 React 애플리케이션의 포트 번호
 # 추후 프론트엔드에서 웹 페이지 배포 후 도메인 매핑했다면 해당 도메인 추가 필요
 CORS_ALLOW_ALL_ORIGINS = True
+
+# drf-yasg (Swagger) 설정: Swagger UI에서 Bearer 토큰으로 인증 가능하도록 함
+SWAGGER_SETTINGS = {
+    'SECURITY_DEFINITIONS': {
+        'Bearer': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header'
+        }
+    },
+    'USE_SESSION_AUTH': False,
+}
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+
+    "formatters": {
+        "precise": {
+            "format": "[%(asctime)s] %(levelname)s : %(message)s",
+            "datefmt": "%d/%b/%Y %H:%M:%S",
+        },
+    },
+
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "precise",
+        },
+        "file": {
+            "class": "logging.FileHandler",
+            "filename": BASE_DIR / "logs/server.log",
+            "formatter": "precise",
+            "level": "INFO",
+        },
+        "errors_file": {
+            "class": "logging.FileHandler",
+            "filename": BASE_DIR / "logs/errors.log",
+            "formatter": "precise",
+            "level": "WARNING",
+        },
+    },
+
+    "root": {
+        "handlers": ["console", "file", "errors_file"],
+        "level": "INFO",
+    },
+}
