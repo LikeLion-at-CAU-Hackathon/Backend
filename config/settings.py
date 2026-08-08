@@ -17,6 +17,8 @@ from django.core.exceptions import ImproperlyConfigured
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
@@ -148,18 +150,20 @@ DJANGO_APPS = [
 ]
 
 PROJECT_APPS = [
-
+    "products",
+    "accounts",
 ]
 
 THIRD_PARTY_APPS = [
     "corsheaders",
     "rest_framework",
     "drf_yasg", 
-    "products",
 ]
 
 
 INSTALLED_APPS = DJANGO_APPS + PROJECT_APPS + THIRD_PARTY_APPS
+
+AUTH_USER_MODEL = "accounts.User"
 
 # 인증 관련 요청(쿠키, 세션 등)을 허용
 # 예를 들어 브라우저가 백엔드 서버로 쿠키를 전송하거나, 백엔드에서 쿠키를 응답으로 보낼 수 있음
