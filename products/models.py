@@ -6,3 +6,64 @@ class BaseModel(models.Model):
     
     class Meta:
         abstract = True
+        
+class ProductGroup(BaseModel):
+    id = models.AutoField(primary_key=True)
+    name = models.TextField()
+    
+class Collection(BaseModel):
+    id = models.AutoField(primary_key=True)
+    name = models.TextField()
+    season = models.TextField()
+    
+class Product(BaseModel):
+    id = models.AutoField(primary_key=True)
+    name = models.TextField()
+    price = models.IntegerField(default=0)
+    color = models.TextField()
+    size = models.TextField()
+    collection = models.ForeignKey(Collection, on_delete=models.PROTECT, related_name='products')
+    group = models.ForeignKey(ProductGroup, on_delete=models.PROTECT, related_name='products')
+    
+class ProductDetail(BaseModel):
+    id = models.AutoField(primary_key=True)
+    material = models.TextField()
+    dimensions = models.TextField()
+    weight = models.IntegerField(default=0)
+    hardware = models.TextField()
+    strap = models.TextField()
+    storage = models.TextField()
+    care = models.TextField()
+    product = models.OneToOneField(Product, on_delete=models.CASCADE, related_name='product_detail')
+    
+class Branch(BaseModel):
+    id = models.AutoField(primary_key=True)
+    name = models.TextField()
+    
+class Stock(BaseModel):
+    id = models.AutoField(primary_key=True)
+    quantity = models.IntegerField(default=0)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='stocks')
+    branch = models.ForeignKey(Branch, on_delete=models.CASCADE, related_name='stocks')
+    
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['product', 'branch'],
+                name='unique_product_branch_stock'
+            )
+        ]
+    
+class ProductImage(BaseModel):
+    id = models.AutoField(primary_key=True)
+    image = models.ImageField(upload_to='images/')
+    order = models.IntegerField(default=0)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='images')
+    
+    class Meta:
+        ordering = ['order']
+    
+class NFCTag(BaseModel):
+    id = models.AutoField(primary_key=True)
+    tag_id = models.CharField(max_length=255, unique=True)
+    product = models.OneToOneField(Product, on_delete=models.CASCADE, related_name='nfc_tag')

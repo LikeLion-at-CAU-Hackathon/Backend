@@ -20,6 +20,8 @@ from django.urls import path, include
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view 
 from drf_yasg import openapi 
+from django.conf import settings
+from django.conf.urls.static import static
 
 # Swagger 설정
 schema_view = get_schema_view(
@@ -37,5 +39,5 @@ urlpatterns = [
     path("", include("products.urls")),
     #Swagger UI
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

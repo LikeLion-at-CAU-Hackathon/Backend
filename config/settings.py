@@ -17,6 +17,8 @@ from django.core.exceptions import ImproperlyConfigured
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
@@ -148,18 +150,20 @@ DJANGO_APPS = [
 ]
 
 PROJECT_APPS = [
-
+    "products",
+    "accounts",
 ]
 
 THIRD_PARTY_APPS = [
     "corsheaders",
     "rest_framework",
     "drf_yasg", 
-    "products",
 ]
 
 
 INSTALLED_APPS = DJANGO_APPS + PROJECT_APPS + THIRD_PARTY_APPS
+
+AUTH_USER_MODEL = "accounts.User"
 
 # 인증 관련 요청(쿠키, 세션 등)을 허용
 # 예를 들어 브라우저가 백엔드 서버로 쿠키를 전송하거나, 백엔드에서 쿠키를 응답으로 보낼 수 있음
@@ -169,7 +173,15 @@ CORS_ALLOW_CREDENTIALS = True
 # 여기에서의 localhost는 EC2 인스턴스의 로컬환경이 아니라 프론트엔드 개발 로컬 환경 의미
 # 3000 포트는 프론트엔드 React 애플리케이션의 포트 번호
 # 추후 프론트엔드에서 웹 페이지 배포 후 도메인 매핑했다면 해당 도메인 추가 필요
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+    "https://frontend-zeta-eight-2ecx6xkvfm.vercel.app",
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:5173",
+    "https://frontend-zeta-eight-2ecx6xkvfm.vercel.app",
+]
 
 # drf-yasg (Swagger) 설정: Swagger UI에서 Bearer 토큰으로 인증 가능하도록 함
 SWAGGER_SETTINGS = {
