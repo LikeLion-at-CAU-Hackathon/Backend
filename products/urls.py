@@ -10,7 +10,7 @@ urlpatterns = [
     
     path(
         "<int:pk>/",
-        ProductDetailAPIView.as_view(),
+        ProductAPIView.as_view(),
         name="product-detail",
     ),
 
