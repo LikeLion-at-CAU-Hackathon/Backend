@@ -230,3 +230,6 @@ LOGGING = {
         "level": "INFO",
     },
 }
+
+
+AUTH_USER_MODEL = "accounts.User"
