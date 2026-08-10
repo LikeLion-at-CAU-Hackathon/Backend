@@ -7,7 +7,6 @@ from .models import (
     NFCTag,
 )
 
-
 class ProductDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductDetail
@@ -21,7 +20,6 @@ class ProductDetailSerializer(serializers.ModelSerializer):
             "care",
         ]
 
-
 class ProductImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductImage
@@ -30,7 +28,6 @@ class ProductImageSerializer(serializers.ModelSerializer):
             "image",
             "order",
         ]
-
 
 class StockSerializer(serializers.ModelSerializer):
     branch_name = serializers.CharField(
@@ -45,7 +42,6 @@ class StockSerializer(serializers.ModelSerializer):
             "quantity",
         ]
 
-
 class ProductSerializer(serializers.ModelSerializer):
     detail = ProductDetailSerializer(read_only=True)
     images = ProductImageSerializer(many=True, read_only=True)
@@ -59,6 +55,11 @@ class ProductSerializer(serializers.ModelSerializer):
     group_name = serializers.CharField(
         source="group.name",
         read_only=True
+    )
+    
+    group_id = serializers.IntegerField(
+    source="group.id",
+    read_only=True
     )
 
     class Meta:
@@ -75,5 +76,33 @@ class ProductSerializer(serializers.ModelSerializer):
 
             "detail",
             "images",
+            "stocks",
+            
+            "group_id",
+        ]
+        
+class ProductSizeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = [
+            "id",
+            "size",
+            "name",
+            "price",
+        ]
+        
+class ProductCompareSerializer(serializers.ModelSerializer):
+    detail = ProductDetailSerializer(read_only=True)
+    stocks = StockSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Product
+        fields = [
+            "id",
+            "name",
+            "size",
+            "price",
+            "color",
+            "detail",
             "stocks",
         ]
