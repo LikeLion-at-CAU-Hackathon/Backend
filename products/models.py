@@ -8,16 +8,13 @@ class BaseModel(models.Model):
         abstract = True
         
 class ProductGroup(BaseModel):
-    id = models.AutoField(primary_key=True)
     name = models.TextField()
     
 class Collection(BaseModel):
-    id = models.AutoField(primary_key=True)
     name = models.TextField()
     season = models.TextField()
     
 class Product(BaseModel):
-    id = models.AutoField(primary_key=True)
     name = models.TextField()
     price = models.IntegerField(default=0)
     color = models.TextField()
@@ -29,11 +26,9 @@ class Product(BaseModel):
     group = models.ForeignKey(ProductGroup, on_delete=models.PROTECT, related_name='products')
     
 class Branch(BaseModel):
-    id = models.AutoField(primary_key=True)
     name = models.TextField()
     
 class Stock(BaseModel):
-    id = models.AutoField(primary_key=True)
     quantity = models.IntegerField(default=0)
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='stocks')
     branch = models.ForeignKey(Branch, on_delete=models.CASCADE, related_name='stocks')
@@ -47,7 +42,6 @@ class Stock(BaseModel):
         ]
     
 class ProductImage(BaseModel):
-    id = models.AutoField(primary_key=True)
     image = models.ImageField(upload_to='images/')
     order = models.IntegerField(default=0)
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='images')
@@ -56,7 +50,6 @@ class ProductImage(BaseModel):
         ordering = ['order']
     
 class NFCTag(BaseModel):
-    id = models.AutoField(primary_key=True)
     tag_id = models.CharField(max_length=255, unique=True)
     product = models.OneToOneField(Product, on_delete=models.CASCADE, related_name='nfc_tag')
 
