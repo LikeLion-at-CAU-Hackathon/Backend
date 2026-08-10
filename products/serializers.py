@@ -123,3 +123,13 @@ class CareGuideSerializer(serializers.ModelSerializer):
         fields = [
             "contents",
         ]
+        
+class AIConversationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AIConversation
+        fields = [
+            "id",
+            "question",
+            "answer",
+            "created_at",
+        ]
