@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import VisitSessionCreateAPIView
+from .views import VisitHistoryCreateAPIView, VisitSessionCreateAPIView
 
 
 urlpatterns = [
@@ -9,4 +9,10 @@ urlpatterns = [
         VisitSessionCreateAPIView.as_view(),
         name="visit-session-create",
     ),
+
+    path(
+    "sessions/<int:session_id>/history/",
+    VisitHistoryCreateAPIView.as_view(),
+    name="visit-history-create",
+),
 ]
