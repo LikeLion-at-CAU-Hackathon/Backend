@@ -95,6 +95,15 @@ class ProductCompareSerializer(serializers.ModelSerializer):
             "specs",
             "stocks",
         ]
+        
+     
+
+class StorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Story
+        fields = [
+            "sections",
+        ]
 
 class MaterialSerializer(serializers.ModelSerializer):
     class Meta:
@@ -102,7 +111,15 @@ class MaterialSerializer(serializers.ModelSerializer):
         fields = [
             "id",
             "name",
+            "location",
             "description",
             "image",
             "order",
+        ]
+
+class CareGuideSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CareGuide
+        fields = [
+            "contents",
         ]

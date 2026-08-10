@@ -62,14 +62,6 @@ class NFCTag(BaseModel):
 
 
 
-class CareGuide(BaseModel):
-    product = models.OneToOneField(
-        Product,
-        on_delete=models.CASCADE,
-        related_name='care_guide'
-    )
-    contents = models.JSONField(default=list, blank=True)
-    
 class Story(BaseModel):
     product = models.OneToOneField(
         Product,
@@ -85,6 +77,7 @@ class Material(BaseModel):
         related_name='materials'
     )
     name = models.TextField()
+    location = models.TextField()
     description = models.TextField()
     image = models.ImageField(
         upload_to='materials/',
@@ -95,3 +88,11 @@ class Material(BaseModel):
 
     class Meta:
         ordering = ['order']
+
+class CareGuide(BaseModel):
+    product = models.OneToOneField(
+        Product,
+        on_delete=models.CASCADE,
+        related_name='care_guide'
+    )
+    contents = models.JSONField(default=list, blank=True)
