@@ -22,19 +22,11 @@ class Product(BaseModel):
     price = models.IntegerField(default=0)
     color = models.TextField()
     size = models.TextField()
+    
+    specs = models.JSONField(default=list, blank=True)
+    
     collection = models.ForeignKey(Collection, on_delete=models.PROTECT, related_name='products')
     group = models.ForeignKey(ProductGroup, on_delete=models.PROTECT, related_name='products')
-    
-class ProductDetail(BaseModel):
-    id = models.AutoField(primary_key=True)
-    material = models.TextField()
-    dimensions = models.TextField()
-    weight = models.IntegerField(default=0)
-    hardware = models.TextField()
-    strap = models.TextField()
-    storage = models.TextField()
-    care = models.TextField()
-    product = models.OneToOneField(Product, on_delete=models.CASCADE, related_name='product_detail')
     
 class Branch(BaseModel):
     id = models.AutoField(primary_key=True)
@@ -67,3 +59,39 @@ class NFCTag(BaseModel):
     id = models.AutoField(primary_key=True)
     tag_id = models.CharField(max_length=255, unique=True)
     product = models.OneToOneField(Product, on_delete=models.CASCADE, related_name='nfc_tag')
+
+
+
+class CareGuide(BaseModel):
+    product = models.OneToOneField(
+        Product,
+        on_delete=models.CASCADE,
+        related_name='care_guide'
+    )
+    contents = models.JSONField(default=list, blank=True)
+    
+class Story(BaseModel):
+    product = models.OneToOneField(
+        Product,
+        on_delete=models.CASCADE,
+        related_name='story'
+    )
+    sections = models.JSONField(default=list, blank=True)
+    
+class Material(BaseModel):
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE,
+        related_name='materials'
+    )
+    name = models.TextField()
+    description = models.TextField()
+    image = models.ImageField(
+        upload_to='materials/',
+        blank=True,
+        null=True
+    )
+    order = models.IntegerField(default=0)
+
+    class Meta:
+        ordering = ['order']
