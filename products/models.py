@@ -96,3 +96,12 @@ class CareGuide(BaseModel):
         related_name='care_guide'
     )
     contents = models.JSONField(default=list, blank=True)
+    
+class AIConversation(BaseModel):
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE,
+        related_name='ai_conversations'
+    )
+    question = models.TextField()
+    answer = models.TextField()
