@@ -63,3 +63,37 @@ class ProductCompareAPIView(ListAPIView):
             )
 
         return queryset
+
+
+
+class ProductStoryAPIView(RetrieveAPIView):
+    serializer_class = StorySerializer
+
+    def get_object(self):
+        product_id = self.kwargs["product_id"]
+
+        return get_object_or_404(
+            Story,
+            product_id=product_id
+        )
+
+class ProductMaterialAPIView(ListAPIView):
+    serializer_class = MaterialSerializer
+
+    def get_queryset(self):
+        product_id = self.kwargs["product_id"]
+
+        return Material.objects.filter(
+            product_id=product_id
+        )
+
+class ProductCareGuideAPIView(RetrieveAPIView):
+    serializer_class = CareGuideSerializer
+
+    def get_object(self):
+        product_id = self.kwargs["product_id"]
+
+        return get_object_or_404(
+            CareGuide,
+            product_id=product_id
+        )
