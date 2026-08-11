@@ -11,14 +11,14 @@ urlpatterns = [
     ),
 
     path(
-    "sessions/<int:session_id>/history/",
-    VisitHistoryCreateAPIView.as_view(),
-    name="visit-history-create",
+        "sessions/<int:session_id>/history/",
+        VisitHistoryCreateAPIView.as_view(),
+        name="visit-history-create",
     ),
 
     path(
-    "sessions/<int:session_id>/analyze/",
-    StyleAnalyzeAPIView.as_view(),
-    name="style-analyze",
+        "sessions/<int:session_id>/analyze/",
+        StyleAnalyzeAPIView.as_view(),
+        name="style-analyze",
     ),
 ]
