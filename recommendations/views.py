@@ -106,3 +106,24 @@ class StyleAnalyzeAPIView(APIView):
             },
             status=status.HTTP_200_OK
         )
+
+
+class StyleProfileRetrieveAPIView(APIView):
+
+    def get(self, request, session_id):
+        visit_session = get_object_or_404(
+            VisitSession,
+            id=session_id
+        )
+
+        profile = get_object_or_404(
+            StyleProfile,
+            visit_session=visit_session
+        )
+
+        serializer = StyleProfileSerializer(profile)
+
+        return Response(
+            serializer.data,
+            status=status.HTTP_200_OK
+        )

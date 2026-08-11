@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import StyleAnalyzeAPIView, VisitHistoryCreateAPIView, VisitSessionCreateAPIView
+from .views import *
 
 
 urlpatterns = [
@@ -21,4 +21,10 @@ urlpatterns = [
     StyleAnalyzeAPIView.as_view(),
     name="style-analyze",
     ),
+    
+    path(
+    "sessions/<int:session_id>/profile/",
+    StyleProfileRetrieveAPIView.as_view(),
+    name="style-profile-detail",
+),
 ]
