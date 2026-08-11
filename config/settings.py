@@ -152,6 +152,7 @@ DJANGO_APPS = [
 PROJECT_APPS = [
     "products",
     "accounts",
+    "recommendations",
 ]
 
 THIRD_PARTY_APPS = [
@@ -230,3 +231,6 @@ LOGGING = {
         "level": "INFO",
     },
 }
+
+
+AUTH_USER_MODEL = "accounts.User"
