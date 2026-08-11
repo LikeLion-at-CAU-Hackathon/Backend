@@ -154,6 +154,7 @@ PROJECT_APPS = [
     "accounts",
     "recommendations",
     "consultations",
+    "notifications",
 ]
 
 THIRD_PARTY_APPS = [
