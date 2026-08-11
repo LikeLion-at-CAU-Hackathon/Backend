@@ -11,20 +11,26 @@ urlpatterns = [
     ),
 
     path(
-    "sessions/<int:session_id>/history/",
-    VisitHistoryCreateAPIView.as_view(),
-    name="visit-history-create",
+        "sessions/<int:session_id>/history/",
+        VisitHistoryCreateAPIView.as_view(),
+        name="visit-history-create",
     ),
 
     path(
-    "sessions/<int:session_id>/analyze/",
-    StyleAnalyzeAPIView.as_view(),
-    name="style-analyze",
+        "sessions/<int:session_id>/analyze/",
+        StyleAnalyzeAPIView.as_view(),
+        name="style-analyze",
     ),
     
     path(
-    "sessions/<int:session_id>/profile/",
-    StyleProfileRetrieveAPIView.as_view(),
-    name="style-profile-detail",
-),
+        "sessions/<int:session_id>/profile/",
+        StyleProfileRetrieveAPIView.as_view(),
+        name="style-profile-detail",
+    ),
+    path(
+        "profiles/<int:profile_id>/looks/",
+        MockStylingResultCreateAPIView.as_view(),
+        name="mock-styling-result-create",
+    ),
+    
 ]
