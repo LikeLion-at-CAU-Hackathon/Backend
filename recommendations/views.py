@@ -231,3 +231,62 @@ class MockStylingResultCreateAPIView(APIView):
             },
             status=status.HTTP_201_CREATED
         )
+
+class MockRecommendationCreateAPIView(APIView):
+
+    def post(self, request, profile_id):
+        profile = get_object_or_404(
+            StyleProfile,
+            id=profile_id
+        )
+
+        product1 = get_object_or_404(Product, id=1)
+        product2 = get_object_or_404(Product, id=2)
+        product3 = get_object_or_404(Product, id=3)
+        product4 = get_object_or_404(Product, id=4)
+
+        # 재호출 시 추천이 계속 쌓이지 않도록 기존 결과 삭제
+        RecommendationResult.objects.filter(
+            style_profile=profile
+        ).delete()
+
+        RecommendationResult.objects.create(
+            style_profile=profile,
+            product=product1,
+            type=RecommendationResult.RecommendationType.SIMILAR,
+            reason="Recommended for its classic and compact styling.",
+            score=100
+        )
+
+        RecommendationResult.objects.create(
+            style_profile=profile,
+            product=product2,
+            type=RecommendationResult.RecommendationType.SIMILAR,
+            reason="Recommended for its warm tone and signature monogram details.",
+            score=80
+        )
+
+        RecommendationResult.objects.create(
+            style_profile=profile,
+            product=product4,
+            type=RecommendationResult.RecommendationType.NEW,
+            reason="Recommended as a fresh accent piece that complements your current interests.",
+            score=60
+        )
+
+        recommendations = RecommendationResult.objects.filter(
+            style_profile=profile
+        ).order_by("-score")
+
+        serializer = RecommendationResultSerializer(
+            recommendations,
+            many=True
+        )
+
+        return Response(
+            {
+                "success": True,
+                "data": serializer.data
+            },
+            status=status.HTTP_201_CREATED
+        )

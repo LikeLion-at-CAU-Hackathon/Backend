@@ -73,3 +73,34 @@ class StylingItem(models.Model):
     )
     order = models.PositiveIntegerField()
     type = models.CharField(max_length=50, blank=True)
+
+
+class RecommendationResult(models.Model):
+    class RecommendationType(models.TextChoices):
+        SIMILAR = "SIMILAR", "Similar"
+        NEW = "NEW", "New"
+
+    style_profile = models.ForeignKey(
+        StyleProfile,
+        on_delete=models.CASCADE,
+        related_name="recommendations"
+    )
+
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE
+    )
+
+    type = models.CharField(
+        max_length=20,
+        choices=RecommendationType.choices
+    )
+
+    reason = models.TextField()
+
+    score = models.PositiveIntegerField()
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["score"]

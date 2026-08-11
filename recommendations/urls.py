@@ -33,4 +33,10 @@ urlpatterns = [
         name="mock-styling-result-create",
     ),
     
+    path(
+    "profiles/<int:profile_id>/recommendations/",
+    MockRecommendationCreateAPIView.as_view(),
+    name="mock-recommendation-create",
+),
+    
 ]
