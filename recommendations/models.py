@@ -46,3 +46,30 @@ class StyleProfile(models.Model):
         choices=AnalysisMode.choices
     )
     created_at = models.DateTimeField(auto_now_add=True)
+
+
+class StylingResult(models.Model):
+    style_profile = models.ForeignKey(
+        StyleProfile,
+        on_delete=models.CASCADE,
+        related_name="styling_results"
+    )
+    look_order = models.PositiveIntegerField()
+    title = models.CharField(max_length=100)
+    subtitle = models.CharField(max_length=200, blank=True)
+    description = models.TextField()
+    reason = models.TextField()
+
+
+class StylingItem(models.Model):
+    styling_result = models.ForeignKey(
+        StylingResult,
+        on_delete=models.CASCADE,
+        related_name="items"
+    )
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE
+    )
+    order = models.PositiveIntegerField()
+    type = models.CharField(max_length=50, blank=True)

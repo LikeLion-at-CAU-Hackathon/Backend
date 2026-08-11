@@ -1,6 +1,8 @@
 from rest_framework import serializers
 
 from .models import (
+    StylingItem,
+    StylingResult,
     VisitSession,
     VisitHistory,
     StyleProfile,
@@ -40,4 +42,34 @@ class StyleProfileSerializer(serializers.ModelSerializer):
             "tags",
             "analysis_mode",
             "created_at",
+        ]
+
+class StylingItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StylingItem
+        fields = [
+            "id",
+            "product",
+            "order",
+            "type",
+        ]
+
+
+class StylingResultSerializer(serializers.ModelSerializer):
+    items = StylingItemSerializer(
+        many=True,
+        read_only=True
+    )
+
+    class Meta:
+        model = StylingResult
+        fields = [
+            "id",
+            "style_profile",
+            "look_order",
+            "title",
+            "subtitle",
+            "description",
+            "reason",
+            "items",
         ]
