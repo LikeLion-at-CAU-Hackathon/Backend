@@ -38,9 +38,9 @@ class StyleProfileSerializer(serializers.ModelSerializer):
             "created_at",
         ]
 
-class StylingItemSerializer(serializers.ModelSerializer):
+class LookItemSerializer(serializers.ModelSerializer):
     class Meta:
-        model = StylingItem
+        model = LookItem
         fields = [
             "id",
             "product",
@@ -49,14 +49,14 @@ class StylingItemSerializer(serializers.ModelSerializer):
         ]
 
 
-class StylingResultSerializer(serializers.ModelSerializer):
-    items = StylingItemSerializer(
+class LookSerializer(serializers.ModelSerializer):
+    items = LookItemSerializer(
         many=True,
         read_only=True
     )
 
     class Meta:
-        model = StylingResult
+        model = Look
         fields = [
             "id",
             "style_profile",
@@ -119,13 +119,13 @@ class StylingProductSerializer(serializers.ModelSerializer):
         return None
 
 
-class StylingItemDetailSerializer(serializers.ModelSerializer):
+class LookItemDetailSerializer(serializers.ModelSerializer):
     product = StylingProductSerializer(
         read_only=True
     )
 
     class Meta:
-        model = StylingItem
+        model = LookItem
         fields = [
             "id",
             "product",
@@ -134,14 +134,14 @@ class StylingItemDetailSerializer(serializers.ModelSerializer):
         ]
 
 
-class StylingResultDetailSerializer(serializers.ModelSerializer):
-    items = StylingItemDetailSerializer(
+class LookDetailSerializer(serializers.ModelSerializer):
+    items = LookItemDetailSerializer(
         many=True,
         read_only=True
     )
 
     class Meta:
-        model = StylingResult
+        model = Look
         fields = [
             "id",
             "style_profile",
