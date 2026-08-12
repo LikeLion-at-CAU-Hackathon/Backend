@@ -29,7 +29,7 @@ urlpatterns = [
     ),
     path(
         "profiles/<int:profile_id>/looks/",
-        MockStylingResultCreateAPIView.as_view(),
+        MockLookCreateAPIView.as_view(),
         name="mock-styling-result-create",
     ),
 
@@ -59,7 +59,7 @@ urlpatterns = [
 
     path(
         "looks/<int:look_id>/",
-        StylingResultDetailAPIView.as_view(),
+        LookDetailAPIView.as_view(),
         name="styling-result-detail",
     ),
 ]

@@ -48,11 +48,11 @@ class StyleProfile(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
 
-class StylingResult(models.Model):
+class Look(models.Model):
     style_profile = models.ForeignKey(
         StyleProfile,
         on_delete=models.CASCADE,
-        related_name="styling_results"
+        related_name="looks"
     )
     look_order = models.PositiveIntegerField()
     title = models.CharField(max_length=100)
@@ -61,9 +61,9 @@ class StylingResult(models.Model):
     reason = models.TextField()
 
 
-class StylingItem(models.Model):
-    styling_result = models.ForeignKey(
-        StylingResult,
+class LookItem(models.Model):
+    look = models.ForeignKey(
+        Look,
         on_delete=models.CASCADE,
         related_name="items"
     )

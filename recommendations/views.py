@@ -81,7 +81,7 @@ class StyleProfileRetrieveAPIView(APIView):
         )
 
 # mock Look 생성 API
-class MockStylingResultCreateAPIView(APIView):
+class MockLookCreateAPIView(APIView):
 
     def post(self, request, profile_id):
         profile = get_object_or_404(
@@ -95,11 +95,11 @@ class MockStylingResultCreateAPIView(APIView):
         product4 = get_object_or_404(Product, id=4)
 
         # 재시도했을 때 Look이 계속 중복 생성되는 걸 방지
-        StylingResult.objects.filter(
+        Look.objects.filter(
             style_profile=profile
         ).delete()
 
-        look1 = StylingResult.objects.create(
+        look1 = Look.objects.create(
             style_profile=profile,
             look_order=1,
             title="Business Casual Look",
@@ -108,21 +108,21 @@ class MockStylingResultCreateAPIView(APIView):
             reason="Recommended based on your current interest in classic and compact pieces."
         )
 
-        StylingItem.objects.create(
+        LookItem.objects.create(
             styling_result=look1,
             product=product1,
             order=1,
             type="MAIN"
         )
 
-        StylingItem.objects.create(
+        LookItem.objects.create(
             styling_result=look1,
             product=product3,
             order=2,
             type="MATCH"
         )
 
-        look2 = StylingResult.objects.create(
+        look2 = Look.objects.create(
             style_profile=profile,
             look_order=2,
             title="Weekend Casual Look",
@@ -131,21 +131,21 @@ class MockStylingResultCreateAPIView(APIView):
             reason="Recommended to match your interest in versatile everyday styling."
         )
 
-        StylingItem.objects.create(
+        LookItem.objects.create(
             styling_result=look2,
             product=product2,
             order=1,
             type="MAIN"
         )
 
-        StylingItem.objects.create(
+        LookItem.objects.create(
             styling_result=look2,
             product=product4,
             order=2,
             type="ACCENT"
         )
 
-        look3 = StylingResult.objects.create(
+        look3 = Look.objects.create(
             style_profile=profile,
             look_order=3,
             title="Travel Look",
@@ -154,25 +154,25 @@ class MockStylingResultCreateAPIView(APIView):
             reason="Recommended based on your current interest in compact and functional pieces."
         )
 
-        StylingItem.objects.create(
+        LookItem.objects.create(
             styling_result=look3,
             product=product1,
             order=1,
             type="MAIN"
         )
 
-        StylingItem.objects.create(
+        LookItem.objects.create(
             styling_result=look3,
             product=product2,
             order=2,
             type="ACCENT"
         )
 
-        looks = StylingResult.objects.filter(
+        looks = Look.objects.filter(
             style_profile=profile
         ).order_by("look_order")
 
-        serializer = StylingResultSerializer(
+        serializer = LookSerializer(
             looks,
             many=True
         )
@@ -339,7 +339,7 @@ class StyleAnalysisAPIView(APIView):
         )
 
         # 재시도 시 기존 추천 결과 삭제
-        StylingResult.objects.filter(
+        Look.objects.filter(
             style_profile=profile
         ).delete()
 
@@ -354,7 +354,7 @@ class StyleAnalysisAPIView(APIView):
         product4 = get_object_or_404(Product, id=4)
 
         # 6. Look 1
-        look1 = StylingResult.objects.create(
+        look1 = Look.objects.create(
             style_profile=profile,
             look_order=1,
             title="Business Casual Look",
@@ -369,14 +369,14 @@ class StyleAnalysisAPIView(APIView):
             )
         )
 
-        StylingItem.objects.create(
+        LookItem.objects.create(
             styling_result=look1,
             product=product1,
             order=1,
             type="MAIN"
         )
 
-        StylingItem.objects.create(
+        LookItem.objects.create(
             styling_result=look1,
             product=product3,
             order=2,
@@ -384,7 +384,7 @@ class StyleAnalysisAPIView(APIView):
         )
 
         # 7. Look 2
-        look2 = StylingResult.objects.create(
+        look2 = Look.objects.create(
             style_profile=profile,
             look_order=2,
             title="Weekend Casual Look",
@@ -399,14 +399,14 @@ class StyleAnalysisAPIView(APIView):
             )
         )
 
-        StylingItem.objects.create(
+        LookItem.objects.create(
             styling_result=look2,
             product=product2,
             order=1,
             type="MAIN"
         )
 
-        StylingItem.objects.create(
+        LookItem.objects.create(
             styling_result=look2,
             product=product4,
             order=2,
@@ -414,7 +414,7 @@ class StyleAnalysisAPIView(APIView):
         )
 
         # 8. Look 3
-        look3 = StylingResult.objects.create(
+        look3 = Look.objects.create(
             style_profile=profile,
             look_order=3,
             title="Travel Look",
@@ -429,14 +429,14 @@ class StyleAnalysisAPIView(APIView):
             )
         )
 
-        StylingItem.objects.create(
+        LookItem.objects.create(
             styling_result=look3,
             product=product1,
             order=1,
             type="MAIN"
         )
 
-        StylingItem.objects.create(
+        LookItem.objects.create(
             styling_result=look3,
             product=product2,
             order=2,
@@ -475,7 +475,7 @@ class StyleAnalysisAPIView(APIView):
         )
 
         # 10. 결과가 정말 만들어졌는지 검사
-        look_count = StylingResult.objects.filter(
+        look_count = Look.objects.filter(
             style_profile=profile
         ).count()
 
@@ -551,7 +551,7 @@ class StyleResultRetrieveAPIView(APIView):
             visit_session=visit_session
         )
 
-        looks = StylingResult.objects.filter(
+        looks = Look.objects.filter(
             style_profile=profile
         ).prefetch_related("items").order_by("look_order")
 
@@ -573,7 +573,7 @@ class StyleResultRetrieveAPIView(APIView):
             {
                 "success": True,
                 "profile": StyleProfileSerializer(profile).data,
-                "curated_looks": StylingResultSerializer(
+                "curated_looks": LookSerializer(
                     looks,
                     many=True
                 ).data,
@@ -587,16 +587,16 @@ class StyleResultRetrieveAPIView(APIView):
 
 
 # 상세 Styling Look 조회 APIView
-class StylingResultDetailAPIView(APIView):
+class LookDetailAPIView(APIView):
 
     def get(self, request, look_id):
 
         look = get_object_or_404(
-            StylingResult.objects.prefetch_related("items__product"),
+            Look.objects.prefetch_related("items__product"),
             id=look_id
         )
 
-        serializer = StylingResultDetailSerializer(look)
+        serializer = LookDetailSerializer(look)
 
         return Response(
             {
