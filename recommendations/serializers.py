@@ -98,6 +98,8 @@ class StylingProductSerializer(serializers.ModelSerializer):
         read_only=True
     )
 
+    image = serializers.SerializerMethodField()
+
     class Meta:
         model = Product
         fields = [
@@ -105,7 +107,16 @@ class StylingProductSerializer(serializers.ModelSerializer):
             "name",
             "price",
             "category",
+            "image",
         ]
+
+    def get_image(self, obj):
+        product_image = obj.images.order_by("order").first()
+
+        if product_image:
+            return product_image.image.url
+
+        return None
 
 
 class StylingItemDetailSerializer(serializers.ModelSerializer):
