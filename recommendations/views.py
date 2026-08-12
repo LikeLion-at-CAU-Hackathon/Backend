@@ -623,3 +623,24 @@ class StyleResultRetrieveAPIView(APIView):
             },
             status=status.HTTP_200_OK
         )
+
+
+# 상세 Styling Look 조회 APIView
+class StylingResultDetailAPIView(APIView):
+
+    def get(self, request, look_id):
+
+        look = get_object_or_404(
+            StylingResult.objects.prefetch_related("items__product"),
+            id=look_id
+        )
+
+        serializer = StylingResultDetailSerializer(look)
+
+        return Response(
+            {
+                "success": True,
+                "data": serializer.data
+            },
+            status=status.HTTP_200_OK
+        )

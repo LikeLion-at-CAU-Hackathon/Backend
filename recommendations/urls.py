@@ -40,20 +40,26 @@ urlpatterns = [
     ),
 
     path(
-    "sessions/<int:session_id>/analyze/",
-    StyleAnalysisAPIView.as_view(),
-    name="style-analysis",
+        "sessions/<int:session_id>/analyze/",
+        StyleAnalysisAPIView.as_view(),
+        name="style-analysis",
     ),
 
     path(
-    "sessions/<int:session_id>/saved-products/",
-    SavedProductCreateAPIView.as_view(),
-    name="saved-product-create",
+        "sessions/<int:session_id>/saved-products/",
+        SavedProductCreateAPIView.as_view(),
+        name="saved-product-create",
     ),
 
     path(
-    "sessions/<int:session_id>/result/",
-    StyleResultRetrieveAPIView.as_view(),
-    name="style-result-detail",
+        "sessions/<int:session_id>/result/",
+        StyleResultRetrieveAPIView.as_view(),
+        name="style-result-detail",
+    ),
+
+    path(
+        "looks/<int:look_id>/",
+        StylingResultDetailAPIView.as_view(),
+        name="styling-result-detail",
     ),
 ]
