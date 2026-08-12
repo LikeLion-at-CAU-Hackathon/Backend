@@ -111,7 +111,7 @@ class StylingProductSerializer(serializers.ModelSerializer):
         ]
 
     def get_image(self, obj):
-        product_image = obj.images.order_by("order").first()
+        product_image = obj.images.first()
 
         if product_image:
             return product_image.image.url

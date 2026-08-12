@@ -59,55 +59,6 @@ class VisitHistoryCreateAPIView(APIView):
             status=status.HTTP_201_CREATED
         )
 
-# class MockStyleAnalyzeAPIView(APIView):
-
-#     def post(self, request, session_id):
-#         visit_session = get_object_or_404(
-#             VisitSession,
-#             id=session_id
-#         )
-
-#         histories = VisitHistory.objects.filter(
-#             visit_session=visit_session
-#         )
-
-#         if not histories.exists():
-#             return Response(
-#                 {
-#                     "success": False,
-#                     "message": "분석할 제품이 없습니다."
-#                 },
-#                 status=status.HTTP_400_BAD_REQUEST
-#             )
-
-#         if histories.count() == 1:
-#             mode = StyleProfile.AnalysisMode.SINGLE_PRODUCT
-#         else:
-#             mode = StyleProfile.AnalysisMode.BEHAVIOR
-
-#         profile, created = StyleProfile.objects.update_or_create(
-#             visit_session=visit_session,
-#             defaults={
-#                 "summary": "Current browsing activity shows an interest in refined and versatile styling.",
-#                 "tags": [
-#                     "Warm Tone Interest",
-#                     "Compact",
-#                     "Classic"
-#                 ],
-#                 "analysis_mode": mode
-#             }
-#         )
-
-#         serializer = StyleProfileSerializer(profile)
-
-#         return Response(
-#             {
-#                 "success": True,
-#                 "data": serializer.data
-#             },
-#             status=status.HTTP_200_OK
-#         )
-
 
 class StyleProfileRetrieveAPIView(APIView):
 
@@ -363,20 +314,20 @@ class StyleAnalysisAPIView(APIView):
         )
 
         # AI를 통해 StyleProfile 생성
-        # ai_profile = generate_style_profile(
-        #     product_context,
-        #     analysis_mode
-        # )
+        ai_profile = generate_style_profile(
+            product_context,
+            analysis_mode
+        )
 
-        # test용 Mock StyleProfile 생성
-        ai_profile = {
-            "summary": "Current browsing activity shows an interest in refined and versatile styling.",
-            "tags": [
-                "Classic",
-                "Compact",
-                "Warm Tone Interest"
-            ]
-        }
+        # # test용 Mock StyleProfile 생성
+        # ai_profile = {
+        #     "summary": "Current browsing activity shows an interest in refined and versatile styling.",
+        #     "tags": [
+        #         "Classic",
+        #         "Compact",
+        #         "Warm Tone Interest"
+        #     ]
+        # }
 
         profile, created = StyleProfile.objects.update_or_create(
             visit_session=visit_session,
