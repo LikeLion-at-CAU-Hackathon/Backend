@@ -3,6 +3,7 @@ import uuid
 
 from django.shortcuts import get_object_or_404
 from django.db import transaction
+from recommendations.services import *
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -335,19 +336,43 @@ class StyleAnalysisAPIView(APIView):
         else:
             analysis_mode = StyleProfile.AnalysisMode.BEHAVIOR
 
-        # 5. StyleProfile 생성 또는 갱신
+        # 5. AI 분석에 사용할 제품 목록 구성
+        history_products = [
+            history.product
+            for history in histories
+        ]
+
+        saved_products_list = [
+            saved.product
+            for saved in saved_products
+        ]
+
+        analysis_products = history_products + saved_products_list
+
+        # NFC로 본 제품과 저장한 제품이 겹칠 수 있으므로 중복 제거
+        product_map = {
+            product.id: product
+            for product in analysis_products
+        }
+
+        analysis_products = list(product_map.values())
+
+        # AI에게 넘길 수 있는 dict 형태로 변환
+        product_context = build_product_context(
+            analysis_products
+        )
+
+
+        ai_profile = generate_style_profile(
+            product_context,
+            analysis_mode
+        )
+
         profile, created = StyleProfile.objects.update_or_create(
             visit_session=visit_session,
             defaults={
-                "summary": (
-                    "Current browsing activity shows an interest "
-                    "in refined and versatile styling."
-                ),
-                "tags": [
-                    "Warm Tone Interest",
-                    "Compact",
-                    "Classic"
-                ],
+                "summary": ai_profile["summary"],
+                "tags": ai_profile["tags"],
                 "analysis_mode": analysis_mode
             }
         )
