@@ -293,7 +293,7 @@ class MockRecommendationCreateAPIView(APIView):
         )
 
 
-# 통합 APIView
+# Style Analysis APIView
 class StyleAnalysisAPIView(APIView):
 
     @transaction.atomic
@@ -548,4 +548,53 @@ class SavedProductCreateAPIView(APIView):
                 if created
                 else status.HTTP_200_OK
             )
+        )
+
+
+# 통합 조회 APIView
+class StyleResultRetrieveAPIView(APIView):
+
+    def get(self, request, session_id):
+        visit_session = get_object_or_404(
+            VisitSession,
+            id=session_id
+        )
+
+        profile = get_object_or_404(
+            StyleProfile,
+            visit_session=visit_session
+        )
+
+        looks = StylingResult.objects.filter(
+            style_profile=profile
+        ).prefetch_related("items").order_by("look_order")
+
+        recommendations = RecommendationResult.objects.filter(
+            style_profile=profile
+        ).order_by("-score")
+
+        # 3.2 화면에 필요한 결과가 모두 있는지 확인
+        if looks.count() != 3 or not recommendations.exists():
+            return Response(
+                {
+                    "success": False,
+                    "message": "스타일 분석 결과가 완성되지 않았습니다."
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        return Response(
+            {
+                "success": True,
+                "profile": StyleProfileSerializer(profile).data,
+                "curated_looks": StylingResultSerializer(
+                    looks,
+                    many=True
+                ).data,
+                "for_you": RecommendationResultSerializer(
+                    recommendations,
+                    many=True
+                ).data
+            },
+            status=status.HTTP_200_OK
         )

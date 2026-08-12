@@ -50,5 +50,10 @@ urlpatterns = [
     SavedProductCreateAPIView.as_view(),
     name="saved-product-create",
     ),
-    
+
+    path(
+    "sessions/<int:session_id>/result/",
+    StyleResultRetrieveAPIView.as_view(),
+    name="style-result-detail",
+    ),
 ]
