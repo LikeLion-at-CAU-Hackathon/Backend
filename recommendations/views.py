@@ -2,6 +2,7 @@ from django.shortcuts import render
 import uuid
 
 from django.shortcuts import get_object_or_404
+from django.db import transaction
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -289,4 +290,219 @@ class MockRecommendationCreateAPIView(APIView):
                 "data": serializer.data
             },
             status=status.HTTP_201_CREATED
+        )
+
+
+# 통합 APIView
+class StyleAnalysisAPIView(APIView):
+
+    @transaction.atomic
+    def post(self, request, session_id):
+
+        # 1. 방문 세션 확인
+        visit_session = get_object_or_404(
+            VisitSession,
+            id=session_id
+        )
+
+        # 2. 이번 방문의 NFC 탐색 기록 조회
+        histories = VisitHistory.objects.filter(
+            visit_session=visit_session
+        ).select_related("product")
+
+        # 3. 아무 제품도 탐색하지 않았다면 분석 불가
+        if not histories.exists():
+            return Response(
+                {
+                    "success": False,
+                    "message": "스타일 분석을 진행할 수 없습니다."
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # 4. 분석 방식 결정
+        if histories.count() == 1:
+            analysis_mode = StyleProfile.AnalysisMode.SINGLE_PRODUCT
+        else:
+            analysis_mode = StyleProfile.AnalysisMode.BEHAVIOR
+
+        # 5. StyleProfile 생성 또는 갱신
+        profile, created = StyleProfile.objects.update_or_create(
+            visit_session=visit_session,
+            defaults={
+                "summary": (
+                    "Current browsing activity shows an interest "
+                    "in refined and versatile styling."
+                ),
+                "tags": [
+                    "Warm Tone Interest",
+                    "Compact",
+                    "Classic"
+                ],
+                "analysis_mode": analysis_mode
+            }
+        )
+
+        # 재시도 시 기존 추천 결과 삭제
+        StylingResult.objects.filter(
+            style_profile=profile
+        ).delete()
+
+        RecommendationResult.objects.filter(
+            style_profile=profile
+        ).delete()
+
+        # 테스트용 상품
+        product1 = get_object_or_404(Product, id=1)
+        product2 = get_object_or_404(Product, id=2)
+        product3 = get_object_or_404(Product, id=3)
+        product4 = get_object_or_404(Product, id=4)
+
+        # 6. Look 1
+        look1 = StylingResult.objects.create(
+            style_profile=profile,
+            look_order=1,
+            title="Business Casual Look",
+            subtitle="Classic Monogram Balance",
+            description=(
+                "A refined business casual styling "
+                "with a classic MCM accent."
+            ),
+            reason=(
+                "Recommended based on your current interest "
+                "in classic and compact pieces."
+            )
+        )
+
+        StylingItem.objects.create(
+            styling_result=look1,
+            product=product1,
+            order=1,
+            type="MAIN"
+        )
+
+        StylingItem.objects.create(
+            styling_result=look1,
+            product=product3,
+            order=2,
+            type="MATCH"
+        )
+
+        # 7. Look 2
+        look2 = StylingResult.objects.create(
+            style_profile=profile,
+            look_order=2,
+            title="Weekend Casual Look",
+            subtitle="Relaxed Signature Style",
+            description=(
+                "A relaxed weekend combination "
+                "with a signature MCM accent."
+            ),
+            reason=(
+                "Recommended to match your interest "
+                "in versatile everyday styling."
+            )
+        )
+
+        StylingItem.objects.create(
+            styling_result=look2,
+            product=product2,
+            order=1,
+            type="MAIN"
+        )
+
+        StylingItem.objects.create(
+            styling_result=look2,
+            product=product4,
+            order=2,
+            type="ACCENT"
+        )
+
+        # 8. Look 3
+        look3 = StylingResult.objects.create(
+            style_profile=profile,
+            look_order=3,
+            title="Travel Look",
+            subtitle="Compact Travel Styling",
+            description=(
+                "A practical travel look centered "
+                "around compact accessories."
+            ),
+            reason=(
+                "Recommended based on your current interest "
+                "in compact and functional pieces."
+            )
+        )
+
+        StylingItem.objects.create(
+            styling_result=look3,
+            product=product1,
+            order=1,
+            type="MAIN"
+        )
+
+        StylingItem.objects.create(
+            styling_result=look3,
+            product=product2,
+            order=2,
+            type="ACCENT"
+        )
+
+        # 9. FOR YOU
+        RecommendationResult.objects.create(
+            style_profile=profile,
+            product=product1,
+            type=RecommendationResult.RecommendationType.SIMILAR,
+            reason="Recommended for its classic and compact styling.",
+            score=100
+        )
+
+        RecommendationResult.objects.create(
+            style_profile=profile,
+            product=product2,
+            type=RecommendationResult.RecommendationType.SIMILAR,
+            reason=(
+                "Recommended for its warm tone "
+                "and signature monogram details."
+            ),
+            score=80
+        )
+
+        RecommendationResult.objects.create(
+            style_profile=profile,
+            product=product4,
+            type=RecommendationResult.RecommendationType.NEW,
+            reason=(
+                "Recommended as a fresh accent piece "
+                "that complements your current interests."
+            ),
+            score=60
+        )
+
+        # 10. 결과가 정말 만들어졌는지 검사
+        look_count = StylingResult.objects.filter(
+            style_profile=profile
+        ).count()
+
+        recommendation_count = RecommendationResult.objects.filter(
+            style_profile=profile
+        ).count()
+
+        if look_count != 3 or recommendation_count == 0:
+            return Response(
+                {
+                    "success": False,
+                    "message": "스타일 분석을 불러오지 못했어요. 다시 시도해주세요."
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+        return Response(
+            {
+                "success": True,
+                "profile_id": profile.id,
+                "analysis_mode": profile.analysis_mode,
+                "message": "Style analysis completed."
+            },
+            status=status.HTTP_200_OK
         )

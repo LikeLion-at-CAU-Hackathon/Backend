@@ -16,11 +16,11 @@ urlpatterns = [
         name="visit-history-create",
     ),
 
-    path(
-        "sessions/<int:session_id>/analyze/",
-        StyleAnalyzeAPIView.as_view(),
-        name="style-analyze",
-    ),
+    # path(
+    #     "sessions/<int:session_id>/analyze/",
+    #     StyleAnalyzeAPIView.as_view(),
+    #     name="style-analyze",
+    # ),
     
     path(
         "sessions/<int:session_id>/profile/",
@@ -32,11 +32,17 @@ urlpatterns = [
         MockStylingResultCreateAPIView.as_view(),
         name="mock-styling-result-create",
     ),
-    
+
     path(
-    "profiles/<int:profile_id>/recommendations/",
-    MockRecommendationCreateAPIView.as_view(),
-    name="mock-recommendation-create",
-),
+        "profiles/<int:profile_id>/recommendations/",
+        MockRecommendationCreateAPIView.as_view(),
+        name="mock-recommendation-create",
+    ),
+
+    path(
+    "sessions/<int:session_id>/analyze/",
+    StyleAnalysisAPIView.as_view(),
+    name="style-analysis",
+    ),
     
 ]
