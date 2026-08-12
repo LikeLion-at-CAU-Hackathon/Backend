@@ -90,3 +90,65 @@ class SavedProductSerializer(serializers.ModelSerializer):
             "product",
             "created_at",
         ]
+
+# 3.3 상세 Styling Look 조회용
+class StylingProductSerializer(serializers.ModelSerializer):
+    category = serializers.CharField(
+        source="category.name",
+        read_only=True
+    )
+
+    image = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Product
+        fields = [
+            "id",
+            "name",
+            "price",
+            "category",
+            "image",
+        ]
+
+    def get_image(self, obj):
+        product_image = obj.images.order_by("order").first()
+
+        if product_image:
+            return product_image.image.url
+
+        return None
+
+
+class StylingItemDetailSerializer(serializers.ModelSerializer):
+    product = StylingProductSerializer(
+        read_only=True
+    )
+
+    class Meta:
+        model = StylingItem
+        fields = [
+            "id",
+            "product",
+            "order",
+            "type",
+        ]
+
+
+class StylingResultDetailSerializer(serializers.ModelSerializer):
+    items = StylingItemDetailSerializer(
+        many=True,
+        read_only=True
+    )
+
+    class Meta:
+        model = StylingResult
+        fields = [
+            "id",
+            "style_profile",
+            "look_order",
+            "title",
+            "subtitle",     # (선택 사항인 듯 - Look 밑에, 'aa 백 + bbb' 부분)
+            "description",  # 스타일 설명
+            "reason",       # 추천 이유
+            "items",
+        ]

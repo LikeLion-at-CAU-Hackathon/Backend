@@ -13,6 +13,16 @@ class ProductGroup(BaseModel):
 class Collection(BaseModel):
     name = models.TextField()
     season = models.TextField()
+
+
+class ProductCategory(models.Model):
+    name = models.CharField(
+        max_length=100,
+        unique=True
+    )
+
+    def __str__(self):
+        return self.name
     
 class Product(BaseModel):
     name = models.TextField()
@@ -24,7 +34,8 @@ class Product(BaseModel):
     
     collection = models.ForeignKey(Collection, on_delete=models.PROTECT, related_name='products')
     group = models.ForeignKey(ProductGroup, on_delete=models.PROTECT, related_name='products')
-    
+    category = models.ForeignKey(ProductCategory, on_delete=models.SET_NULL, null=True, blank=True, related_name="products")
+
 class Branch(BaseModel):
     name = models.TextField()
     
@@ -98,3 +109,5 @@ class AIConversation(BaseModel):
     )
     question = models.TextField()
     answer = models.TextField()
+
+

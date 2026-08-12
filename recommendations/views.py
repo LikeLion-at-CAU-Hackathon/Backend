@@ -362,11 +362,21 @@ class StyleAnalysisAPIView(APIView):
             analysis_products
         )
 
+        # AI를 통해 StyleProfile 생성
+        # ai_profile = generate_style_profile(
+        #     product_context,
+        #     analysis_mode
+        # )
 
-        ai_profile = generate_style_profile(
-            product_context,
-            analysis_mode
-        )
+        # test용 Mock StyleProfile 생성
+        ai_profile = {
+            "summary": "Current browsing activity shows an interest in refined and versatile styling.",
+            "tags": [
+                "Classic",
+                "Compact",
+                "Warm Tone Interest"
+            ]
+        }
 
         profile, created = StyleProfile.objects.update_or_create(
             visit_session=visit_session,
@@ -620,6 +630,27 @@ class StyleResultRetrieveAPIView(APIView):
                     recommendations,
                     many=True
                 ).data
+            },
+            status=status.HTTP_200_OK
+        )
+
+
+# 상세 Styling Look 조회 APIView
+class StylingResultDetailAPIView(APIView):
+
+    def get(self, request, look_id):
+
+        look = get_object_or_404(
+            StylingResult.objects.prefetch_related("items__product"),
+            id=look_id
+        )
+
+        serializer = StylingResultDetailSerializer(look)
+
+        return Response(
+            {
+                "success": True,
+                "data": serializer.data
             },
             status=status.HTTP_200_OK
         )
