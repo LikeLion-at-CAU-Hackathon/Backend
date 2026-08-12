@@ -80,3 +80,13 @@ class RecommendationResultSerializer(serializers.ModelSerializer):
             "score",
             "created_at",
         ]
+
+class SavedProductSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SavedProduct
+        fields = [
+            "id",
+            "visit_session",
+            "product",
+            "created_at",
+        ]

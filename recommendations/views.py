@@ -58,54 +58,54 @@ class VisitHistoryCreateAPIView(APIView):
             status=status.HTTP_201_CREATED
         )
 
-class MockStyleAnalyzeAPIView(APIView):
+# class MockStyleAnalyzeAPIView(APIView):
 
-    def post(self, request, session_id):
-        visit_session = get_object_or_404(
-            VisitSession,
-            id=session_id
-        )
+#     def post(self, request, session_id):
+#         visit_session = get_object_or_404(
+#             VisitSession,
+#             id=session_id
+#         )
 
-        histories = VisitHistory.objects.filter(
-            visit_session=visit_session
-        )
+#         histories = VisitHistory.objects.filter(
+#             visit_session=visit_session
+#         )
 
-        if not histories.exists():
-            return Response(
-                {
-                    "success": False,
-                    "message": "분석할 제품이 없습니다."
-                },
-                status=status.HTTP_400_BAD_REQUEST
-            )
+#         if not histories.exists():
+#             return Response(
+#                 {
+#                     "success": False,
+#                     "message": "분석할 제품이 없습니다."
+#                 },
+#                 status=status.HTTP_400_BAD_REQUEST
+#             )
 
-        if histories.count() == 1:
-            mode = StyleProfile.AnalysisMode.SINGLE_PRODUCT
-        else:
-            mode = StyleProfile.AnalysisMode.BEHAVIOR
+#         if histories.count() == 1:
+#             mode = StyleProfile.AnalysisMode.SINGLE_PRODUCT
+#         else:
+#             mode = StyleProfile.AnalysisMode.BEHAVIOR
 
-        profile, created = StyleProfile.objects.update_or_create(
-            visit_session=visit_session,
-            defaults={
-                "summary": "Current browsing activity shows an interest in refined and versatile styling.",
-                "tags": [
-                    "Warm Tone Interest",
-                    "Compact",
-                    "Classic"
-                ],
-                "analysis_mode": mode
-            }
-        )
+#         profile, created = StyleProfile.objects.update_or_create(
+#             visit_session=visit_session,
+#             defaults={
+#                 "summary": "Current browsing activity shows an interest in refined and versatile styling.",
+#                 "tags": [
+#                     "Warm Tone Interest",
+#                     "Compact",
+#                     "Classic"
+#                 ],
+#                 "analysis_mode": mode
+#             }
+#         )
 
-        serializer = StyleProfileSerializer(profile)
+#         serializer = StyleProfileSerializer(profile)
 
-        return Response(
-            {
-                "success": True,
-                "data": serializer.data
-            },
-            status=status.HTTP_200_OK
-        )
+#         return Response(
+#             {
+#                 "success": True,
+#                 "data": serializer.data
+#             },
+#             status=status.HTTP_200_OK
+#         )
 
 
 class StyleProfileRetrieveAPIView(APIView):
@@ -310,8 +310,14 @@ class StyleAnalysisAPIView(APIView):
             visit_session=visit_session
         ).select_related("product")
 
-        # 3. 아무 제품도 탐색하지 않았다면 분석 불가
-        if not histories.exists():
+        # 이번 방문에서 저장한 제품 조회
+        saved_products = SavedProduct.objects.filter(
+            visit_session=visit_session
+        ).select_related("product")
+
+
+        # 3. NFC 태그와 저장 제품이 모두 없으면 분석 불가
+        if not histories.exists() and not saved_products.exists():
             return Response(
                 {
                     "success": False,
@@ -320,8 +326,11 @@ class StyleAnalysisAPIView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        # 4. 분석 방식 결정
-        if histories.count() == 1:
+
+        # 4. NFC 태그 개수 기준으로 분석 방식 결정
+        history_count = histories.count()
+
+        if history_count <= 1:
             analysis_mode = StyleProfile.AnalysisMode.SINGLE_PRODUCT
         else:
             analysis_mode = StyleProfile.AnalysisMode.BEHAVIOR
@@ -505,4 +514,38 @@ class StyleAnalysisAPIView(APIView):
                 "message": "Style analysis completed."
             },
             status=status.HTTP_200_OK
+        )
+
+
+class SavedProductCreateAPIView(APIView):
+
+    def post(self, request, session_id):
+        visit_session = get_object_or_404(
+            VisitSession,
+            id=session_id
+        )
+
+        product = get_object_or_404(
+            Product,
+            id=request.data.get("product_id")
+        )
+
+        saved_product, created = SavedProduct.objects.get_or_create(
+            visit_session=visit_session,
+            product=product
+        )
+
+        serializer = SavedProductSerializer(saved_product)
+
+        return Response(
+            {
+                "success": True,
+                "created": created,
+                "data": serializer.data
+            },
+            status=(
+                status.HTTP_201_CREATED
+                if created
+                else status.HTTP_200_OK
+            )
         )

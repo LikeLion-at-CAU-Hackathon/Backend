@@ -44,5 +44,11 @@ urlpatterns = [
     StyleAnalysisAPIView.as_view(),
     name="style-analysis",
     ),
+
+    path(
+    "sessions/<int:session_id>/saved-products/",
+    SavedProductCreateAPIView.as_view(),
+    name="saved-product-create",
+    ),
     
 ]

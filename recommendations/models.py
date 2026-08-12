@@ -104,3 +104,26 @@ class RecommendationResult(models.Model):
 
     class Meta:
         ordering = ["score"]
+
+
+class SavedProduct(models.Model):
+    visit_session = models.ForeignKey(
+        VisitSession,
+        on_delete=models.CASCADE,
+        related_name="saved_products"
+    )
+
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["visit_session", "product"],
+                name="unique_saved_product_per_session"
+            )
+        ]
