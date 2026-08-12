@@ -18,7 +18,7 @@ urlpatterns = [
 
     # path(
     #     "sessions/<int:session_id>/analyze/",
-    #     StyleAnalyzeAPIView.as_view(),
+    #     MockStyleAnalyzeAPIView.as_view(),
     #     name="style-analyze",
     # ),
     

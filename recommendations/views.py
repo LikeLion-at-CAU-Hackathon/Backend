@@ -58,7 +58,7 @@ class VisitHistoryCreateAPIView(APIView):
             status=status.HTTP_201_CREATED
         )
 
-class StyleAnalyzeAPIView(APIView):
+class MockStyleAnalyzeAPIView(APIView):
 
     def post(self, request, session_id):
         visit_session = get_object_or_404(
