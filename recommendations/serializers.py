@@ -1,10 +1,6 @@
 from rest_framework import serializers
 
-from .models import (
-    VisitSession,
-    VisitHistory,
-    StyleProfile,
-)
+from .models import *
 
 
 class VisitSessionSerializer(serializers.ModelSerializer):
@@ -39,5 +35,58 @@ class StyleProfileSerializer(serializers.ModelSerializer):
             "summary",
             "tags",
             "analysis_mode",
+            "created_at",
+        ]
+
+class StylingItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StylingItem
+        fields = [
+            "id",
+            "product",
+            "order",
+            "type",
+        ]
+
+
+class StylingResultSerializer(serializers.ModelSerializer):
+    items = StylingItemSerializer(
+        many=True,
+        read_only=True
+    )
+
+    class Meta:
+        model = StylingResult
+        fields = [
+            "id",
+            "style_profile",
+            "look_order",
+            "title",
+            "subtitle",
+            "description",
+            "reason",
+            "items",
+        ]
+
+class RecommendationResultSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RecommendationResult
+        fields = [
+            "id",
+            "style_profile",
+            "product",
+            "type",
+            "reason",
+            "score",
+            "created_at",
+        ]
+
+class SavedProductSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SavedProduct
+        fields = [
+            "id",
+            "visit_session",
+            "product",
             "created_at",
         ]
