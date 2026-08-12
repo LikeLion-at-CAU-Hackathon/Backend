@@ -362,11 +362,21 @@ class StyleAnalysisAPIView(APIView):
             analysis_products
         )
 
+        # AI를 통해 StyleProfile 생성
+        # ai_profile = generate_style_profile(
+        #     product_context,
+        #     analysis_mode
+        # )
 
-        ai_profile = generate_style_profile(
-            product_context,
-            analysis_mode
-        )
+        # test용 Mock StyleProfile 생성
+        ai_profile = {
+            "summary": "Current browsing activity shows an interest in refined and versatile styling.",
+            "tags": [
+                "Classic",
+                "Compact",
+                "Warm Tone Interest"
+            ]
+        }
 
         profile, created = StyleProfile.objects.update_or_create(
             visit_session=visit_session,
