@@ -93,13 +93,18 @@ class SavedProductSerializer(serializers.ModelSerializer):
 
 # 3.3 상세 Styling Look 조회용
 class StylingProductSerializer(serializers.ModelSerializer):
+    category = serializers.CharField(
+        source="category.name",
+        read_only=True
+    )
+
     class Meta:
         model = Product
         fields = [
             "id",
             "name",
             "price",
-            "color",
+            "category",
         ]
 
 
