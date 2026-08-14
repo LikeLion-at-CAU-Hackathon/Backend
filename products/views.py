@@ -1,9 +1,5 @@
 from django.db.models import Prefetch
 from rest_framework.generics import RetrieveAPIView, ListAPIView
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
-from django.shortcuts import get_object_or_404
 
 from .serializers import *
 from .models import *
@@ -11,6 +7,7 @@ from .models import *
 class ProductAPIView(RetrieveAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+    lookup_url_kwarg = "product_id"
 
 class ProductStockAPIView(ListAPIView):
     serializer_class = StockSerializer
@@ -65,3 +62,27 @@ class ProductCompareAPIView(ListAPIView):
         return queryset
 
 
+
+class ProductBackgroundAPIView(RetrieveAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductBackgroundSerializer
+
+class ProductMaterialAPIView(ListAPIView):
+    serializer_class = MaterialSerializer
+
+    def get_queryset(self):
+        product_id = self.kwargs["product_id"]
+
+        return Material.objects.filter(
+            products__product_id=product_id
+        ).order_by("order")
+        
+class ProductCareGuideAPIView(ListAPIView):
+    serializer_class = CareGuideSerializer
+
+    def get_queryset(self):
+        product_id = self.kwargs["product_id"]
+
+        return Material.objects.filter(
+            products__product_id=product_id
+        ).order_by("order")

@@ -19,7 +19,7 @@ class Product(BaseModel):
 class ProductDetail(BaseModel):
     size = models.CharField(max_length=50)
     color = models.CharField(max_length=50)
-    price = models.PositiveIntegerField(default=0)
+    price = models.IntegerField(default=0)
 
     product = models.ForeignKey(
         Product,
@@ -50,7 +50,7 @@ class Branch(BaseModel):
         return self.name
     
 class Stock(BaseModel):
-    quantity = models.PositiveIntegerField(default=0)
+    quantity = models.IntegerField(default=0)
     
     branch = models.ForeignKey(
         Branch,
@@ -72,3 +72,38 @@ class BusinessHours(BaseModel):
         on_delete=models.CASCADE,
         related_name="business_hours",
     )
+    
+    
+
+class Material(BaseModel):
+    name = models.TextField()
+    description = models.TextField()
+    image = models.ImageField(upload_to="materials/", blank=True, null=True) # migrate를 위한 임시 조건
+    order = models.IntegerField(default=0)
+    careguide = models.JSONField(default=dict, blank=True) # migrate를 위한 임시 조건
+
+    class Meta:
+        ordering = ["order"]
+
+    def __str__(self):
+        return self.name
+    
+class MaterialProduct(BaseModel):
+    material = models.ForeignKey(
+        Material,
+        on_delete=models.CASCADE,
+        related_name="products"
+    )
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE,
+        related_name="materials"
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["material", "product"],
+                name="unique_material_product"
+            )
+        ]

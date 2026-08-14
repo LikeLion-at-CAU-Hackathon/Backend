@@ -88,3 +88,32 @@ class ProductCompareSerializer(serializers.ModelSerializer):
             "stocks",
         ]        
      
+     
+   
+class ProductBackgroundSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = [
+            "background",
+        ]
+     
+class MaterialSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Material
+        fields = [
+            "id",
+            "name",
+            "description",
+            "image",
+            "order",
+            "careguide",
+        ]
+        
+class CareGuideSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Material
+        fields = [
+            "id",
+            "name",
+            "careguide",
+        ]
