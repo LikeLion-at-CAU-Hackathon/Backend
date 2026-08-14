@@ -63,13 +63,8 @@ class ProductSerializer(serializers.ModelSerializer):
         ]
         
 class ProductSizeSerializer(serializers.ModelSerializer):
-    stocks = StockSerializer(
-        many=True,
-        read_only=True
-    )
-    
     class Meta:
-        model = Product
+        model = ProductDetail
         fields = [
             "id",
             "name",
@@ -78,5 +73,19 @@ class ProductSizeSerializer(serializers.ModelSerializer):
             "price",
         ]
 
-        
+class ProductCompareSerializer(serializers.ModelSerializer):
+    stocks = StockSerializer(
+        many=True,
+        read_only=True
+    )
+
+    class Meta:
+        model = ProductDetail
+        fields = [
+            "id",
+            "size",
+            "color",
+            "price",
+            "stocks",
+        ]        
      
