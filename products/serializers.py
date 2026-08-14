@@ -117,3 +117,10 @@ class CareGuideSerializer(serializers.ModelSerializer):
             "name",
             "careguide",
         ]
+
+    
+class AIDocentRequestSerializer(serializers.Serializer):
+    question = serializers.CharField()
+
+class AIDocentResponseSerializer(serializers.Serializer):
+    answer = serializers.CharField()

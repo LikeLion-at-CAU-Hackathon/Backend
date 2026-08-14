@@ -1,8 +1,13 @@
 from django.db.models import Prefetch
 from rest_framework.generics import RetrieveAPIView, ListAPIView
+from django.shortcuts import get_object_or_404
+from rest_framework.views import APIView
+from rest_framework.response import Response
+
 
 from .serializers import *
 from .models import *
+from .services import *
 
 class ProductAPIView(RetrieveAPIView):
     queryset = Product.objects.all()
@@ -86,3 +91,37 @@ class ProductCareGuideAPIView(ListAPIView):
         return Material.objects.filter(
             products__product_id=product_id
         ).order_by("order")
+
+class AIDocentAPIView(APIView):
+
+    def post(self, request, product_id):
+
+        serializer = AIDocentRequestSerializer(
+            data=request.data
+        )
+        serializer.is_valid(raise_exception=True)
+
+        product = get_object_or_404(
+            Product,
+            id=product_id
+        )
+
+        product_context = build_ai_docent_context(
+            product
+        )
+
+        answer = ask_ai_docent(
+            question=serializer.validated_data["question"],
+            product_context=product_context,
+        )
+        
+        response_serializer = AIDocentResponseSerializer(
+            data={
+                "answer": answer
+            }
+        )
+        response_serializer.is_valid(raise_exception=True)
+
+        return Response(
+            response_serializer.validated_data
+        )
