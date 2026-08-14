@@ -23,7 +23,7 @@ class StockSerializer(serializers.ModelSerializer):
             "quantity",
         ]
 
-class ProductSerializer(serializers.ModelSerializer):
+class ProductDetailSerializer(serializers.ModelSerializer):
     images = ProductImageSerializer(
         many=True, 
         read_only=True
@@ -34,53 +34,20 @@ class ProductSerializer(serializers.ModelSerializer):
         read_only=True
     )
 
-    collection_name = serializers.CharField(
-        source="collection.name",
-        read_only=True
-    )
-
-    group_name = serializers.CharField(
-        source="group.name",
-        read_only=True
-    )
-    
-    group_id = serializers.IntegerField(
-        source="group.id",
-        read_only=True
-    )
-
     class Meta:
-        model = Product
+        model = ProductDetail
         fields = [
             "id",
-            "name",
-            "price",
-            "color",
             "size",
-            "specs",
-
-            "collection_name",
-            "group_name",
-            "group_id",
-
+            "color",
+            "price",
             "images",
             "stocks",
         ]
         
-class ProductSizeSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Product
-        fields = [
-            "id",
-            "name",
-            "color",
-            "size",
-            "price",
-        ]
-        
-class ProductCompareSerializer(serializers.ModelSerializer):
-    stocks = StockSerializer(
-        many=True, 
+class ProductSerializer(serializers.ModelSerializer):
+    details = ProductDetailSerializer(
+        many=True,
         read_only=True
     )
 
@@ -89,47 +56,35 @@ class ProductCompareSerializer(serializers.ModelSerializer):
         fields = [
             "id",
             "name",
+            "category",
+            "specs",
+            "background",
+            "details",
+        ]
+        
+class ProductSizeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductDetail
+        fields = [
+            "id",
+            "color",
             "size",
             "price",
+        ]
+
+class ProductCompareSerializer(serializers.ModelSerializer):
+    stocks = StockSerializer(
+        many=True,
+        read_only=True
+    )
+
+    class Meta:
+        model = ProductDetail
+        fields = [
+            "id",
+            "size",
             "color",
-            "specs",
+            "price",
             "stocks",
-        ]
-        
+        ]        
      
-
-class StorySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Story
-        fields = [
-            "sections",
-        ]
-
-class MaterialSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Material
-        fields = [
-            "id",
-            "name",
-            "location",
-            "description",
-            "image",
-            "order",
-        ]
-
-class CareGuideSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CareGuide
-        fields = [
-            "contents",
-        ]
-        
-class AIConversationSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = AIConversation
-        fields = [
-            "id",
-            "question",
-            "answer",
-            "created_at",
-        ]
