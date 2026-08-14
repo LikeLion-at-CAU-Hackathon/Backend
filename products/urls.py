@@ -9,7 +9,7 @@ urlpatterns = [
     ),
     
     path(
-        "<int:pk>/",
+        "<int:product_id>/",
         ProductAPIView.as_view(),
         name="product-detail",
     ),
@@ -24,5 +24,23 @@ urlpatterns = [
         "<int:product_id>/sizes/",
         ProductSizeAPIView.as_view(),
         name="product-sizes",
+    ),
+    
+    path(
+        "<int:product_id>/background/",
+        ProductBackgroundAPIView.as_view(),
+        name="product-background",
+    ),
+    
+    path(
+        "<int:product_id>/materials/",
+        ProductMaterialAPIView.as_view(),
+        name="product-materials",
+    ),
+    
+    path(
+        "<int:product_id>/care-guide/",
+        ProductCareGuideAPIView.as_view(),
+        name="product-care-guide",
     ),
 ]
