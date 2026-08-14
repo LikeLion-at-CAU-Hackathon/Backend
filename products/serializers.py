@@ -67,7 +67,6 @@ class ProductSizeSerializer(serializers.ModelSerializer):
         model = ProductDetail
         fields = [
             "id",
-            "name",
             "color",
             "size",
             "price",

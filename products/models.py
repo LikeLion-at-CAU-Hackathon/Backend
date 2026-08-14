@@ -43,8 +43,8 @@ class ProductImage(BaseModel):
 class Branch(BaseModel):
     name = models.CharField(max_length=50)
     
-    latitude = models.FloatField()
-    longitude = models.FloatField()
+    latitude = models.FloatField() 
+    longitude = models.FloatField() 
     
     def __str__(self):
         return self.name
@@ -70,5 +70,5 @@ class BusinessHours(BaseModel):
     branch = models.ForeignKey(
         Branch,
         on_delete=models.CASCADE,
-        related_name="business_hours"
+        related_name="business_hours",
     )

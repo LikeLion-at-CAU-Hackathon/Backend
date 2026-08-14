@@ -12,15 +12,15 @@ class ProductAPIView(RetrieveAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
 
-class ProductSizeAPIView(ListAPIView):
-    serializer_class = ProductSizeSerializer
+class ProductStockAPIView(ListAPIView):
+    serializer_class = StockSerializer
 
     def get_queryset(self):
         product_id = self.kwargs["product_id"]
 
-        return ProductDetail.objects.filter(
-            product_id=product_id
-        ).order_by("size")
+        return Stock.objects.filter(
+            detail__product_id=product_id
+        ).select_related("branch")
         
 class ProductSizeAPIView(ListAPIView):
     serializer_class = ProductSizeSerializer
