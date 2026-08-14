@@ -46,6 +46,9 @@ class Branch(BaseModel):
     latitude = models.FloatField()
     longitude = models.FloatField()
     
+    def __str__(self):
+        return self.name
+    
 class Stock(BaseModel):
     quantity = models.PositiveIntegerField(default=0)
     
@@ -61,11 +64,11 @@ class Stock(BaseModel):
     )
 
 class BusinessHours(BaseModel):
+    open = models.DateTimeField()
+    close = models.DateTimeField()
+    
     branch = models.ForeignKey(
         Branch,
         on_delete=models.CASCADE,
         related_name="business_hours"
     )
-
-    open = models.DateTimeField()
-    close = models.DateTimeField()
