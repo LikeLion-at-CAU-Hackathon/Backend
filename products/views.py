@@ -71,6 +71,7 @@ class ProductCompareAPIView(ListAPIView):
 class ProductBackgroundAPIView(RetrieveAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductBackgroundSerializer
+    lookup_url_kwarg = "product_id"
 
 class ProductMaterialAPIView(ListAPIView):
     serializer_class = MaterialSerializer
