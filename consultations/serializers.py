@@ -21,6 +21,8 @@ class ConsultationRequestSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = [
             "id",
+            "product",
+            "product_name",
             "status",
             "created_at",
         ]
