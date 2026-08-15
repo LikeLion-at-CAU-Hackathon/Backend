@@ -158,7 +158,6 @@ DJANGO_APPS = [
 
 PROJECT_APPS = [
     "products",
-    "accounts",
     "recommendations",
     "consultations",
     "notifications",
@@ -173,7 +172,6 @@ THIRD_PARTY_APPS = [
 
 INSTALLED_APPS = DJANGO_APPS + PROJECT_APPS + THIRD_PARTY_APPS
 
-AUTH_USER_MODEL = "accounts.User"
 
 # 인증 관련 요청(쿠키, 세션 등)을 허용
 # 예를 들어 브라우저가 백엔드 서버로 쿠키를 전송하거나, 백엔드에서 쿠키를 응답으로 보낼 수 있음
@@ -240,6 +238,3 @@ LOGGING = {
         "level": "INFO",
     },
 }
-
-
-AUTH_USER_MODEL = "accounts.User"

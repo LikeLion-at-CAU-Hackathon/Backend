@@ -90,14 +90,22 @@ class LookProductDetailSerializer(serializers.ModelSerializer):
         source="product.id",
         read_only=True
     )
+
     name = serializers.CharField(
         source="product.name",
         read_only=True
     )
+
     category = serializers.CharField(
         source="product.category",
         read_only=True
     )
+
+    detail_id = serializers.SerializerMethodField()
+    price = serializers.SerializerMethodField()
+    color = serializers.SerializerMethodField()
+    size = serializers.SerializerMethodField()
+    image = serializers.SerializerMethodField()
 
     class Meta:
         model = LookProduct
@@ -106,7 +114,67 @@ class LookProductDetailSerializer(serializers.ModelSerializer):
             "product_id",
             "name",
             "category",
+            "detail_id",
+            "price",
+            "color",
+            "size",
+            "image",
         ]
+
+    def get_detail(self, obj):
+        return obj.product.details.first()
+
+    def get_detail_id(self, obj):
+        detail = self.get_detail(obj)
+
+        if detail:
+            return detail.id
+
+        return None
+
+    def get_price(self, obj):
+        detail = self.get_detail(obj)
+
+        if detail:
+            return detail.price
+
+        return None
+
+    def get_color(self, obj):
+        detail = self.get_detail(obj)
+
+        if detail:
+            return detail.color
+
+        return None
+
+    def get_size(self, obj):
+        detail = self.get_detail(obj)
+
+        if detail:
+            return detail.size
+
+        return None
+
+    def get_image(self, obj):
+        detail = self.get_detail(obj)
+
+        if not detail:
+            return None
+
+        product_image = detail.images.first()
+
+        if not product_image:
+            return None
+
+        request = self.context.get("request")
+
+        if request:
+            return request.build_absolute_uri(
+                product_image.image.url
+            )
+
+        return product_image.image.url
 
 
 class LookDetailSerializer(serializers.ModelSerializer):

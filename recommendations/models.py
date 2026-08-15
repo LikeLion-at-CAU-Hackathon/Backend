@@ -3,18 +3,6 @@ from django.conf import settings
 from products.models import Product
 
 
-# class StyleChip(models.TextChoices):
-#     WARM = "WARM", "Warm Tone"
-#     COMPACT = "COMPACT", "Compact Size"
-#     CLASSIC = "CLASSIC", "Classic"
-#     HERITAGE = "HERITAGE", "Heritage"
-#     REFINED = "REFINED", "Refined"
-#     MODERN = "MODERN", "Modern"
-#     SOFT = "SOFT", "Soft"
-#     CASUAL = "CASUAL", "Casual"
-#     CONTEMPORARY = "CONTEMPORARY", "Contemporary"
-#     FEMININE = "FEMININE", "Feminine"
-
 class StyleChip(models.Model):
     code = models.CharField(
         max_length=30,
@@ -35,14 +23,6 @@ class VisitSession(models.Model):
         unique=True
     )
 
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name="visit_sessions"
-    )
-    
     started_at = models.DateTimeField(auto_now_add=True)
     ended_at = models.DateTimeField(
         null=True,
@@ -92,8 +72,9 @@ class Look(models.Model):
         related_name="looks"
     )
 
-    style_chips = models.ManyToManyField(
+    style_chip = models.ForeignKey(
         StyleChip,
+        on_delete=models.PROTECT,
         related_name="looks"
     )
 
@@ -117,34 +98,13 @@ class Look(models.Model):
             models.UniqueConstraint(
                 fields=["style_profile", "look_order"],
                 name="unique_look_order_per_profile"
-            )
-        ]
-
-
-
-
-class SavedProduct(models.Model):
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        related_name="saved_products"
-    )
-
-    product = models.ForeignKey(
-        Product,
-        on_delete=models.CASCADE,
-        related_name="saved_by"
-    )
-
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        constraints = [
+            ),
             models.UniqueConstraint(
-                fields=["user", "product"],
-                name="unique_saved_product_per_user"
-            )
+                fields=["style_profile", "style_chip"],
+                name="unique_style_chip_per_profile_look"
+            ),
         ]
+
 
 
 
@@ -153,10 +113,13 @@ class LookProduct(models.Model):
     class ItemType(models.TextChoices):
         TOP = "TOP", "Top"
         BOTTOM = "BOTTOM", "Bottom"
-        ACCESSORY = "ACCESSORY", "Accessory"
         SHOES = "SHOES", "Shoes"
         BAG = "BAG", "Bag"
+        ACCESSORY = "ACCESSORY", "Accessory"
 
+    class Source(models.TextChoices):
+        VISITED = "VISITED", "Visited Product"
+        RECOMMENDED = "RECOMMENDED", "AI Recommended"
 
     look = models.ForeignKey(
         Look,
@@ -175,6 +138,11 @@ class LookProduct(models.Model):
         choices=ItemType.choices
     )
 
+    source = models.CharField(
+        max_length=20,
+        choices=Source.choices
+    )
+
     class Meta:
         constraints = [
             models.UniqueConstraint(
@@ -186,4 +154,3 @@ class LookProduct(models.Model):
                 name="unique_item_type_per_look"
             ),
         ]
-

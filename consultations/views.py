@@ -9,7 +9,7 @@ class ConsultationRequestCreateAPIView(CreateAPIView):
     serializer_class = ConsultationRequestSerializer
     
     def perform_create(self, serializer):
-        user = self.request.user if self.request.user.is_authenticated else None
+        # user = self.request.user if self.request.user.is_authenticated else None
         session_key = self.request.session.session_key
 
         if not session_key:
@@ -17,6 +17,6 @@ class ConsultationRequestCreateAPIView(CreateAPIView):
             session_key = self.request.session.session_key
 
         serializer.save(
-            user=user,
+            # user=user,
             session_key=session_key,
         )
