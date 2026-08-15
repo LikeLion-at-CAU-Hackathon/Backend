@@ -38,35 +38,35 @@ class StyleProfileSerializer(serializers.ModelSerializer):
             "created_at",
         ]
 
-class LookItemSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = LookItem
-        fields = [
-            "id",
-            "product",
-            "order",
-            "type",
-        ]
+# class LookItemSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = LookItem
+#         fields = [
+#             "id",
+#             "product",
+#             "order",
+#             "type",
+#         ]
 
 
-class LookSerializer(serializers.ModelSerializer):
-    items = LookItemSerializer(
-        many=True,
-        read_only=True
-    )
+# class LookSerializer(serializers.ModelSerializer):
+#     items = LookItemSerializer(
+#         many=True,
+#         read_only=True
+#     )
 
-    class Meta:
-        model = Look
-        fields = [
-            "id",
-            "style_profile",
-            "look_order",
-            "title",
-            "subtitle",
-            "description",
-            "reason",
-            "items",
-        ]
+#     class Meta:
+#         model = Look
+#         fields = [
+#             "id",
+#             "style_profile",
+#             "look_order",
+#             "title",
+#             "subtitle",
+#             "description",
+#             "reason",
+#             "items",
+#         ]
 
 class RecommendationResultSerializer(serializers.ModelSerializer):
     class Meta:
@@ -119,36 +119,36 @@ class StylingProductSerializer(serializers.ModelSerializer):
         return None
 
 
-class LookItemDetailSerializer(serializers.ModelSerializer):
-    product = StylingProductSerializer(
-        read_only=True
-    )
+# class LookItemDetailSerializer(serializers.ModelSerializer):
+#     product = StylingProductSerializer(
+#         read_only=True
+#     )
 
-    class Meta:
-        model = LookItem
-        fields = [
-            "id",
-            "product",
-            "order",
-            "type",
-        ]
+#     class Meta:
+#         model = LookItem
+#         fields = [
+#             "id",
+#             "product",
+#             "order",
+#             "type",
+#         ]
 
 
-class LookDetailSerializer(serializers.ModelSerializer):
-    items = LookItemDetailSerializer(
-        many=True,
-        read_only=True
-    )
+# class LookDetailSerializer(serializers.ModelSerializer):
+#     items = LookItemDetailSerializer(
+#         many=True,
+#         read_only=True
+#     )
 
-    class Meta:
-        model = Look
-        fields = [
-            "id",
-            "style_profile",
-            "look_order",
-            "title",
-            "subtitle",     # (선택 사항인 듯 - Look 밑에, 'aa 백 + bbb' 부분)
-            "description",  # 스타일 설명
-            "reason",       # 추천 이유
-            "items",
-        ]
+#     class Meta:
+#         model = Look
+#         fields = [
+#             "id",
+#             "style_profile",
+#             "look_order",
+#             "title",
+#             "subtitle",     # (선택 사항인 듯 - Look 밑에, 'aa 백 + bbb' 부분)
+#             "description",  # 스타일 설명
+#             "reason",       # 추천 이유
+#             "items",
+#         ]
