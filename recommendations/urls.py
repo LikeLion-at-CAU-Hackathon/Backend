@@ -62,4 +62,21 @@ urlpatterns = [
     #     LookDetailAPIView.as_view(),
     #     name="styling-result-detail",
     # ),
+    path(
+        "sessions/<int:session_id>/analyze/",
+        StyleAnalysisAPIView.as_view(),
+        name="style-analysis"
+    ),
+
+    path(
+        "sessions/<int:session_id>/result/",
+        StyleResultAPIView.as_view(),
+        name="style-result"
+    ),
+
+    path(
+        "looks/<int:look_id>/",
+        LookDetailAPIView.as_view(),
+        name="look-detail"
+    ),
 ]

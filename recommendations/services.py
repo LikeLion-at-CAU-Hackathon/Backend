@@ -379,23 +379,20 @@ def create_style_profile(visit_session):
 
 # mock 으로 looks 테스트
 def generate_mock_looks(style_profile):
-    """
-    OpenAI 연결 전 테스트용 Mock Look 생성
-    """
-
     return [
         {
             "look_order": 1,
             "title": "Heritage Weekend",
             "subtitle": "Classic & Heritage",
-            "description": "클래식한 헤리티지 무드를 활용한 스타일링입니다.",
-            "reason": (
-                "최근 탐색에서 나타난 클래식한 실루엣과 "
-                "헤리티지 요소를 바탕으로 구성했어요."
-            ),
-            "style_chips": [
-                "CLASSIC",
-                "HERITAGE",
+            "description": "클래식한 헤리티지 무드의 스타일링입니다.",
+            "reason": "최근 탐색에서 나타난 클래식하고 헤리티지한 특성을 바탕으로 구성했어요.",
+            "style_chips": ["CLASSIC", "HERITAGE"],
+            "items": [
+                {"item_type": "BAG", "product_id": 1},
+                {"item_type": "TOP", "product_id": 2},
+                {"item_type": "SHOES", "product_id": 4},
+                {"item_type": "ACCESSORY", "product_id": 5},
+                {"item_type": "BOTTOM", "product_id": 3},
             ],
         },
         {
@@ -403,13 +400,14 @@ def generate_mock_looks(style_profile):
             "title": "Refined City",
             "subtitle": "Refined & Modern",
             "description": "정돈된 무드에 현대적인 감각을 더한 스타일링입니다.",
-            "reason": (
-                "최근 탐색에서 나타난 정제된 디자인 취향을 "
-                "현대적으로 확장한 스타일이에요."
-            ),
-            "style_chips": [
-                "REFINED",
-                "MODERN",
+            "reason": "최근 탐색에서 나타난 정제된 취향을 현대적으로 확장했어요.",
+            "style_chips": ["REFINED", "MODERN"],
+            "items": [
+                {"item_type": "BAG", "product_id": 1},
+                {"item_type": "TOP", "product_id": 2},
+                {"item_type": "BOTTOM", "product_id": 3},
+                {"item_type": "SHOES", "product_id": 4},
+                {"item_type": "ACCESSORY", "product_id": 5},
             ],
         },
         {
@@ -417,13 +415,14 @@ def generate_mock_looks(style_profile):
             "title": "Soft Heritage",
             "subtitle": "Heritage & Soft",
             "description": "헤리티지 요소에 부드러운 분위기를 더한 스타일링입니다.",
-            "reason": (
-                "헤리티지한 취향을 유지하면서 "
-                "조금 더 부드러운 방향으로 제안한 스타일이에요."
-            ),
-            "style_chips": [
-                "HERITAGE",
-                "SOFT",
+            "reason": "헤리티지한 취향을 유지하면서 부드러운 분위기를 더했어요.",
+            "style_chips": ["HERITAGE", "SOFT"],
+            "items": [
+                {"item_type": "BAG", "product_id": 1},
+                {"item_type": "TOP", "product_id": 2},
+                {"item_type": "BOTTOM", "product_id": 3},
+                {"item_type": "SHOES", "product_id": 4},
+                {"item_type": "ACCESSORY", "product_id": 5},
             ],
         },
     ]
@@ -431,14 +430,9 @@ def generate_mock_looks(style_profile):
 
 # looks 저장
 def save_looks(style_profile, look_data_list):
-    """
-    생성된 Look 데이터를 DB에 저장한다.
-    """
-
     if len(look_data_list) != 3:
         raise ValueError("Look은 정확히 3개여야 합니다.")
 
-    # 기존 Look이 있다면 삭제
     style_profile.looks.all().delete()
 
     created_looks = []
@@ -447,9 +441,7 @@ def save_looks(style_profile, look_data_list):
         chip_codes = look_data["style_chips"]
 
         chips = list(
-            StyleChip.objects.filter(
-                code__in=chip_codes
-            )
+            StyleChip.objects.filter(code__in=chip_codes)
         )
 
         if len(chips) != len(chip_codes):
@@ -466,8 +458,48 @@ def save_looks(style_profile, look_data_list):
             reason=look_data["reason"],
         )
 
-        # ManyToMany 연결
         look.style_chips.set(chips)
+
+        items = look_data["items"]
+
+        required_types = {
+            "BAG",
+            "TOP",
+            "BOTTOM",
+            "SHOES",
+            "ACCESSORY",
+        }
+
+        if len(items) != 5:
+            raise ValueError(
+                "각 Look은 정확히 5개의 제품을 포함해야 합니다."
+            )
+
+        item_types = {
+            item["item_type"]
+            for item in items
+        }
+
+        if item_types != required_types:
+            raise ValueError(
+                "각 Look은 BAG, TOP, BOTTOM, SHOES, ACCESSORY를 하나씩 포함해야 합니다."
+            )
+
+        for item_data in items:
+            product = Product.objects.filter(
+                id=item_data["product_id"]
+            ).first()
+
+            if product is None:
+                raise ValueError(
+                    f"존재하지 않는 Product ID입니다: {item_data['product_id']}"
+                )
+
+            LookProduct.objects.create(
+                look=look,
+                product=product,
+                item_type=item_data["item_type"],
+            )
 
         created_looks.append(look)
 

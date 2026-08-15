@@ -1,154 +1,152 @@
 from rest_framework import serializers
 
-from .models import *
+from products.models import Product
+from .models import (
+    StyleChip,
+    StyleProfile,
+    Look,
+    LookProduct,
+)
 
 
-class VisitSessionSerializer(serializers.ModelSerializer):
+# class VisitSessionSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = VisitSession
+#         fields = [
+#             "id",
+#             "session_key",
+#             "started_at",
+#             "ended_at",
+#         ]
+
+
+# class VisitHistorySerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = VisitHistory
+#         fields = [
+#             "id",
+#             "visit_session",
+#             "product",
+#             "sequence",
+#             "visited_at",
+#         ]
+
+class StyleChipSerializer(serializers.ModelSerializer):
     class Meta:
-        model = VisitSession
+        model = StyleChip
+        fields = ["code", "label"]
+
+
+class ProductSimpleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = ["id", "name", "category"]
+
+
+class LookProductSerializer(serializers.ModelSerializer):
+    product = ProductSimpleSerializer(read_only=True)
+
+    class Meta:
+        model = LookProduct
+        fields = ["id", "product"]
+
+
+class LookSerializer(serializers.ModelSerializer):
+    style_chips = StyleChipSerializer(
+        many=True,
+        read_only=True
+    )
+
+    products = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Look
         fields = [
             "id",
-            "session_key",
-            "started_at",
-            "ended_at",
+            "look_order",
+            "title",
+            "subtitle",
+            "description",
+            "reason",
+            "style_chips",
+            "products",
+        ]
+
+    def get_products(self, obj):
+        look_products = (
+            obj.look_products
+            .select_related("product")
+            .all()
+        )
+
+        return ProductSimpleSerializer(
+            [item.product for item in look_products],
+            many=True
+        ).data
+
+
+class LookProductDetailSerializer(serializers.ModelSerializer):
+    product_id = serializers.IntegerField(
+        source="product.id",
+        read_only=True
+    )
+    name = serializers.CharField(
+        source="product.name",
+        read_only=True
+    )
+    category = serializers.CharField(
+        source="product.category",
+        read_only=True
+    )
+
+    class Meta:
+        model = LookProduct
+        fields = [
+            "item_type",
+            "product_id",
+            "name",
+            "category",
         ]
 
 
-class VisitHistorySerializer(serializers.ModelSerializer):
+class LookDetailSerializer(serializers.ModelSerializer):
+    style_chips = StyleChipSerializer(
+        many=True,
+        read_only=True
+    )
+
+    products = LookProductDetailSerializer(
+        source="look_products",
+        many=True,
+        read_only=True
+    )
+
     class Meta:
-        model = VisitHistory
+        model = Look
         fields = [
             "id",
-            "visit_session",
-            "product",
-            "sequence",
-            "visited_at",
+            "look_order",
+            "title",
+            "subtitle",
+            "description",
+            "reason",
+            "style_chips",
+            "products",
         ]
+
 
 
 class StyleProfileSerializer(serializers.ModelSerializer):
+    style_chips = StyleChipSerializer(
+        many=True,
+        read_only=True
+    )
+
     class Meta:
         model = StyleProfile
         fields = [
             "id",
-            "visit_session",
             "summary",
-            "tags",
-            "analysis_mode",
+            "style_chips",
             "created_at",
         ]
-
-# class LookItemSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = LookItem
-#         fields = [
-#             "id",
-#             "product",
-#             "order",
-#             "type",
-#         ]
-
-
-# class LookSerializer(serializers.ModelSerializer):
-#     items = LookItemSerializer(
-#         many=True,
-#         read_only=True
-#     )
-
-#     class Meta:
-#         model = Look
-#         fields = [
-#             "id",
-#             "style_profile",
-#             "look_order",
-#             "title",
-#             "subtitle",
-#             "description",
-#             "reason",
-#             "items",
-#         ]
-
-class RecommendationResultSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = RecommendationResult
-        fields = [
-            "id",
-            "style_profile",
-            "product",
-            "type",
-            "reason",
-            "score",
-            "created_at",
-        ]
-
-class SavedProductSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = SavedProduct
-        fields = [
-            "id",
-            "visit_session",
-            "product",
-            "created_at",
-        ]
-
-# 3.3 상세 Styling Look 조회용
-class StylingProductSerializer(serializers.ModelSerializer):
-    category = serializers.CharField(
-        source="category.name",
-        read_only=True
-    )
-
-    image = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Product
-        fields = [
-            "id",
-            "name",
-            "price",
-            "category",
-            "image",
-        ]
-
-    def get_image(self, obj):
-        product_image = obj.images.first()
-
-        if product_image:
-            return product_image.image.url
-
-        return None
-
-
-# class LookItemDetailSerializer(serializers.ModelSerializer):
-#     product = StylingProductSerializer(
-#         read_only=True
-#     )
-
-#     class Meta:
-#         model = LookItem
-#         fields = [
-#             "id",
-#             "product",
-#             "order",
-#             "type",
-#         ]
-
-
-# class LookDetailSerializer(serializers.ModelSerializer):
-#     items = LookItemDetailSerializer(
-#         many=True,
-#         read_only=True
-#     )
-
-#     class Meta:
-#         model = Look
-#         fields = [
-#             "id",
-#             "style_profile",
-#             "look_order",
-#             "title",
-#             "subtitle",     # (선택 사항인 듯 - Look 밑에, 'aa 백 + bbb' 부분)
-#             "description",  # 스타일 설명
-#             "reason",       # 추천 이유
-#             "items",
-#         ]

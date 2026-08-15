@@ -149,6 +149,15 @@ class SavedProduct(models.Model):
 
 
 class LookProduct(models.Model):
+
+    class ItemType(models.TextChoices):
+        TOP = "TOP", "Top"
+        BOTTOM = "BOTTOM", "Bottom"
+        ACCESSORY = "ACCESSORY", "Accessory"
+        SHOES = "SHOES", "Shoes"
+        BAG = "BAG", "Bag"
+
+
     look = models.ForeignKey(
         Look,
         on_delete=models.CASCADE,
@@ -161,11 +170,20 @@ class LookProduct(models.Model):
         related_name="look_products"
     )
 
+    item_type = models.CharField(
+        max_length=20,
+        choices=ItemType.choices
+    )
+
     class Meta:
         constraints = [
             models.UniqueConstraint(
                 fields=["look", "product"],
                 name="unique_product_per_look"
-            )
+            ),
+            models.UniqueConstraint(
+                fields=["look", "item_type"],
+                name="unique_item_type_per_look"
+            ),
         ]
 
