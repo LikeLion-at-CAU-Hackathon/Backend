@@ -1,5 +1,32 @@
 from django.db import models
+from django.conf import settings
 from products.models import Product
+
+
+# class StyleChip(models.TextChoices):
+#     WARM = "WARM", "Warm Tone"
+#     COMPACT = "COMPACT", "Compact Size"
+#     CLASSIC = "CLASSIC", "Classic"
+#     HERITAGE = "HERITAGE", "Heritage"
+#     REFINED = "REFINED", "Refined"
+#     MODERN = "MODERN", "Modern"
+#     SOFT = "SOFT", "Soft"
+#     CASUAL = "CASUAL", "Casual"
+#     CONTEMPORARY = "CONTEMPORARY", "Contemporary"
+#     FEMININE = "FEMININE", "Feminine"
+
+class StyleChip(models.Model):
+    code = models.CharField(
+        max_length=30,
+        unique=True
+    )
+
+    label = models.CharField(
+        max_length=100
+    )
+
+    def __str__(self):
+        return self.label
 
 
 class VisitSession(models.Model):
@@ -7,6 +34,15 @@ class VisitSession(models.Model):
         max_length=100,
         unique=True
     )
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="visit_sessions"
+    )
+    
     started_at = models.DateTimeField(auto_now_add=True)
     ended_at = models.DateTimeField(
         null=True,
@@ -28,23 +64,24 @@ class VisitHistory(models.Model):
     sequence = models.PositiveIntegerField()
     visited_at = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        ordering = ["sequence"]
+
 
 class StyleProfile(models.Model):
-    class AnalysisMode(models.TextChoices):
-        BEHAVIOR = "BEHAVIOR", "탐색 행동 기반"
-        SINGLE_PRODUCT = "SINGLE_PRODUCT", "단일 제품 기반"
-
     visit_session = models.OneToOneField(
         VisitSession,
         on_delete=models.CASCADE,
         related_name="style_profile"
     )
+
     summary = models.TextField()
-    tags = models.JSONField(default=list)
-    analysis_mode = models.CharField(
-        max_length=20,
-        choices=AnalysisMode.choices
+
+    style_chips = models.ManyToManyField(
+        StyleChip,
+        related_name="style_profiles"
     )
+
     created_at = models.DateTimeField(auto_now_add=True)
 
 
@@ -54,68 +91,49 @@ class Look(models.Model):
         on_delete=models.CASCADE,
         related_name="looks"
     )
+
+    style_chips = models.ManyToManyField(
+        StyleChip,
+        related_name="looks"
+    )
+
     look_order = models.PositiveIntegerField()
+
     title = models.CharField(max_length=100)
-    subtitle = models.CharField(max_length=200, blank=True)
+
+    subtitle = models.CharField(
+        max_length=200,
+        blank=True
+    )
+
     description = models.TextField()
-    reason = models.TextField()
-
-
-class LookItem(models.Model):
-    look = models.ForeignKey(
-        Look,
-        on_delete=models.CASCADE,
-        related_name="items"
-    )
-    product = models.ForeignKey(
-        Product,
-        on_delete=models.CASCADE
-    )
-    order = models.PositiveIntegerField()
-    type = models.CharField(max_length=50, blank=True)
-
-
-class RecommendationResult(models.Model):
-    class RecommendationType(models.TextChoices):
-        SIMILAR = "SIMILAR", "Similar"
-        NEW = "NEW", "New"
-
-    style_profile = models.ForeignKey(
-        StyleProfile,
-        on_delete=models.CASCADE,
-        related_name="recommendations"
-    )
-
-    product = models.ForeignKey(
-        Product,
-        on_delete=models.CASCADE
-    )
-
-    type = models.CharField(
-        max_length=20,
-        choices=RecommendationType.choices
-    )
 
     reason = models.TextField()
-
-    score = models.PositiveIntegerField()
-
-    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        ordering = ["score"]
+        ordering = ["look_order"]
+
+        constraints = [
+            models.UniqueConstraint(
+                fields=["style_profile", "look_order"],
+                name="unique_look_order_per_profile"
+            )
+        ]
+
+
 
 
 class SavedProduct(models.Model):
-    visit_session = models.ForeignKey(
-        VisitSession,
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name="saved_products"
     )
 
     product = models.ForeignKey(
         Product,
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
+        related_name="saved_by"
     )
 
     created_at = models.DateTimeField(auto_now_add=True)
@@ -123,7 +141,31 @@ class SavedProduct(models.Model):
     class Meta:
         constraints = [
             models.UniqueConstraint(
-                fields=["visit_session", "product"],
-                name="unique_saved_product_per_session"
+                fields=["user", "product"],
+                name="unique_saved_product_per_user"
             )
         ]
+
+
+
+class LookProduct(models.Model):
+    look = models.ForeignKey(
+        Look,
+        on_delete=models.CASCADE,
+        related_name="look_products"
+    )
+
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE,
+        related_name="look_products"
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["look", "product"],
+                name="unique_product_per_look"
+            )
+        ]
+
