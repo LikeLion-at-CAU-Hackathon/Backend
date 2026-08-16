@@ -15,37 +15,7 @@ urlpatterns = [
         VisitHistoryAPIView.as_view(),
         name="visit-history",
     ),
-
-    # # path(
-    # #     "sessions/<int:session_id>/analyze/",
-    # #     MockStyleAnalyzeAPIView.as_view(),
-    # #     name="style-analyze",
-    # # ),
     
-    # path(
-    #     "sessions/<int:session_id>/profile/",
-    #     StyleProfileRetrieveAPIView.as_view(),
-    #     name="style-profile-detail",
-    # ),
-    # path(
-    #     "profiles/<int:profile_id>/looks/",
-    #     MockLookCreateAPIView.as_view(),
-    #     name="mock-styling-result-create",
-    # ),
-
-    # path(
-    #     "profiles/<int:profile_id>/recommendations/",
-    #     MockRecommendationCreateAPIView.as_view(),
-    #     name="mock-recommendation-create",
-    # ),
-
-
-    # path(
-    #     "sessions/<int:session_id>/saved-products/",
-    #     SavedProductCreateAPIView.as_view(),
-    #     name="saved-product-create",
-    # ),
-
 
     path(
         "sessions/<int:session_id>/analyze/",
@@ -63,5 +33,23 @@ urlpatterns = [
         "looks/<int:look_id>/",
         LookDetailAPIView.as_view(),
         name="look-detail"
+    ),
+
+    path(
+        "sessions/<int:session_id>/saved-products/<int:product_id>/",
+        SavedProductAPIView.as_view(),
+        name="saved-product"
+    ),
+
+    path(
+        "sessions/<int:session_id>/saved-products/",
+        SavedProductListAPIView.as_view(),
+        name="saved-product-list"
+    ),
+
+    path(
+        "sessions/<int:session_id>/saved-products/<int:product_id>/analysis/",
+        SavedProductAnalysisAPIView.as_view(),
+        name="saved-product-analysis"
     ),
 ]
