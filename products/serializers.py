@@ -11,19 +11,26 @@ class ProductImageSerializer(serializers.ModelSerializer):
         ]
 
 class StockSerializer(serializers.ModelSerializer):
+    branch_id = serializers.IntegerField(
+        source="branch.id",
+        read_only=True
+    )
+    
     branch_name = serializers.CharField(
         source="branch.name",
         read_only=True
     )
-
+    
     class Meta:
         model = Stock
         fields = [
+            "branch_id",
             "branch_name",
             "quantity",
         ]
 
 class ProductDetailSerializer(serializers.ModelSerializer):
+    
     images = ProductImageSerializer(
         many=True, 
         read_only=True
@@ -94,6 +101,13 @@ class ProductCompareSerializer(serializers.ModelSerializer):
             "price",
             "stocks",
         ]        
+        
+class NearbyBranchSerializer(serializers.Serializer):
+    branch_id = serializers.IntegerField()
+    branch_name = serializers.CharField()
+    distance = serializers.FloatField()
+    is_open = serializers.BooleanField()
+    has_stock = serializers.BooleanField()
      
      
    
