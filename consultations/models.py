@@ -12,11 +12,11 @@ class BaseModel(models.Model):
 class ConsultationRequest(BaseModel):
         
     REQUEST_TYPE_CHOICES = [
-            ("OTHER", "다른 옵션"),
-            ("FITTING", "착용 상담"),
-            ("STYLING", "스타일링"),
-            ("ETC", "기타"),
-        ]
+        ("OTHER", "다른 옵션"),
+        ("FITTING", "착용 상담"),
+        ("STYLING", "스타일링"),
+        ("ETC", "기타"),
+    ]
     
     STATUS_CHOICES = [
         ("REQUESTED", "요청"),
@@ -24,33 +24,17 @@ class ConsultationRequest(BaseModel):
         ("COMPLETED", "완료"),
     ]
     
-    # user = models.ForeignKey(
-    #     settings.AUTH_USER_MODEL,
-    #     on_delete=models.SET_NULL,
-    #     null=True,
-    #     blank=True,
-    #     related_name="consultation_requests",
-    # )
-    session_key = models.CharField(
-        max_length=255,
-        null=True,
-        blank=True,
+    session = models.ForeignKey(
+        "recommendations.VisitSession",
+        on_delete=models.PROTECT,
+        related_name="consultation_requests",
     )
     product = models.ForeignKey(
         "products.Product",
         on_delete=models.PROTECT,
         related_name="consultation_requests",
     )
-    request_type = models.CharField(
-        max_length=20,
-        choices=REQUEST_TYPE_CHOICES,
-    )
-    message = models.TextField(
-        blank=True,
-        default="",
-    )
-    status = models.CharField(
-        max_length=20,
-        choices=STATUS_CHOICES,
-        default="REQUESTED",
-    )
+    
+    request_type = models.CharField(max_length=20, choices=REQUEST_TYPE_CHOICES)
+    message = models.TextField(blank=True, default="")
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="REQUESTED")
