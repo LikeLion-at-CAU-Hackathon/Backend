@@ -3,11 +3,42 @@ from rest_framework.generics import RetrieveAPIView, ListAPIView
 from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from math import radians, sin, cos, sqrt, atan2
+from django.utils import timezone
 
 
 from .serializers import *
 from .models import *
 from .services import *
+
+def calculate_distance(lat1, lon1, lat2, lon2):
+    R = 6371
+
+    lat1 = radians(lat1)
+    lon1 = radians(lon1)
+    lat2 = radians(lat2)
+    lon2 = radians(lon2)
+
+    dlat = lat2 - lat1
+    dlon = lon2 - lon1
+
+    a = (
+        sin(dlat / 2) ** 2
+        + cos(lat1) * cos(lat2) * sin(dlon / 2) ** 2
+    )
+
+    c = 2 * atan2(sqrt(a), sqrt(1 - a))
+
+    return R * c
+
+def is_branch_open(branch):
+    now = timezone.localtime().time()
+
+    return branch.business_hours.filter(
+        open__lte=now,
+        close__gte=now,
+    ).exists()
+    
 
 class ProductAPIView(RetrieveAPIView):
     serializer_class = ProductSerializer
@@ -18,15 +49,78 @@ class ProductAPIView(RetrieveAPIView):
         "details__stocks__branch",
     )
 
-class ProductStockAPIView(ListAPIView):
-    serializer_class = StockSerializer
+class ProductStockAPIView(APIView):
 
-    def get_queryset(self):
-        product_id = self.kwargs["product_id"]
+    def get(self, request, product_id):
+        latitude = request.query_params.get("latitude")
+        longitude = request.query_params.get("longitude")
 
-        return Stock.objects.filter(
-            detail__product_id=product_id
-        ).select_related("branch")
+        if not latitude or not longitude:
+            return Response(
+                {
+                    "detail": "latitude와 longitude가 필요합니다."
+                },
+                status=400
+            )
+
+        try:
+            latitude = float(latitude)
+            longitude = float(longitude)
+        except ValueError:
+            return Response(
+                {
+                    "detail": "latitude와 longitude는 숫자여야 합니다."
+                },
+                status=400
+            )
+
+        branches = Branch.objects.prefetch_related(
+            Prefetch(
+                "stocks",
+                queryset=Stock.objects.filter(
+                    detail__product_id=product_id
+                )
+            ),
+            "business_hours",
+        )
+
+        result = []
+
+        for branch in branches:
+            distance = calculate_distance(
+                latitude,
+                longitude,
+                branch.latitude,
+                branch.longitude,
+            )
+
+            stocks = branch.stocks.all()
+
+            has_stock = any(
+                stock.quantity > 0
+                for stock in stocks
+            )
+
+            result.append(
+                {
+                    "branch_id": branch.id,
+                    "branch_name": branch.name,
+                    "distance": round(distance, 1),
+                    "is_open": is_branch_open(branch),
+                    "has_stock": has_stock,
+                }
+            )
+
+        result.sort(
+            key=lambda x: x["distance"]
+        )
+
+        serializer = NearbyBranchSerializer(
+            result,
+            many=True
+        )
+
+        return Response(serializer.data)
         
 class ProductSizeAPIView(ListAPIView):
     serializer_class = ProductSizeSerializer
