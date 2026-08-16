@@ -17,11 +17,11 @@ class Notification(BaseModel):
         ("RECOMMENDATION", "개인화 추천"),
     ]
 
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        related_name="notifications",
-    )
+    # user = models.ForeignKey(
+    #     settings.AUTH_USER_MODEL,
+    #     on_delete=models.CASCADE,
+    #     related_name="notifications",
+    # )
     notification_type = models.CharField(
         max_length=30,
         choices=NOTIFICATION_TYPE_CHOICES,
