@@ -154,3 +154,37 @@ class LookProduct(models.Model):
                 name="unique_item_type_per_look"
             ),
         ]
+
+
+class SavedProduct(models.Model):
+    visit_session = models.ForeignKey(
+        VisitSession,
+        on_delete=models.CASCADE,
+        related_name="saved_products"
+    )
+
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE,
+        related_name="saved_by_sessions"
+    )
+
+    saved_at = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    class Meta:
+        ordering = ["-saved_at"]
+
+        constraints = [
+            models.UniqueConstraint(
+                fields=[
+                    "visit_session",
+                    "product",
+                ],
+                name="unique_saved_product_per_session"
+            )
+        ]
+
+    def __str__(self):
+        return f"{self.visit_session_id} - {self.product.name}"
