@@ -49,10 +49,18 @@ class VisitHistory(models.Model):
 
 
 class StyleProfile(models.Model):
-    visit_session = models.OneToOneField(
+    visit_session = models.ForeignKey(
         VisitSession,
         on_delete=models.CASCADE,
-        related_name="style_profile"
+        related_name="style_profiles"
+    )
+
+    main_product = models.ForeignKey(
+        Product,
+        on_delete=models.PROTECT,
+        related_name="style_profiles",
+        # null=True,
+        # blank=True,
     )
 
     summary = models.TextField()
@@ -62,7 +70,9 @@ class StyleProfile(models.Model):
         related_name="style_profiles"
     )
 
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
 
 
 class Look(models.Model):
