@@ -161,35 +161,19 @@ class LookProductDetailSerializer(serializers.ModelSerializer):
 
     def get_detail_id(self, obj):
         detail = self.get_detail(obj)
-
-        if detail:
-            return detail.id
-
-        return None
+        return detail.id if detail else None
 
     def get_price(self, obj):
         detail = self.get_detail(obj)
-
-        if detail:
-            return detail.price
-
-        return None
+        return detail.price if detail else None
 
     def get_color(self, obj):
         detail = self.get_detail(obj)
-
-        if detail:
-            return detail.color
-
-        return None
+        return detail.color if detail else None
 
     def get_size(self, obj):
         detail = self.get_detail(obj)
-
-        if detail:
-            return detail.size
-
-        return None
+        return detail.size if detail else None
 
     def get_image(self, obj):
         detail = self.get_detail(obj)
@@ -211,9 +195,8 @@ class LookProductDetailSerializer(serializers.ModelSerializer):
 
         return product_image.image.url
 
-
 class LookDetailSerializer(serializers.ModelSerializer):
-    # 여기도 단수
+    
     style_chip = StyleChipSerializer(
         read_only=True
     )

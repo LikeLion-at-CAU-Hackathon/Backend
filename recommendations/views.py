@@ -86,10 +86,7 @@ class LookDetailAPIView(APIView):
 
     def get(self, request, look_id):
         look = get_object_or_404(
-            Look.objects.prefetch_related(
-                "style_chips",
-                "look_products__product__details__images",
-            ),
+            Look,
             id=look_id
         )
 
@@ -101,7 +98,7 @@ class LookDetailAPIView(APIView):
         return Response(
             {
                 "success": True,
-                "look": serializer.data,
+                "data": serializer.data,
             },
             status=status.HTTP_200_OK
         )
