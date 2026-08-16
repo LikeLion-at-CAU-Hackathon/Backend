@@ -10,9 +10,13 @@ from .models import *
 from .services import *
 
 class ProductAPIView(RetrieveAPIView):
-    queryset = Product.objects.all()
     serializer_class = ProductSerializer
     lookup_url_kwarg = "product_id"
+
+    queryset = Product.objects.prefetch_related(
+        "details__images",
+        "details__stocks__branch",
+    )
 
 class ProductStockAPIView(ListAPIView):
     serializer_class = StockSerializer
@@ -93,11 +97,11 @@ class ProductCareGuideAPIView(ListAPIView):
             products__product_id=product_id
         ).order_by("order")
 
-class AIDocentAPIView(APIView):
+class AIAssistantAPIView(APIView):
 
     def post(self, request, product_id):
 
-        serializer = AIDocentRequestSerializer(
+        serializer = AIAssistantRequestSerializer(
             data=request.data
         )
         serializer.is_valid(raise_exception=True)
@@ -107,16 +111,16 @@ class AIDocentAPIView(APIView):
             id=product_id
         )
 
-        product_context = build_ai_docent_context(
+        product_context = build_ai_assistant_context(
             product
         )
 
-        answer = ask_ai_docent(
+        answer = ask_ai_assistant(
             question=serializer.validated_data["question"],
             product_context=product_context,
         )
         
-        response_serializer = AIDocentResponseSerializer(
+        response_serializer = AIAssistantResponseSerializer(
             data={
                 "answer": answer
             }

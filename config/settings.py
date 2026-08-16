@@ -160,7 +160,6 @@ PROJECT_APPS = [
     "products",
     "recommendations",
     "consultations",
-    "notifications",
 ]
 
 THIRD_PARTY_APPS = [
