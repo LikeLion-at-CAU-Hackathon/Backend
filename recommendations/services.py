@@ -211,20 +211,9 @@ def select_style_chips(products):
         reverse=True
     )
 
-    positive_styles = [
-        (code, score)
-        for code, score in ranked_styles
-        if score > 0
-    ]
-
-    if len(positive_styles) < 3:
-        raise ValueError(
-            "StyleProfile을 생성하기에 충분한 스타일 특징이 없습니다."
-        )
-
     top_codes = [
         code
-        for code, score in positive_styles[:3]
+        for code, score in ranked_styles[:3]
     ]
 
     chips = StyleChip.objects.filter(
@@ -240,6 +229,11 @@ def select_style_chips(products):
         chip_map[code]
         for code in top_codes
     ]
+
+    if len(selected_chips) != 3:
+        raise ValueError(
+            "StyleChip 데이터를 확인해주세요."
+        )
 
     return selected_chips, scores
 
@@ -262,46 +256,43 @@ def create_summary(style_chips):
 def analyze_visit_session(visit_session):
 
     # 1. 최근 NFC 제품 최대 3개
-    products = get_analysis_products(
+    visited_products = get_analysis_products(
         visit_session
     )
 
-    if not products:
-        raise ValueError("분석할 방문 제품이 없습니다.")
+    if not visited_products:
+        raise ValueError(
+            "분석할 방문 제품이 없습니다."
+        )
 
-    # 2. 규칙 기반 StyleProfile
+    # 2. 규칙 기반 StyleProfile 생성
     profile_result = create_style_profile(
         visit_session
     )
 
     style_profile = profile_result["profile"]
 
-    # 3. StyleChip 3개
+    # 3. StyleChip 3개 가져오기
     style_chips = list(
         style_profile.style_chips.all()
     )
 
-    # 4. 방문 제품을 각 StyleChip/Look에 배치
+    # 4. 방문 제품을 각 StyleChip / Look에 배치
     assignments = assign_products_to_style_chips(
-        products,
+        visited_products,
         style_chips
     )
 
-    # 5. AI Look 생성
-    look_data = generate_ai_looks(
+     # 5. AI Look 생성 + 저장
+    looks = create_ai_looks(
         style_profile,
-        assignments
-    )
-
-    # 6. DB 저장
-    looks = save_looks(
-        style_profile,
-        look_data
+        assignments,
+        visited_products
     )
 
     return {
         "profile": style_profile,
-        "products": products,
+        "products": visited_products,
         "looks": looks,
     }
 
@@ -404,11 +395,33 @@ def generate_mock_looks(style_profile):
 
 
 # looks 저장
-def save_looks(style_profile, look_data_list):
-    if len(look_data_list) != 3:
-        raise ValueError("Look은 정확히 3개여야 합니다.")
+@transaction.atomic
+def save_looks(
+    style_profile,
+    look_data_list,
+    visited_products
+):
+    # =====================================
+    # 0. 기본 검증
+    # =====================================
 
-    # StyleProfile에 실제 연결된 StyleChip 3개
+    if len(look_data_list) != 3:
+        raise ValueError(
+            "Look은 정확히 3개여야 합니다."
+        )
+
+    if not visited_products:
+        raise ValueError(
+            "방문 제품이 최소 1개 이상 필요합니다."
+        )
+
+    # 실제 분석에 사용된 방문 제품 ID
+    visited_product_ids = {
+        product.id
+        for product in visited_products
+    }
+
+    # StyleProfile에 실제 연결된 StyleChip
     profile_chip_codes = set(
         style_profile.style_chips.values_list(
             "code",
@@ -421,15 +434,12 @@ def save_looks(style_profile, look_data_list):
             "StyleProfile에는 정확히 3개의 StyleChip이 있어야 합니다."
         )
 
-    # Look에서 사용된 chip 중복 검사용
-    used_chip_codes = set()
-
     required_types = {
-        "BAG",
-        "TOP",
-        "BOTTOM",
-        "SHOES",
-        "ACCESSORY",
+        LookProduct.ItemType.BAG,
+        LookProduct.ItemType.TOP,
+        LookProduct.ItemType.BOTTOM,
+        LookProduct.ItemType.SHOES,
+        LookProduct.ItemType.ACCESSORY,
     }
 
     valid_sources = {
@@ -437,51 +447,58 @@ def save_looks(style_profile, look_data_list):
         LookProduct.Source.RECOMMENDED,
     }
 
-    # 기존 Look 전부 삭제
-    style_profile.looks.all().delete()
+    # 전체 Look에서 사용된 StyleChip
+    used_chip_codes = set()
 
-    created_looks = []
+    # 전체 Look에서 실제 VISITED로 사용된 상품
+    used_visited_product_ids = set()
+
+    # =====================================
+    # 1. 먼저 전체 입력 데이터 검증
+    # =====================================
+    #
+    # DB에 Look을 생성하기 전에 검증을 최대한 끝낸다.
+    # =====================================
+
+    look_orders = set()
 
     for look_data in look_data_list:
-        # =====================================
-        # 1. Look의 StyleChip 검증
-        # =====================================
+        # -----------------------------
+        # Look order 검증
+        # -----------------------------
+
+        look_order = look_data["look_order"]
+
+        if look_order in look_orders:
+            raise ValueError(
+                f"look_order가 중복되었습니다: {look_order}"
+            )
+
+        look_orders.add(look_order)
+
+        # -----------------------------
+        # StyleChip 검증
+        # -----------------------------
 
         chip_code = look_data["style_chip"]
 
         if chip_code not in profile_chip_codes:
             raise ValueError(
-                f"{chip_code}는 현재 StyleProfile의 StyleChip이 아닙니다."
+                f"{chip_code}는 현재 StyleProfile의 "
+                f"StyleChip이 아닙니다."
             )
 
         if chip_code in used_chip_codes:
             raise ValueError(
-                f"{chip_code} StyleChip으로 Look이 중복 생성되었습니다."
+                f"{chip_code} StyleChip으로 "
+                f"Look이 중복 생성되었습니다."
             )
-
-        style_chip = StyleChip.objects.get(
-            code=chip_code
-        )
 
         used_chip_codes.add(chip_code)
 
-        # =====================================
-        # 2. Look 생성
-        # =====================================
-
-        look = Look.objects.create(
-            style_profile=style_profile,
-            style_chip=style_chip,
-            look_order=look_data["look_order"],
-            title=look_data["title"],
-            subtitle=look_data.get("subtitle", ""),
-            description=look_data["description"],
-            reason=look_data["reason"],
-        )
-
-        # =====================================
-        # 3. LookProduct 검증
-        # =====================================
+        # -----------------------------
+        # items 검증
+        # -----------------------------
 
         items = look_data["items"]
 
@@ -497,58 +514,134 @@ def save_looks(style_profile, look_data_list):
 
         if item_types != required_types:
             raise ValueError(
-                "각 Look은 BAG, TOP, BOTTOM, SHOES, ACCESSORY를 "
-                "하나씩 포함해야 합니다."
+                "각 Look은 BAG, TOP, BOTTOM, SHOES, "
+                "ACCESSORY를 하나씩 포함해야 합니다."
             )
 
-        # 방문 제품이 최소 1개 포함되어야 함
-        visited_items = [
-            item
+        # 같은 Look에 같은 product 중복 방지
+        product_ids = [
+            item["product_id"]
             for item in items
-            if item["source"] == LookProduct.Source.VISITED
         ]
 
-        if not visited_items:
+        if len(product_ids) != len(set(product_ids)):
             raise ValueError(
-                "각 Look에는 방문 기록의 제품이 최소 1개 포함되어야 합니다."
+                "같은 Look에 동일한 Product를 "
+                "중복으로 포함할 수 없습니다."
             )
 
-        # =====================================
-        # 4. LookProduct 저장
-        # =====================================
+        # -----------------------------
+        # source 검증
+        # -----------------------------
 
-        for item_data in items:
-            product = Product.objects.filter(
-                id=item_data["product_id"]
-            ).first()
+        visited_count = 0
 
-            if product is None:
-                raise ValueError(
-                    f"존재하지 않는 Product ID입니다: "
-                    f"{item_data['product_id']}"
-                )
-
-            source = item_data["source"]
+        for item in items:
+            product_id = item["product_id"]
+            source = item["source"]
 
             if source not in valid_sources:
                 raise ValueError(
                     f"잘못된 source 값입니다: {source}"
                 )
 
+            # DB에 실제 존재하는 Product인지
+            if not Product.objects.filter(
+                id=product_id
+            ).exists():
+                raise ValueError(
+                    f"존재하지 않는 Product ID입니다: "
+                    f"{product_id}"
+                )
+
+            # VISITED라면 진짜 방문 상품이어야 함
+            if source == LookProduct.Source.VISITED:
+                if product_id not in visited_product_ids:
+                    raise ValueError(
+                        f"Product {product_id}는 "
+                        f"실제 방문 제품이 아닙니다."
+                    )
+
+                visited_count += 1
+
+                used_visited_product_ids.add(
+                    product_id
+                )
+
+        # 각 Look에는 방문 상품 최소 1개
+        if visited_count == 0:
+            raise ValueError(
+                "각 Look에는 방문 기록의 제품이 "
+                "최소 1개 포함되어야 합니다."
+            )
+
+    # =====================================
+    # 2. Look 전체 수준 검증
+    # =====================================
+
+    if used_chip_codes != profile_chip_codes:
+        raise ValueError(
+            "StyleProfile의 각 StyleChip마다 "
+            "Look이 하나씩 생성되어야 합니다."
+        )
+
+    # 방문했던 모든 상품이 최소 하나의 Look에는 들어갔는지
+    if used_visited_product_ids != visited_product_ids:
+        missing_ids = (
+            visited_product_ids
+            - used_visited_product_ids
+        )
+
+        raise ValueError(
+            "일부 방문 제품이 Look에 반영되지 않았습니다: "
+            f"{sorted(missing_ids)}"
+        )
+
+    # =====================================
+    # 3. 기존 Look 삭제
+    # =====================================
+
+    style_profile.looks.all().delete()
+
+    # =====================================
+    # 4. 실제 DB 저장
+    # =====================================
+
+    created_looks = []
+
+    for look_data in look_data_list:
+        chip_code = look_data["style_chip"]
+
+        style_chip = StyleChip.objects.get(
+            code=chip_code
+        )
+
+        look = Look.objects.create(
+            style_profile=style_profile,
+            style_chip=style_chip,
+            look_order=look_data["look_order"],
+            title=look_data["title"],
+            subtitle=look_data.get(
+                "subtitle",
+                ""
+            ),
+            description=look_data["description"],
+            reason=look_data["reason"],
+        )
+
+        for item_data in look_data["items"]:
+            product = Product.objects.get(
+                id=item_data["product_id"]
+            )
+
             LookProduct.objects.create(
                 look=look,
                 product=product,
                 item_type=item_data["item_type"],
-                source=source,
+                source=item_data["source"],
             )
 
         created_looks.append(look)
-
-    # 세 Look이 StyleProfile의 세 chip을 정확히 하나씩 사용했는지
-    if used_chip_codes != profile_chip_codes:
-        raise ValueError(
-            "StyleProfile의 각 StyleChip마다 Look이 하나씩 생성되어야 합니다."
-        )
 
     return created_looks
 
@@ -560,7 +653,8 @@ def create_mock_looks(style_profile):
 
     looks = save_looks(
         style_profile,
-        look_data_list
+        look_data_list,
+        visited_products=[]
     )
 
     return looks
@@ -616,7 +710,10 @@ def build_look_product_candidates():
     return result
 
 # AI 기반 Look 생성
-def generate_ai_looks(style_profile):
+def generate_ai_looks(
+    style_profile,
+    assignments
+):
     profile_chips = list(
         style_profile.style_chips.values(
             "code",
@@ -624,25 +721,34 @@ def generate_ai_looks(style_profile):
         )
     )
 
-    available_chips = list(
-        StyleChip.objects.values(
-            "code",
-            "label"
-        )
-    )
-
     product_candidates = build_look_product_candidates()
+
+    # assignments 안에는 Product 객체가 들어 있으므로
+    # AI에게 넘길 수 있도록 dict 형태로 변환
+    required_products_by_chip = {}
+
+    for chip_code, products in assignments.items():
+        required_products_by_chip[chip_code] = [
+            {
+                "id": product.id,
+                "name": product.name,
+                "category": product.category,
+            }
+            for product in products
+        ]
 
     prompt = f"""
 You are an MCM fashion styling assistant.
 
-Create exactly 3 distinct curated looks based on the user's style profile.
+Create exactly 3 curated looks.
+
+The user's style profile contains exactly 3 style chips.
 
 USER STYLE CHIPS:
 {json.dumps(profile_chips, ensure_ascii=False)}
 
-AVAILABLE STYLE CHIPS:
-{json.dumps(available_chips, ensure_ascii=False)}
+REQUIRED VISITED PRODUCTS FOR EACH STYLE CHIP:
+{json.dumps(required_products_by_chip, ensure_ascii=False)}
 
 AVAILABLE PRODUCTS:
 {json.dumps(product_candidates, ensure_ascii=False)}
@@ -651,30 +757,54 @@ Rules:
 
 1. Create exactly 3 looks.
 
-2. Each look must represent a different styling direction.
+2. Create exactly one Look for each USER STYLE CHIP.
 
-3. Each look must include exactly these five item types:
+3. Each Look must use exactly one style_chip.
+   The style_chip must be one of USER STYLE CHIPS.
+
+4. Each Look must contain exactly these five item types:
    BAG
    TOP
    BOTTOM
    SHOES
    ACCESSORY
 
-4. Select exactly one product for each item type.
+5. Each item type must appear exactly once.
 
-5. You MUST only use product IDs from AVAILABLE PRODUCTS.
+6. Every product listed in REQUIRED VISITED PRODUCTS
+   for that style chip MUST be included in that Look.
+
+7. Products from REQUIRED VISITED PRODUCTS must have:
+   "source": "VISITED"
+
+8. All other products must have:
+   "source": "RECOMMENDED"
+
+9. You MUST only use product IDs from AVAILABLE PRODUCTS.
    Never invent products or product IDs.
 
-6. The selected product's category must reasonably match its item_type.
+10. Never replace or omit a required visited product.
 
-7. Each look must have exactly 2 style chips.
+11. Two products of the same category cannot appear
+    in the same Look.
 
-8. Style chips must only use codes from AVAILABLE STYLE CHIPS.
+12. Select recommended products that complement
+    the required visited products based on:
+    color,
+    material,
+    pattern,
+    design,
+    and overall style compatibility.
 
-9. Each look should be meaningfully connected to the user's style profile,
-   while still offering a distinct styling direction.
+13. Each Look must contain exactly 5 products total.
 
-10. reason must explain why the look fits the user's inferred interests.
+14. Each Look should represent the styling direction
+    of its assigned style_chip.
+
+15. reason must explain:
+    - how the visited product(s) influenced the styling
+    - why the recommended products work with them
+    - why the Look fits the assigned style chip
 
 Return JSON only.
 
@@ -684,59 +814,73 @@ Required format:
   "looks": [
     {{
       "look_order": 1,
+      "style_chip": "CLASSIC",
       "title": "...",
       "subtitle": "...",
       "description": "...",
       "reason": "...",
-      "style_chips": ["CLASSIC", "HERITAGE"],
       "items": [
         {{
           "item_type": "BAG",
-          "product_id": 1
+          "product_id": 1,
+          "source": "VISITED"
         }},
         {{
           "item_type": "TOP",
-          "product_id": 2
+          "product_id": 2,
+          "source": "RECOMMENDED"
         }},
         {{
           "item_type": "BOTTOM",
-          "product_id": 3
+          "product_id": 3,
+          "source": "RECOMMENDED"
         }},
         {{
           "item_type": "SHOES",
-          "product_id": 4
+          "product_id": 4,
+          "source": "RECOMMENDED"
         }},
         {{
           "item_type": "ACCESSORY",
-          "product_id": 5
+          "product_id": 5,
+          "source": "RECOMMENDED"
         }}
       ]
     }}
   ]
 }}
 """
+
     response = client.responses.create(
         model="gpt-5-mini",
         input=prompt,
     )
 
-    data = json.loads(response.output_text)
+    data = json.loads(
+        response.output_text
+    )
 
     return data["looks"]
 
 
-def create_ai_looks(style_profile):
+
+def create_ai_looks(
+    style_profile,
+    assignments,
+    visited_products
+):
     look_data_list = generate_ai_looks(
-        style_profile
+        style_profile,
+        assignments
     )
 
     looks = save_looks(
         style_profile,
-        look_data_list
+        look_data_list,
+        visited_products=visited_products
     )
 
     return looks
-
 
 
 # Look 배치 함수 (최근 방문 제품을 3개의 Look에 배치)
@@ -803,7 +947,6 @@ def assign_products_to_style_chips(products, style_chips):
     4. 같은 category의 제품은 같은 Look에 함께 들어갈 수 없음
     5. 제품은 자신과 가장 잘 맞는 StyleChip Look에 우선 배치
     """
-
     if not products:
         raise ValueError("분석할 방문 제품이 없습니다.")
 
@@ -815,10 +958,15 @@ def assign_products_to_style_chips(products, style_chips):
         for chip in style_chips
     }
 
-    # ---------------------------------------
-    # 제품이 1개
-    # 모든 Look에 동일 제품 포함
-    # ---------------------------------------
+    # 제품별 style 점수 미리 계산
+    product_scores = {
+        product.id: get_product_style_scores(product)
+        for product in products
+    }
+
+    # ----------------------------
+    # 제품 1개
+    # ----------------------------
     if len(products) == 1:
         product = products[0]
 
@@ -827,33 +975,105 @@ def assign_products_to_style_chips(products, style_chips):
 
         return assignments
 
-    # ---------------------------------------
-    # 제품이 2개 이상
-    # ---------------------------------------
+    # ----------------------------
+    # 제품 2개
+    # ----------------------------
+    if len(products) == 2:
+        p1, p2 = products
 
-    # 제품별 / chip별 점수를 미리 계산
-    product_scores = {
-        product.id: get_product_style_scores(product)
-        for product in products
-    }
-
-    # 각 제품을 가장 잘 맞는 Look에 먼저 배치
-    for product in products:
-
-        # 점수 높은 chip부터 정렬
-        ranked_chips = sorted(
-            style_chips,
-            key=lambda chip: product_scores[product.id].get(
+        # 각 chip에서 어떤 제품이 더 잘 맞는지 계산
+        for chip in style_chips:
+            p1_score = product_scores[p1.id].get(
                 chip.code,
                 0
-            ),
+            )
+
+            p2_score = product_scores[p2.id].get(
+                chip.code,
+                0
+            )
+
+            # 해당 chip과 더 잘 맞는 제품을 기본으로 배치
+            if p1_score >= p2_score:
+                assignments[chip.code].append(p1)
+            else:
+                assignments[chip.code].append(p2)
+
+        # 두 제품 중 하나가 한 번도 사용되지 않았을 수도 있으므로 보정
+        used_product_ids = {
+            product.id
+            for assigned_products in assignments.values()
+            for product in assigned_products
+        }
+
+        for product in products:
+            if product.id in used_product_ids:
+                continue
+
+            # 아직 사용되지 않은 제품이 가장 잘 맞는 chip 찾기
+            best_chip = max(
+                style_chips,
+                key=lambda chip:
+                    product_scores[product.id].get(
+                        chip.code,
+                        0
+                    )
+            )
+
+            current_products = assignments[
+                best_chip.code
+            ]
+
+            # 같은 카테고리라면 같이 넣을 수 없음
+            category_exists = any(
+                existing.category == product.category
+                for existing in current_products
+            )
+
+            if not category_exists:
+                assignments[
+                    best_chip.code
+                ].append(product)
+
+            else:
+                # 다른 chip 중 넣을 수 있는 곳 찾기
+                for chip in style_chips:
+                    current_products = assignments[
+                        chip.code
+                    ]
+
+                    category_exists = any(
+                        existing.category == product.category
+                        for existing in current_products
+                    )
+
+                    if not category_exists:
+                        assignments[
+                            chip.code
+                        ].append(product)
+                        break
+
+        return assignments
+
+    # ----------------------------
+    # 제품 3개
+    # ----------------------------
+    for product in products:
+        ranked_chips = sorted(
+            style_chips,
+            key=lambda chip:
+                product_scores[product.id].get(
+                    chip.code,
+                    0
+                ),
             reverse=True
         )
 
         for chip in ranked_chips:
-            current_products = assignments[chip.code]
+            current_products = assignments[
+                chip.code
+            ]
 
-            # 같은 category가 이미 있으면 이 Look에는 못 들어감
             category_exists = any(
                 existing.category == product.category
                 for existing in current_products
@@ -862,22 +1082,32 @@ def assign_products_to_style_chips(products, style_chips):
             if category_exists:
                 continue
 
-            assignments[chip.code].append(product)
+            assignments[
+                chip.code
+            ].append(product)
+
             break
 
-    # ---------------------------------------
-    # 방문 제품이 없는 Look 채우기
-    # ---------------------------------------
+    # 비어 있는 Look 보정
     for chip in style_chips:
-        assignments[chip.code] = remove_category_duplicates(
-            assignments[chip.code]
+        if assignments[chip.code]:
+            continue
+
+        ranked_products = sorted(
+            products,
+            key=lambda product:
+                product_scores[product.id].get(
+                    chip.code,
+                    0
+                ),
+            reverse=True
         )
 
-    for chip in style_chips:
-        if not assignments[chip.code]:
-            raise ValueError(
-                f"{chip.code} Look에 방문 제품이 하나도 없습니다."
-            )
+        assignments[
+            chip.code
+        ].append(
+            ranked_products[0]
+        )
 
     return assignments
 
