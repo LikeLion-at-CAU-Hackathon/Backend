@@ -306,3 +306,64 @@ class SavedProductListAPIView(APIView):
                 "saved_products": serializer.data,
             }
         )
+
+
+class SavedProductAnalysisAPIView(APIView):
+
+    def get(
+        self,
+        request,
+        session_id,
+        product_id
+    ):
+        visit_session = get_object_or_404(
+            VisitSession,
+            id=session_id
+        )
+
+        product = get_object_or_404(
+            Product,
+            id=product_id
+        )
+
+        get_object_or_404(
+            SavedProduct,
+            visit_session=visit_session,
+            product=product
+        )
+
+        profile = (
+            StyleProfile.objects
+            .filter(
+                visit_session=visit_session,
+                main_product=product
+            )
+            .order_by("-created_at")
+            .first()
+        )
+
+        if profile is None:
+            return Response(
+                {
+                    "success": False,
+                    "message": (
+                        "아직 저장된 분석 결과가 없습니다."
+                    )
+                },
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        serializer = StyleProfileSerializer(
+            profile,
+            context={
+                "request": request
+            }
+        )
+
+        return Response(
+            {
+                "success": True,
+                "data": serializer.data,
+            },
+            status=status.HTTP_200_OK
+        )
