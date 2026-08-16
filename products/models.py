@@ -9,8 +9,9 @@ class BaseModel(models.Model):
     
 class Product(BaseModel):
     name = models.TextField()
+    style_no = models.CharField(max_length=50, unique=True, null=True, blank=True) # migrate를 위한 임시 조건
     category = models.CharField(max_length=50)
-    specs = models.JSONField(default=list, blank=True)
+    specs = models.JSONField(default=dict, blank=True)
     background = models.JSONField(default=dict, blank=True)
 
     def __str__(self):
@@ -62,10 +63,18 @@ class Stock(BaseModel):
         on_delete=models.CASCADE,
         related_name="stocks",
     )
+    
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["branch", "detail"],
+                name="unique_branch_detail_stock",
+            )
+        ]
 
 class BusinessHours(BaseModel):
-    open = models.DateTimeField()
-    close = models.DateTimeField()
+    open = models.TimeField()
+    close = models.TimeField()
     
     branch = models.ForeignKey(
         Branch,
@@ -78,15 +87,13 @@ class BusinessHours(BaseModel):
 class Material(BaseModel):
     name = models.TextField()
     description = models.TextField()
-    image = models.ImageField(upload_to="materials/", blank=True, null=True) # migrate를 위한 임시 조건
+    image = models.ImageField(upload_to="materials/", null=True, blank=True) # migrate를 위한 임시 조건
     order = models.IntegerField(default=0)
     careguide = models.JSONField(default=dict, blank=True) # migrate를 위한 임시 조건
 
     class Meta:
         ordering = ["order"]
 
-    def __str__(self):
-        return self.name
     
 class MaterialProduct(BaseModel):
     material = models.ForeignKey(

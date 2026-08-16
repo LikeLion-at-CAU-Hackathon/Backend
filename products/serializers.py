@@ -56,6 +56,7 @@ class ProductSerializer(serializers.ModelSerializer):
         fields = [
             "id",
             "name",
+            "style_no",
             "category",
             "specs",
             "background",
@@ -73,6 +74,11 @@ class ProductSizeSerializer(serializers.ModelSerializer):
         ]
 
 class ProductCompareSerializer(serializers.ModelSerializer):
+    name = serializers.CharField(
+        source="product.name",
+        read_only=True,
+    )
+
     stocks = StockSerializer(
         many=True,
         read_only=True
@@ -82,6 +88,7 @@ class ProductCompareSerializer(serializers.ModelSerializer):
         model = ProductDetail
         fields = [
             "id",
+            "name",
             "size",
             "color",
             "price",
@@ -119,8 +126,8 @@ class CareGuideSerializer(serializers.ModelSerializer):
         ]
 
     
-class AIDocentRequestSerializer(serializers.Serializer):
+class AIAssistantRequestSerializer(serializers.Serializer):
     question = serializers.CharField()
 
-class AIDocentResponseSerializer(serializers.Serializer):
+class AIAssistantResponseSerializer(serializers.Serializer):
     answer = serializers.CharField()

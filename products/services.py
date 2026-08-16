@@ -7,10 +7,10 @@ from .models import Product, Material
 client = OpenAI()
 
 
-def ask_ai_docent(question, product_context):
+def ask_ai_assistant(question, product_context):
 
     instructions = """
-너는 MCM 매장의 AI 도슨트다.
+너는 MCM 매장의 AI 도우미다.
 
 사용자가 현재 보고 있는 제품에 대해 질문하면,
 제공된 제품 정보를 바탕으로 자연스럽고 정확하게 답변한다.
@@ -108,7 +108,7 @@ def ask_ai_docent(question, product_context):
     return response.output_text
 
 
-def build_ai_docent_context(product):
+def build_ai_assistant_context(product):
 
     # 제품 상세 정보
     details = product.details.prefetch_related(
@@ -178,6 +178,9 @@ def build_ai_docent_context(product):
 
 제품명:
 {product.name}
+
+스타일 번호:
+{product.style_no}
 
 카테고리:
 {product.category}

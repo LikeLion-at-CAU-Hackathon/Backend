@@ -45,8 +45,8 @@ urlpatterns = [
     ),
     
     path(
-        "<int:product_id>/ai-docent/",
-        AIDocentAPIView.as_view(),
-        name="ai-docent",
+        "<int:product_id>/ai-assistant/",
+        AIAssistantAPIView.as_view(),
+        name="ai-assistant",
     ),
 ]
