@@ -2,6 +2,7 @@ from rest_framework import serializers
 
 from products.models import Product
 from .models import (
+    SavedProduct,
     StyleChip,
     StyleProfile,
     Look,
@@ -241,4 +242,17 @@ class StyleProfileSerializer(serializers.ModelSerializer):
             "style_chips",
             "looks",
             "created_at",
+        ]
+
+class SavedProductSerializer(serializers.ModelSerializer):
+    product = ProductSimpleSerializer(
+        read_only=True
+    )
+
+    class Meta:
+        model = SavedProduct
+        fields = [
+            "id",
+            "product",
+            "saved_at",
         ]

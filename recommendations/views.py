@@ -7,12 +7,13 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from products.models import Product
-from .models import StyleProfile, VisitSession, Look,  VisitHistory
+from .models import SavedProduct, StyleProfile, VisitSession, Look,  VisitHistory
 from .services import analyze_visit_session
 from .serializers import (
     StyleProfileSerializer,
     LookSerializer,
     LookDetailSerializer,
+    SavedProductSerializer,
     VisitSessionSerializer,
     VisitHistorySerializer,
 )
@@ -203,4 +204,105 @@ class VisitHistoryAPIView(APIView):
                 "history": serializer.data,
             },
             status=status.HTTP_201_CREATED
+        )
+
+    
+# 저장 제품 추가/삭제 APIView
+class SavedProductAPIView(APIView):
+
+    def post(
+        self,
+        request,
+        session_id,
+        product_id
+    ):
+        visit_session = get_object_or_404(
+            VisitSession,
+            id=session_id
+        )
+
+        product = get_object_or_404(
+            Product,
+            id=product_id
+        )
+
+        saved_product, created = (
+            SavedProduct.objects.get_or_create(
+                visit_session=visit_session,
+                product=product
+            )
+        )
+
+        return Response(
+            {
+                "success": True,
+                "saved": True,
+                "created": created,
+            },
+            status=status.HTTP_201_CREATED
+            if created
+            else status.HTTP_200_OK
+        )
+
+    def delete(
+        self,
+        request,
+        session_id,
+        product_id
+    ):
+        visit_session = get_object_or_404(
+            VisitSession,
+            id=session_id
+        )
+
+        saved_product = get_object_or_404(
+            SavedProduct,
+            visit_session=visit_session,
+            product_id=product_id
+        )
+
+        saved_product.delete()
+
+        return Response(
+            {
+                "success": True,
+                "saved": False,
+            },
+            status=status.HTTP_200_OK
+        )
+
+
+# 저장 제품 전체 조회 APIView
+class SavedProductListAPIView(APIView):
+
+    def get(
+        self,
+        request,
+        session_id
+    ):
+        visit_session = get_object_or_404(
+            VisitSession,
+            id=session_id
+        )
+
+        saved_products = (
+            SavedProduct.objects
+            .filter(
+                visit_session=visit_session
+            )
+            .select_related("product")
+            .order_by("-saved_at")
+        )
+
+        serializer = SavedProductSerializer(
+            saved_products,
+            many=True
+        )
+
+        return Response(
+            {
+                "success": True,
+                "count": saved_products.count(),
+                "saved_products": serializer.data,
+            }
         )
