@@ -8,13 +8,14 @@ client = OpenAI()
 from django.db import transaction
 
 from products.models import Product
-from .models import (
+from .models import (   
     VisitHistory,
     StyleProfile,
     StyleChip,
     Look,
     LookProduct,
 )
+from .schemas import LOOK_RESPONSE_SCHEMA
 
 
 # 규칙 (StyleChip 판단 규칙)
@@ -246,9 +247,9 @@ def create_summary(style_chips):
     ]
 
     return (
-        f"이번 탐색에서는 "
+        f"현재 관심사를 분석한 결과, "
         f"{labels[0]}, {labels[1]}, {labels[2]} "
-        f"스타일에 대한 관심이 나타났어요."
+        f"스타일을 선호하고 있습니다."
     )
 
 
@@ -723,8 +724,6 @@ def generate_ai_looks(
 
     product_candidates = build_look_product_candidates()
 
-    # assignments 안에는 Product 객체가 들어 있으므로
-    # AI에게 넘길 수 있도록 dict 형태로 변환
     required_products_by_chip = {}
 
     for chip_code, products in assignments.items():
@@ -742,8 +741,6 @@ You are an MCM fashion styling assistant.
 
 Create exactly 3 curated looks.
 
-The user's style profile contains exactly 3 style chips.
-
 USER STYLE CHIPS:
 {json.dumps(profile_chips, ensure_ascii=False)}
 
@@ -755,105 +752,63 @@ AVAILABLE PRODUCTS:
 
 Rules:
 
-1. Create exactly 3 looks.
+1. Create one Look for each USER STYLE CHIP.
 
-2. Create exactly one Look for each USER STYLE CHIP.
+2. Every product listed in REQUIRED VISITED PRODUCTS
+   for a StyleChip must be included in that Look.
 
-3. Each Look must use exactly one style_chip.
-   The style_chip must be one of USER STYLE CHIPS.
+3. Required visited products must use source VISITED.
 
-4. Each Look must contain exactly these five item types:
+4. Products added from AVAILABLE PRODUCTS
+   must use source RECOMMENDED.
+
+5. Only use product IDs from AVAILABLE PRODUCTS.
+
+6. Each Look must contain:
    BAG
    TOP
    BOTTOM
    SHOES
    ACCESSORY
 
-5. Each item type must appear exactly once.
+7. Do not place two products of the same category
+   in the same Look.
 
-6. Every product listed in REQUIRED VISITED PRODUCTS
-   for that style chip MUST be included in that Look.
+8. Recommended products should complement the
+   visited products based on color, material,
+   pattern, design, and style.
 
-7. Products from REQUIRED VISITED PRODUCTS must have:
-   "source": "VISITED"
+9. reason should explain why the styling fits
+   the assigned StyleChip and visited products.
 
-8. All other products must have:
-   "source": "RECOMMENDED"
+10. title and subtitle should be concise.
 
-9. You MUST only use product IDs from AVAILABLE PRODUCTS.
-   Never invent products or product IDs.
+11. description must be written in Korean.
+    Keep it to one short sentence.
 
-10. Never replace or omit a required visited product.
+12. reason must be written in Korean.
+    Keep it concise, about 1 to 2 short sentences.
 
-11. Two products of the same category cannot appear
-    in the same Look.
+13. Do not write long paragraphs for description or reason.
 
-12. Select recommended products that complement
-    the required visited products based on:
-    color,
-    material,
-    pattern,
-    design,
-    and overall style compatibility.
+Writing style:
 
-13. Each Look must contain exactly 5 products total.
-
-14. Each Look should represent the styling direction
-    of its assigned style_chip.
-
-15. reason must explain:
-    - how the visited product(s) influenced the styling
-    - why the recommended products work with them
-    - why the Look fits the assigned style chip
-
-Return JSON only.
-
-Required format:
-
-{{
-  "looks": [
-    {{
-      "look_order": 1,
-      "style_chip": "CLASSIC",
-      "title": "...",
-      "subtitle": "...",
-      "description": "...",
-      "reason": "...",
-      "items": [
-        {{
-          "item_type": "BAG",
-          "product_id": 1,
-          "source": "VISITED"
-        }},
-        {{
-          "item_type": "TOP",
-          "product_id": 2,
-          "source": "RECOMMENDED"
-        }},
-        {{
-          "item_type": "BOTTOM",
-          "product_id": 3,
-          "source": "RECOMMENDED"
-        }},
-        {{
-          "item_type": "SHOES",
-          "product_id": 4,
-          "source": "RECOMMENDED"
-        }},
-        {{
-          "item_type": "ACCESSORY",
-          "product_id": 5,
-          "source": "RECOMMENDED"
-        }}
-      ]
-    }}
-  ]
-}}
+- description: Korean, one short sentence.
+- reason: Korean, one or two short sentences.
+- Keep both concise and natural.
 """
 
     response = client.responses.create(
         model="gpt-5-mini",
         input=prompt,
+        text={
+            "format": {
+                "type": "json_schema",
+                "name": "fashion_looks",
+                "schema": LOOK_RESPONSE_SCHEMA,
+                "strict": True,
+            }
+        },
     )
 
     data = json.loads(
@@ -861,8 +816,6 @@ Required format:
     )
 
     return data["looks"]
-
-
 
 def create_ai_looks(
     style_profile,
