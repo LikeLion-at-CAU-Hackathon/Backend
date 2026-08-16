@@ -28,6 +28,8 @@ class ConsultationRequest(BaseModel):
         "recommendations.VisitSession",
         on_delete=models.PROTECT,
         related_name="consultation_requests",
+        null=True,
+        blank=True, # migrate를 위한 임시 조건
     )
     product = models.ForeignKey(
         "products.Product",

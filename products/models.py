@@ -9,7 +9,7 @@ class BaseModel(models.Model):
     
 class Product(BaseModel):
     name = models.TextField()
-    style_no = models.CharField(max_length=50, unique=True)
+    style_no = models.CharField(max_length=50, unique=True, null=True, blank=True) # migrate를 위한 임시 조건
     category = models.CharField(max_length=50)
     specs = models.JSONField(default=dict, blank=True)
     background = models.JSONField(default=dict, blank=True)
@@ -73,8 +73,8 @@ class Stock(BaseModel):
         ]
 
 class BusinessHours(BaseModel):
-    open = models.DateTimeField()
-    close = models.DateTimeField()
+    open = models.TimeField()
+    close = models.TimeField()
     
     branch = models.ForeignKey(
         Branch,
@@ -87,9 +87,9 @@ class BusinessHours(BaseModel):
 class Material(BaseModel):
     name = models.TextField()
     description = models.TextField()
-    image = models.ImageField(upload_to="materials/")
+    image = models.ImageField(upload_to="materials/", null=True, blank=True) # migrate를 위한 임시 조건
     order = models.IntegerField(default=0)
-    careguide = models.JSONField(default=dict)
+    careguide = models.JSONField(default=dict, blank=True) # migrate를 위한 임시 조건
 
     class Meta:
         ordering = ["order"]
