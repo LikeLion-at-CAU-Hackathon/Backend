@@ -256,7 +256,7 @@ def create_summary(style_chips):
 # 전체 분석 함수
 def analyze_visit_session(visit_session):
 
-    # 1. 최근 NFC 제품 최대 3개
+    # 1. 최근 방문 제품 최대 3개
     visited_products = get_analysis_products(
         visit_session
     )
@@ -266,29 +266,38 @@ def analyze_visit_session(visit_session):
             "분석할 방문 제품이 없습니다."
         )
 
-    # 2. 규칙 기반 StyleProfile 생성
+    # 2. StyleProfile 생성
     profile_result = create_style_profile(
-        visit_session
-    )
+    visit_session,
+    visited_products
+)
 
     style_profile = profile_result["profile"]
 
-    # 3. StyleChip 3개 가져오기
-    style_chips = list(
-        style_profile.style_chips.all()
-    )
+    # 3. StyleChip 3개
+    style_chips = profile_result["style_chips"]
 
-    # 4. 방문 제품을 각 StyleChip / Look에 배치
+    # 4. 가장 최근 제품은 모든 Look에 강제로 배치
     assignments = assign_products_to_style_chips(
         visited_products,
         style_chips
     )
 
-     # 5. AI Look 생성 + 저장
-    looks = create_ai_looks(
+    # 5. 2, 3번째 방문 제품은 optional
+    optional_products = visited_products[1:]
+
+    # 6. AI Look 생성
+    look_data = generate_ai_looks(
         style_profile,
         assignments,
-        visited_products
+        optional_products
+    )
+
+    # 7. DB 저장
+    looks = save_looks(
+        style_profile,
+        look_data,
+        visited_products=visited_products
     )
 
     return {
@@ -299,35 +308,30 @@ def analyze_visit_session(visit_session):
 
 
 # Style Profile 생성 함수
-def create_style_profile(visit_session):
-    # 1. 분석 대상 제품 선정
-    products = get_analysis_products(
-        visit_session
-    )
-
+def create_style_profile(
+    visit_session,
+    products
+):
     if not products:
         raise ValueError(
             "분석할 제품이 없습니다."
         )
 
-    # 2. 규칙 기반 StyleChip 3개 선택
+    main_product = products[0]
+
     style_chips, scores = select_style_chips(
         products
     )
 
-    # 3. summary
     summary = create_summary(
         style_chips
     )
 
-    # 4. DB 저장
     with transaction.atomic():
-
-        profile, _ = StyleProfile.objects.update_or_create(
+        profile = StyleProfile.objects.create(
             visit_session=visit_session,
-            defaults={
-                "summary": summary
-            }
+            main_product=main_product,
+            summary=summary,
         )
 
         profile.style_chips.set(
@@ -416,6 +420,13 @@ def save_looks(
             "방문 제품이 최소 1개 이상 필요합니다."
         )
 
+    # 최근 방문 제품 최대 3개
+    visited_products = visited_products[:3]
+
+    # 가장 최근 방문 제품
+    main_product = visited_products[0]
+    main_product_id = main_product.id
+
     # 실제 분석에 사용된 방문 제품 ID
     visited_product_ids = {
         product.id
@@ -448,24 +459,17 @@ def save_looks(
         LookProduct.Source.RECOMMENDED,
     }
 
-    # 전체 Look에서 사용된 StyleChip
     used_chip_codes = set()
-
-    # 전체 Look에서 실제 VISITED로 사용된 상품
-    used_visited_product_ids = set()
-
-    # =====================================
-    # 1. 먼저 전체 입력 데이터 검증
-    # =====================================
-    #
-    # DB에 Look을 생성하기 전에 검증을 최대한 끝낸다.
-    # =====================================
-
     look_orders = set()
 
+    # =====================================
+    # 1. 전체 입력 데이터 사전 검증
+    # =====================================
+
     for look_data in look_data_list:
+
         # -----------------------------
-        # Look order 검증
+        # look_order 검증
         # -----------------------------
 
         look_order = look_data["look_order"]
@@ -519,7 +523,7 @@ def save_looks(
                 "ACCESSORY를 하나씩 포함해야 합니다."
             )
 
-        # 같은 Look에 같은 product 중복 방지
+        # 같은 Look에 같은 Product 중복 방지
         product_ids = [
             item["product_id"]
             for item in items
@@ -532,10 +536,8 @@ def save_looks(
             )
 
         # -----------------------------
-        # source 검증
+        # source + Product 검증
         # -----------------------------
-
-        visited_count = 0
 
         for item in items:
             product_id = item["product_id"]
@@ -555,7 +557,7 @@ def save_looks(
                     f"{product_id}"
                 )
 
-            # VISITED라면 진짜 방문 상품이어야 함
+            # VISITED라면 실제 최근 방문 제품이어야 함
             if source == LookProduct.Source.VISITED:
                 if product_id not in visited_product_ids:
                     raise ValueError(
@@ -563,17 +565,30 @@ def save_looks(
                         f"실제 방문 제품이 아닙니다."
                     )
 
-                visited_count += 1
+            # 실제 최근 방문 제품을 사용했다면
+            # 반드시 VISITED로 표시되어야 함
+            if product_id in visited_product_ids:
+                if source != LookProduct.Source.VISITED:
+                    raise ValueError(
+                        f"방문 제품 {product_id}는 "
+                        f"source가 VISITED여야 합니다."
+                    )
 
-                used_visited_product_ids.add(
-                    product_id
-                )
+        # -----------------------------
+        # 핵심 규칙:
+        # 가장 최근 방문 제품은 모든 Look에 반드시 포함
+        # -----------------------------
 
-        # 각 Look에는 방문 상품 최소 1개
-        if visited_count == 0:
+        main_product_in_look = any(
+            item["product_id"] == main_product_id
+            and item["source"] == LookProduct.Source.VISITED
+            for item in items
+        )
+
+        if not main_product_in_look:
             raise ValueError(
-                "각 Look에는 방문 기록의 제품이 "
-                "최소 1개 포함되어야 합니다."
+                "가장 최근 방문 제품은 "
+                "모든 Look에 VISITED로 포함되어야 합니다."
             )
 
     # =====================================
@@ -586,16 +601,10 @@ def save_looks(
             "Look이 하나씩 생성되어야 합니다."
         )
 
-    # 방문했던 모든 상품이 최소 하나의 Look에는 들어갔는지
-    if used_visited_product_ids != visited_product_ids:
-        missing_ids = (
-            visited_product_ids
-            - used_visited_product_ids
-        )
-
+    # look_order도 1, 2, 3 정확히 사용하도록 강제하고 싶다면
+    if look_orders != {1, 2, 3}:
         raise ValueError(
-            "일부 방문 제품이 Look에 반영되지 않았습니다: "
-            f"{sorted(missing_ids)}"
+            "look_order는 1, 2, 3을 정확히 하나씩 사용해야 합니다."
         )
 
     # =====================================
@@ -713,7 +722,8 @@ def build_look_product_candidates():
 # AI 기반 Look 생성
 def generate_ai_looks(
     style_profile,
-    assignments
+    assignments,
+    optional_products
 ):
     profile_chips = list(
         style_profile.style_chips.values(
@@ -736,6 +746,15 @@ def generate_ai_looks(
             for product in products
         ]
 
+    optional_product_data = [
+        {
+            "id": product.id,
+            "name": product.name,
+            "category": product.category,
+        }
+        for product in optional_products
+    ]
+
     prompt = f"""
 You are an MCM fashion styling assistant.
 
@@ -744,58 +763,64 @@ Create exactly 3 curated looks.
 USER STYLE CHIPS:
 {json.dumps(profile_chips, ensure_ascii=False)}
 
-REQUIRED VISITED PRODUCTS FOR EACH STYLE CHIP:
+REQUIRED MAIN PRODUCT FOR EACH STYLE CHIP:
 {json.dumps(required_products_by_chip, ensure_ascii=False)}
+
+OPTIONAL RECENTLY VISITED PRODUCTS:
+{json.dumps(optional_product_data, ensure_ascii=False)}
 
 AVAILABLE PRODUCTS:
 {json.dumps(product_candidates, ensure_ascii=False)}
 
 Rules:
 
-1. Create one Look for each USER STYLE CHIP.
+1. Create exactly one Look for each USER STYLE CHIP.
 
-2. Every product listed in REQUIRED VISITED PRODUCTS
-   for a StyleChip must be included in that Look.
+2. Every product listed in REQUIRED MAIN PRODUCT FOR EACH STYLE CHIP
+   MUST be included in that Look.
 
-3. Required visited products must use source VISITED.
+3. The required main product must use:
+   "source": "VISITED"
 
-4. Products added from AVAILABLE PRODUCTS
-   must use source RECOMMENDED.
+4. OPTIONAL RECENTLY VISITED PRODUCTS may be included
+   only when they improve the styling.
 
-5. Only use product IDs from AVAILABLE PRODUCTS.
+5. OPTIONAL RECENTLY VISITED PRODUCTS are not required
+   to appear in any Look.
 
-6. Each Look must contain:
+6. If an optional recently visited product is used,
+   it must use:
+   "source": "VISITED"
+
+7. Products that are not from the visited product lists
+   must use:
+   "source": "RECOMMENDED"
+
+8. Each Look must contain exactly:
    BAG
    TOP
    BOTTOM
    SHOES
    ACCESSORY
 
-7. Do not place two products of the same category
-   in the same Look.
+9. Each item type must appear exactly once.
 
-8. Recommended products should complement the
-   visited products based on color, material,
-   pattern, design, and style.
+10. Do not include two products of the same category
+    in the same Look.
 
-9. reason should explain why the styling fits
-   the assigned StyleChip and visited products.
+11. Only use product IDs from AVAILABLE PRODUCTS.
 
-10. title and subtitle should be concise.
+12. Recommended products should complement the
+    visited products based on color, material,
+    pattern, design, and overall style.
 
-11. description must be written in Korean.
-    Keep it to one short sentence.
+13. description must be written in Korean
+    and must be one short sentence.
 
-12. reason must be written in Korean.
-    Keep it concise, about 1 to 2 short sentences.
+14. reason must be written in Korean
+    and must be one or two short sentences.
 
-13. Do not write long paragraphs for description or reason.
-
-Writing style:
-
-- description: Korean, one short sentence.
-- reason: Korean, one or two short sentences.
-- Keep both concise and natural.
+15. Keep description and reason concise and natural.
 """
 
     response = client.responses.create(
@@ -822,9 +847,14 @@ def create_ai_looks(
     assignments,
     visited_products
 ):
+    # 가장 최근 제품을 제외한
+    # 2번째, 3번째 방문 제품
+    optional_products = visited_products[1:]
+
     look_data_list = generate_ai_looks(
         style_profile,
-        assignments
+        assignments,
+        optional_products
     )
 
     looks = save_looks(
@@ -836,243 +866,38 @@ def create_ai_looks(
     return looks
 
 
-# Look 배치 함수 (최근 방문 제품을 3개의 Look에 배치)
-def assign_visited_products_to_looks(products):
-    """
-    최근 방문 제품들을 3개의 Look에 배치한다.
-
-    모든 Look에는 방문 제품이 최소 1개 포함되고,
-    모든 방문 제품도 최소 하나의 Look에 포함된다.
-    """
-
-    if not products:
-        raise ValueError("방문 기록이 없습니다.")
-
-    # 제품 1개
-    if len(products) == 1:
-        product = products[0]
-
-        return [
-            [product],
-            [product],
-            [product],
-        ]
-
-    # 제품 2개
-    if len(products) == 2:
-        p1, p2 = products
-
-        # 같은 category면 같은 Look에 넣지 않음
-        if p1.category == p2.category:
-            return [
-                [p1],
-                [p2],
-                [p1],
-            ]
-
-        # 다른 category면 조합 가능
-        return [
-            [p1],
-            [p2],
-            [p1, p2],
-        ]
-
-    # 제품 3개
-    p1, p2, p3 = products
-
-    # 가장 단순하고 안전한 기본 배치
-    return [
-        [p1],
-        [p2],
-        [p3],
-    ]
-
 
 # 제품들을 StyleChip에 배치하는 함수
-def assign_products_to_style_chips(products, style_chips):
-    """
-    방문 제품을 StyleChip별 Look에 배치한다.
-
-    규칙:
-    1. Look은 StyleChip 3개 각각 하나씩 존재
-    2. 모든 Look에 방문 제품이 최소 1개 포함
-    3. 제품이 1개면 세 Look에 모두 포함
-    4. 같은 category의 제품은 같은 Look에 함께 들어갈 수 없음
-    5. 제품은 자신과 가장 잘 맞는 StyleChip Look에 우선 배치
-    """
+def assign_products_to_style_chips(
+    products,
+    style_chips
+):
     if not products:
-        raise ValueError("분석할 방문 제품이 없습니다.")
+        raise ValueError(
+            "분석할 방문 제품이 없습니다."
+        )
 
     if len(style_chips) != 3:
-        raise ValueError("StyleChip은 정확히 3개여야 합니다.")
+        raise ValueError(
+            "StyleChip은 정확히 3개여야 합니다."
+        )
 
-    assignments = {
-        chip.code: []
+    main_product = products[0]
+
+    return {
+        chip.code: [main_product]
         for chip in style_chips
     }
 
-    # 제품별 style 점수 미리 계산
-    product_scores = {
-        product.id: get_product_style_scores(product)
-        for product in products
-    }
+# def remove_category_duplicates(products):
+#     result = []
+#     categories = set()
 
-    # ----------------------------
-    # 제품 1개
-    # ----------------------------
-    if len(products) == 1:
-        product = products[0]
+#     for product in products:
+#         if product.category in categories:
+#             continue
 
-        for chip in style_chips:
-            assignments[chip.code].append(product)
+#         result.append(product)
+#         categories.add(product.category)
 
-        return assignments
-
-    # ----------------------------
-    # 제품 2개
-    # ----------------------------
-    if len(products) == 2:
-        p1, p2 = products
-
-        # 각 chip에서 어떤 제품이 더 잘 맞는지 계산
-        for chip in style_chips:
-            p1_score = product_scores[p1.id].get(
-                chip.code,
-                0
-            )
-
-            p2_score = product_scores[p2.id].get(
-                chip.code,
-                0
-            )
-
-            # 해당 chip과 더 잘 맞는 제품을 기본으로 배치
-            if p1_score >= p2_score:
-                assignments[chip.code].append(p1)
-            else:
-                assignments[chip.code].append(p2)
-
-        # 두 제품 중 하나가 한 번도 사용되지 않았을 수도 있으므로 보정
-        used_product_ids = {
-            product.id
-            for assigned_products in assignments.values()
-            for product in assigned_products
-        }
-
-        for product in products:
-            if product.id in used_product_ids:
-                continue
-
-            # 아직 사용되지 않은 제품이 가장 잘 맞는 chip 찾기
-            best_chip = max(
-                style_chips,
-                key=lambda chip:
-                    product_scores[product.id].get(
-                        chip.code,
-                        0
-                    )
-            )
-
-            current_products = assignments[
-                best_chip.code
-            ]
-
-            # 같은 카테고리라면 같이 넣을 수 없음
-            category_exists = any(
-                existing.category == product.category
-                for existing in current_products
-            )
-
-            if not category_exists:
-                assignments[
-                    best_chip.code
-                ].append(product)
-
-            else:
-                # 다른 chip 중 넣을 수 있는 곳 찾기
-                for chip in style_chips:
-                    current_products = assignments[
-                        chip.code
-                    ]
-
-                    category_exists = any(
-                        existing.category == product.category
-                        for existing in current_products
-                    )
-
-                    if not category_exists:
-                        assignments[
-                            chip.code
-                        ].append(product)
-                        break
-
-        return assignments
-
-    # ----------------------------
-    # 제품 3개
-    # ----------------------------
-    for product in products:
-        ranked_chips = sorted(
-            style_chips,
-            key=lambda chip:
-                product_scores[product.id].get(
-                    chip.code,
-                    0
-                ),
-            reverse=True
-        )
-
-        for chip in ranked_chips:
-            current_products = assignments[
-                chip.code
-            ]
-
-            category_exists = any(
-                existing.category == product.category
-                for existing in current_products
-            )
-
-            if category_exists:
-                continue
-
-            assignments[
-                chip.code
-            ].append(product)
-
-            break
-
-    # 비어 있는 Look 보정
-    for chip in style_chips:
-        if assignments[chip.code]:
-            continue
-
-        ranked_products = sorted(
-            products,
-            key=lambda product:
-                product_scores[product.id].get(
-                    chip.code,
-                    0
-                ),
-            reverse=True
-        )
-
-        assignments[
-            chip.code
-        ].append(
-            ranked_products[0]
-        )
-
-    return assignments
-
-def remove_category_duplicates(products):
-    result = []
-    categories = set()
-
-    for product in products:
-        if product.category in categories:
-            continue
-
-        result.append(product)
-        categories.add(product.category)
-
-    return result
+#     return result

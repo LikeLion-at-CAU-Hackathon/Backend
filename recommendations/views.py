@@ -65,19 +65,33 @@ class StyleResultAPIView(APIView):
             id=session_id
         )
 
-        style_profile = get_object_or_404(
-            StyleProfile,
-            visit_session=visit_session
+        style_profile = (
+            StyleProfile.objects
+            .filter(
+                visit_session=visit_session
+            )
+            .order_by("-created_at")
+            .first()
         )
 
+        if style_profile is None:
+            return Response(
+                {
+                    "success": False,
+                    "message": "스타일 분석 결과가 없습니다."
+                },
+                status=status.HTTP_404_NOT_FOUND
+            )
+
         serializer = StyleProfileSerializer(
-            style_profile
+            style_profile,
+            context={"request": request}
         )
 
         return Response(
             {
                 "success": True,
-                "data": serializer.data,
+                "data": serializer.data
             },
             status=status.HTTP_200_OK
         )
