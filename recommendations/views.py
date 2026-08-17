@@ -7,12 +7,13 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from products.models import Product
-from .models import StyleProfile, VisitSession, Look,  VisitHistory
+from .models import SavedProduct, StyleProfile, VisitSession, Look,  VisitHistory
 from .services import analyze_visit_session
 from .serializers import (
     StyleProfileSerializer,
     LookSerializer,
     LookDetailSerializer,
+    SavedProductSerializer,
     VisitSessionSerializer,
     VisitHistorySerializer,
 )
@@ -64,19 +65,33 @@ class StyleResultAPIView(APIView):
             id=session_id
         )
 
-        style_profile = get_object_or_404(
-            StyleProfile,
-            visit_session=visit_session
+        style_profile = (
+            StyleProfile.objects
+            .filter(
+                visit_session=visit_session
+            )
+            .order_by("-created_at")
+            .first()
         )
 
+        if style_profile is None:
+            return Response(
+                {
+                    "success": False,
+                    "message": "스타일 분석 결과가 없습니다."
+                },
+                status=status.HTTP_404_NOT_FOUND
+            )
+
         serializer = StyleProfileSerializer(
-            style_profile
+            style_profile,
+            context={"request": request}
         )
 
         return Response(
             {
                 "success": True,
-                "data": serializer.data,
+                "data": serializer.data
             },
             status=status.HTTP_200_OK
         )
@@ -203,4 +218,166 @@ class VisitHistoryAPIView(APIView):
                 "history": serializer.data,
             },
             status=status.HTTP_201_CREATED
+        )
+
+    
+# 저장 제품 추가/삭제 APIView
+class SavedProductAPIView(APIView):
+
+    def post(
+        self,
+        request,
+        session_id,
+        product_id
+    ):
+        visit_session = get_object_or_404(
+            VisitSession,
+            id=session_id
+        )
+
+        product = get_object_or_404(
+            Product,
+            id=product_id
+        )
+
+        saved_product, created = (
+            SavedProduct.objects.get_or_create(
+                visit_session=visit_session,
+                product=product
+            )
+        )
+
+        return Response(
+            {
+                "success": True,
+                "saved": True,
+                "created": created,
+            },
+            status=status.HTTP_201_CREATED
+            if created
+            else status.HTTP_200_OK
+        )
+
+    def delete(
+        self,
+        request,
+        session_id,
+        product_id
+    ):
+        visit_session = get_object_or_404(
+            VisitSession,
+            id=session_id
+        )
+
+        saved_product = get_object_or_404(
+            SavedProduct,
+            visit_session=visit_session,
+            product_id=product_id
+        )
+
+        saved_product.delete()
+
+        return Response(
+            {
+                "success": True,
+                "saved": False,
+            },
+            status=status.HTTP_200_OK
+        )
+
+
+# 저장 제품 전체 조회 APIView
+class SavedProductListAPIView(APIView):
+
+    def get(
+        self,
+        request,
+        session_id
+    ):
+        visit_session = get_object_or_404(
+            VisitSession,
+            id=session_id
+        )
+
+        saved_products = (
+            SavedProduct.objects
+            .filter(
+                visit_session=visit_session
+            )
+            .select_related("product")
+            .order_by("-saved_at")
+        )
+
+        serializer = SavedProductSerializer(
+            saved_products,
+            many=True
+        )
+
+        return Response(
+            {
+                "success": True,
+                "count": saved_products.count(),
+                "saved_products": serializer.data,
+            }
+        )
+
+
+class SavedProductAnalysisAPIView(APIView):
+
+    def get(
+        self,
+        request,
+        session_id,
+        product_id
+    ):
+        visit_session = get_object_or_404(
+            VisitSession,
+            id=session_id
+        )
+
+        product = get_object_or_404(
+            Product,
+            id=product_id
+        )
+
+        get_object_or_404(
+            SavedProduct,
+            visit_session=visit_session,
+            product=product
+        )
+
+        profile = (
+            StyleProfile.objects
+            .filter(
+                visit_session=visit_session,
+                main_product=product
+            )
+            .order_by("-created_at")
+            .first()
+        )
+
+        if profile is None:
+            return Response(
+                {
+                    "success": False,
+                    "message": (
+                        "아직 저장된 분석 결과가 없습니다."
+                    )
+                },
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        serializer = StyleProfileSerializer(
+            profile,
+            context={
+                "request": request
+            }
+        )
+
+        return Response(
+            {
+                "success": True,
+                "data": serializer.data,
+            },
+            status=status.HTTP_200_OK
         )
