@@ -125,6 +125,11 @@ USE_I18N = True
 USE_TZ = True
 
 
+# 현재 위치: 신세계면세점 본점
+CURRENT_LOCATION_LAT = 37.5603907
+CURRENT_LOCATION_LON = 126.9808854
+
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
