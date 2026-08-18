@@ -28,7 +28,7 @@ class ProductDetail(BaseModel):
     )
     
 class ProductImage(BaseModel):
-    image = models.ImageField(upload_to='images/')
+    image = models.ImageField(upload_to='products/')
     order = models.IntegerField(default=0)
     
     detail = models.ForeignKey(
