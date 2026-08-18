@@ -9,7 +9,6 @@ class BaseModel(models.Model):
     
 class Product(BaseModel):
     name = models.TextField()
-    style_no = models.CharField(max_length=50, unique=True, null=True, blank=True) # migrate를 위한 임시 조건
     category = models.CharField(max_length=50)
     specs = models.JSONField(default=dict, blank=True)
     background = models.JSONField(default=dict, blank=True)
