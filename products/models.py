@@ -8,8 +8,19 @@ class BaseModel(models.Model):
         abstract = True
     
 class Product(BaseModel):
+
+    class Category(models.TextChoices):
+        TOP = "TOP", "Top"
+        BOTTOM = "BOTTOM", "Bottom"
+        SHOES = "SHOES", "Shoes"
+        BAG = "BAG", "Bag"
+        ACCESSORY = "ACCESSORY", "Accessory"
+    
     name = models.TextField()
-    category = models.CharField(max_length=50)
+    category = models.CharField(
+        max_length=20,
+        choices=Category.choices
+    )
     specs = models.JSONField(default=dict, blank=True)
     background = models.JSONField(default=dict, blank=True)
 
