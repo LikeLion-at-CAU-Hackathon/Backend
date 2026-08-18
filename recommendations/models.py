@@ -120,13 +120,6 @@ class Look(models.Model):
 
 class LookProduct(models.Model):
 
-    class ItemType(models.TextChoices):
-        TOP = "TOP", "Top"
-        BOTTOM = "BOTTOM", "Bottom"
-        SHOES = "SHOES", "Shoes"
-        BAG = "BAG", "Bag"
-        ACCESSORY = "ACCESSORY", "Accessory"
-
     class Source(models.TextChoices):
         VISITED = "VISITED", "Visited Product"
         RECOMMENDED = "RECOMMENDED", "AI Recommended"
@@ -145,13 +138,18 @@ class LookProduct(models.Model):
 
     item_type = models.CharField(
         max_length=20,
-        choices=ItemType.choices
+        choices=Product.Category.choices,
+        editable=False
     )
 
     source = models.CharField(
         max_length=20,
         choices=Source.choices
     )
+
+    def save(self, *args, **kwargs):
+        self.item_type = self.product.category
+        super().save(*args, **kwargs)
 
     class Meta:
         constraints = [
