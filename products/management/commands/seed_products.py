@@ -19,9 +19,9 @@ def seed_product_1():
     # 1. Product
     # =========================
 
-    product = Product.objects.create(
+    product = Product.objects.update_or_create(
         name="Aren 비세토스 3단 지갑",
-        category="지갑",
+        category=Product.Category.ACCESSORY,
         specs={
             "dimensions": "약 3 x 12 x 9 cm",
             "closure": "Snap Closure",
@@ -46,14 +46,14 @@ def seed_product_1():
     # 2. ProductDetail
     # =========================
 
-    cognac = ProductDetail.objects.create(
+    cognac = ProductDetail.objects.update_or_create(
         product=product,
         size="S",
         color="Cognac",
         price=490000,
     )
 
-    soft_pink = ProductDetail.objects.create(
+    soft_pink = ProductDetail.objects.update_or_create(
         product=product,
         size="S",
         color="Soft Pink",
@@ -64,7 +64,7 @@ def seed_product_1():
     # 3. Material
     # =========================
 
-    visetos = Material.objects.create(
+    visetos = Material.objects.update_or_create(
         name="Visetos Monogram Canvas",
         description=(
             "MCM의 시그니처 비세토스 모노그램 캔버스를 바디에 사용했습니다. "
@@ -80,7 +80,7 @@ def seed_product_1():
         },
     )
 
-    natural_leather = Material.objects.create(
+    natural_leather = Material.objects.update_or_create(
         name="Natural Leather",
         description=(
             "천연 가죽으로 트림을 마감했습니다. "
@@ -90,7 +90,7 @@ def seed_product_1():
         careguide=leather_careguide,
     )
 
-    gold_plated_brass = Material.objects.create(
+    gold_plated_brass = Material.objects.update_or_create(
         name="24K Gold-Plated Brass",
         description=(
             "브라스 하드웨어에 24K 골드 도금을 적용했습니다. "
@@ -105,7 +105,7 @@ def seed_product_1():
         },
     )
 
-    fabric_lining = Material.objects.create(
+    fabric_lining = Material.objects.update_or_create(
         name="Fabric Lining",
         description="지갑 내부에 패브릭 안감을 적용했습니다.",
         order=4,
@@ -120,22 +120,22 @@ def seed_product_1():
     # 4. MaterialProduct
     # =========================
 
-    MaterialProduct.objects.create(
+    MaterialProduct.objects.get_or_create(
         material=visetos,
         product=product,
     )
 
-    MaterialProduct.objects.create(
+    MaterialProduct.objects.get_or_create(
         material=natural_leather,
         product=product,
     )
 
-    MaterialProduct.objects.create(
+    MaterialProduct.objects.get_or_create(
         material=gold_plated_brass,
         product=product,
     )
 
-    MaterialProduct.objects.create(
+    MaterialProduct.objects.get_or_create(
         material=fabric_lining,
         product=product,
     )
@@ -147,9 +147,9 @@ def seed_product_2():
     # 1. Product
     # =========================
 
-    product = Product.objects.create(
+    product = Product.objects.update_or_create(
         name="모노그램 프린트 뿌띠 실크 스카프",
-        category="스카프",
+        category=Product.Category.ACCESSORY,
         specs={
             "dimensions": "약 8 x 120 x 0 cm",
             "design": "Reversible",
@@ -178,7 +178,7 @@ def seed_product_2():
     # 2. ProductDetail
     # =========================
 
-    detail = ProductDetail.objects.create(
+    detail = ProductDetail.objects.update_or_create(
         product=product,
         size="Free",
         color="Cognac",
@@ -189,7 +189,7 @@ def seed_product_2():
     # 3. Material
     # =========================
 
-    organic_silk = Material.objects.create(
+    organic_silk = Material.objects.update_or_create(
         name="Organic Silk 100%",
         description=(
             "오가닉 이탈리안 실크 100%를 사용해 가볍고 부드러운 촉감을 완성했습니다. "
@@ -211,7 +211,7 @@ def seed_product_2():
     # 4. MaterialProduct
     # =========================
 
-    MaterialProduct.objects.create(
+    MaterialProduct.objects.get_or_create(
         material=organic_silk,
         product=product,
     )
@@ -224,9 +224,9 @@ def seed_product_3():
     # 1. Product
     # =========================
 
-    product = Product.objects.create(
+    product = Product.objects.update_or_create(
         name="에센셜 로고 프린트 티셔츠",
-        category="상의",
+        category=Product.Category.TOP,
 
         specs={
             "fit": "Regular Fit",
@@ -297,7 +297,7 @@ def seed_product_3():
 
     for color in colors:
         for size in sizes:
-            ProductDetail.objects.create(
+            ProductDetail.objects.update_or_create(
                 product=product,
                 size=size,
                 color=color,
@@ -308,7 +308,7 @@ def seed_product_3():
     # 3. Material
     # =========================
 
-    material = Material.objects.create(
+    material = Material.objects.update_or_create(
         name="Organic Cotton 100%",
 
         description=(
@@ -331,7 +331,7 @@ def seed_product_3():
     # 4. MaterialProduct
     # =========================
 
-    MaterialProduct.objects.create(
+    MaterialProduct.objects.get_or_create(
         material=material,
         product=product,
     )
@@ -344,9 +344,9 @@ def seed_product_4():
     # 1. Product
     # =========================
 
-    product = Product.objects.create(
+    product = Product.objects.update_or_create(
         name="오발 선글라스",
-        category="선글라스",
+        category=Product.Category.ACCESSORY,
 
         specs={
             "size": "53-16-145 mm",
@@ -397,7 +397,7 @@ def seed_product_4():
     colors = ["Pink", "Black"]
 
     for color in colors:
-        ProductDetail.objects.create(
+        ProductDetail.objects.update_or_create(
             product=product,
             size="Free",
             color=color,
@@ -417,7 +417,7 @@ def seed_product_4():
         "06": "제품이 거친 표면에 긁히거나 마찰되지 않도록 주의해 주세요.",
     }
 
-    acetate_frame = Material.objects.create(
+    acetate_frame = Material.objects.update_or_create(
         name="Acetate Frame",
         description=(
             "아세테이트 프레임에 내구성과 가벼운 착용감을 갖춘 "
@@ -427,7 +427,7 @@ def seed_product_4():
         careguide=sunglasses_careguide,
     )
 
-    smoke_lens = Material.objects.create(
+    smoke_lens = Material.objects.update_or_create(
         name="Solid Smoke Lens",
         description=(
             "솔리드 스모크 컬러의 렌즈를 적용해 "
@@ -437,7 +437,7 @@ def seed_product_4():
         careguide=sunglasses_careguide,
     )
 
-    metal_hardware = Material.objects.create(
+    metal_hardware = Material.objects.update_or_create(
         name="Metal Hardware",
         description=(
             "템플에 메탈 소재의 하드웨어 디테일을 적용했습니다."
@@ -446,7 +446,7 @@ def seed_product_4():
         careguide=sunglasses_careguide,
     )
 
-    pouch_case = Material.objects.create(
+    pouch_case = Material.objects.update_or_create(
         name="Logo-Embossed Pouch Case",
         description=(
             "제품 보관을 위한 로고 엠보싱 파우치 케이스가 "
@@ -466,7 +466,7 @@ def seed_product_4():
         metal_hardware,
         pouch_case,
     ]:
-        MaterialProduct.objects.create(
+        MaterialProduct.objects.get_or_create(
             material=material,
             product=product,
         )
@@ -479,9 +479,9 @@ def seed_product_5():
     # 1. Product
     # =========================
 
-    product = Product.objects.create(
+    product = Product.objects.update_or_create(
         name="MCM 오 드 퍼퓸",
-        category="향수",
+        category=Product.Category.ACCESSORY,
 
         specs={
             "product_type": "Unisex Fragrance",
@@ -562,7 +562,7 @@ def seed_product_5():
     ]
 
     for size in sizes:
-        ProductDetail.objects.create(
+        ProductDetail.objects.update_or_create(
             product=product,
             size=size,
             color="Cognac",
@@ -573,7 +573,7 @@ def seed_product_5():
     # 3. Material
     # =========================
 
-    material = Material.objects.create(
+    material = Material.objects.update_or_create(
         name="Fragrance / Parfum",
 
         description=(
@@ -602,7 +602,7 @@ def seed_product_5():
     # 4. MaterialProduct
     # =========================
 
-    MaterialProduct.objects.create(
+    MaterialProduct.objects.get_or_create(
         material=material,
         product=product,
     )
@@ -615,9 +615,9 @@ def seed_product_6():
     # 1. Product
     # =========================
 
-    product = Product.objects.create(
+    product = Product.objects.update_or_create(
         name="클라우스 M 비세토스 리버서블 벨트 4.5cm",
-        category="벨트",
+        category=Product.Category.ACCESSORY,
 
         specs={
             "dimensions": "약 0 x 130 x 5 cm",
@@ -652,7 +652,7 @@ def seed_product_6():
     ]
 
     for color in colors:
-        ProductDetail.objects.create(
+        ProductDetail.objects.update_or_create(
             product=product,
             size="Cut to Size",
             color=color,
@@ -663,7 +663,7 @@ def seed_product_6():
     # 3. Material
     # =========================
 
-    coated_canvas = Material.objects.create(
+    coated_canvas = Material.objects.update_or_create(
         name="Coated Canvas",
         description=(
             "코티드 캔버스의 내구성을 높인 코팅 캔버스를 사용해 "
@@ -677,7 +677,7 @@ def seed_product_6():
         },
     )
 
-    solid_leather = Material.objects.create(
+    solid_leather = Material.objects.update_or_create(
         name="Solid Leather",
         description=(
             "반대쪽 면에는 솔리드 레더를 사용해 "
@@ -687,7 +687,7 @@ def seed_product_6():
         careguide=leather_careguide,
     )
 
-    nappa_leather_trim = Material.objects.create(
+    nappa_leather_trim = Material.objects.update_or_create(
         name="Nappa Leather Trim",
         description=(
             "부드러운 나파 가죽으로 가장자리와 트림을 "
@@ -697,7 +697,7 @@ def seed_product_6():
         careguide=leather_careguide,
     )
 
-    metal_hardware = Material.objects.create(
+    metal_hardware = Material.objects.update_or_create(
         name="Metal Hardware",
         description=(
             "금속 하드웨어를 적용해 구조적인 완성도와 "
@@ -720,7 +720,7 @@ def seed_product_6():
         nappa_leather_trim,
         metal_hardware,
     ]:
-        MaterialProduct.objects.create(
+        MaterialProduct.objects.get_or_create(
             material=material,
             product=product,
         )
@@ -733,9 +733,9 @@ def seed_product_7():
     # 1. Product
     # =========================
 
-    product = Product.objects.create(
+    product = Product.objects.update_or_create(
         name="네오 테리엔 모노그램 레더 로우탑 스니커즈",
-        category="신발",
+        category=Product.Category.SHOES,
 
         specs={
             "product_type": "Low-Top Sneakers",
@@ -779,7 +779,7 @@ def seed_product_7():
     ]
 
     for size in sizes:
-        ProductDetail.objects.create(
+        ProductDetail.objects.update_or_create(
             product=product,
             size=size,
             color="Egret",
@@ -798,7 +798,7 @@ def seed_product_7():
         "05": "어퍼는 살짝 물에 적신 코튼 천을 사용해 세척하세요.",
     }
 
-    calf_leather = Material.objects.create(
+    calf_leather = Material.objects.update_or_create(
         name="100% Calf Leather",
         description=(
             "송아지 가죽 어퍼와 트림에 100% 송아지 가죽을 사용해 "
@@ -808,7 +808,7 @@ def seed_product_7():
         careguide=sneaker_careguide,
     )
 
-    leather_mesh_lining = Material.objects.create(
+    leather_mesh_lining = Material.objects.update_or_create(
         name="Leather & Mesh Lining",
         description=(
             "가죽과 메쉬를 조합한 안감을 적용해 "
@@ -818,7 +818,7 @@ def seed_product_7():
         careguide=sneaker_careguide,
     )
 
-    ortholite = Material.objects.create(
+    ortholite = Material.objects.update_or_create(
         name="OrthoLite® Memory Foam",
         description=(
             "탈착 가능한 OrthoLite® 메모리폼 인솔을 적용해 "
@@ -828,7 +828,7 @@ def seed_product_7():
         careguide=sneaker_careguide,
     )
 
-    rubber_outsole = Material.objects.create(
+    rubber_outsole = Material.objects.update_or_create(
         name="Rubber Outsole",
         description=(
             "러버 아웃솔을 사용해 안정적인 접지력과 "
@@ -848,7 +848,7 @@ def seed_product_7():
         ortholite,
         rubber_outsole,
     ]:
-        MaterialProduct.objects.create(
+        MaterialProduct.objects.get_or_create(
             material=material,
             product=product,
         )
