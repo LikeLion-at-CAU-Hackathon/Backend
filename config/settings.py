@@ -35,7 +35,7 @@ MEDIA_URL = '/media/'
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    "13.209.52.128",
+    "1.201.117.114",
     "localhost",
     "127.0.0.1",
 ]
