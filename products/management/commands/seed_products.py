@@ -19,26 +19,28 @@ def seed_product_1():
     # 1. Product
     # =========================
 
-    product = Product.objects.update_or_create(
+    product, _ = Product.objects.update_or_create(
         name="Aren 비세토스 3단 지갑",
-        category=Product.Category.ACCESSORY,
-        specs={
-            "dimensions": "약 3 x 12 x 9 cm",
-            "closure": "Snap Closure",
-            "card_slots": "6 Slots",
-            "storage": "Bill Compartment · Zipper Pocket",
-        },
-        background={
-            "description": (
-                "헤리티지 하드웨어로 완성한 모노그램 지갑. "
-                "비세토스 모노그램 캔버스에 MCM 로고 브라스 플레이트와 "
-                "스냅 클로저를 더했습니다. "
-                "트라이폴드 구조로 구성된 지갑으로, "
-                "아이코닉한 MCM 로고와 헤리티지 하드웨어를 통해 "
-                "MCM의 디자인 아이덴티티를 보여줍니다."
-            ),
-            "collection": "Visetos",
-            "design": "Aren 비세토스 3단 지갑",
+        defaults={
+            "category": Product.Category.ACCESSORY,
+            "specs": {
+                "dimensions": "약 3 x 12 x 9 cm",
+                "closure": "Snap Closure",
+                "card_slots": "6 Slots",
+                "storage": "Bill Compartment · Zipper Pocket",
+            },
+            "background": {
+                "description": (
+                    "헤리티지 하드웨어로 완성한 모노그램 지갑. "
+                    "비세토스 모노그램 캔버스에 MCM 로고 브라스 플레이트와 "
+                    "스냅 클로저를 더했습니다. "
+                    "트라이폴드 구조로 구성된 지갑으로, "
+                    "아이코닉한 MCM 로고와 헤리티지 하드웨어를 통해 "
+                    "MCM의 디자인 아이덴티티를 보여줍니다."
+                ),
+                "collection": "Visetos",
+                "design": "Aren 비세토스 3단 지갑",
+            },
         },
     )
 
@@ -46,73 +48,79 @@ def seed_product_1():
     # 2. ProductDetail
     # =========================
 
-    cognac = ProductDetail.objects.update_or_create(
+    cognac, _ = ProductDetail.objects.update_or_create(
         product=product,
         size="S",
         color="Cognac",
-        price=490000,
+        defaults={
+            "price": 490000,
+        },
     )
 
-    soft_pink = ProductDetail.objects.update_or_create(
+    soft_pink, _ = ProductDetail.objects.update_or_create(
         product=product,
         size="S",
         color="Soft Pink",
-        price=490000,
+        defaults={
+            "price": 490000,
+        },
     )
 
     # =========================
     # 3. Material
     # =========================
 
-    visetos = Material.objects.update_or_create(
+    visetos, _ = Material.objects.update_or_create(
         name="Visetos Monogram Canvas",
-        description=(
-            "MCM의 시그니처 비세토스 모노그램 캔버스를 바디에 사용했습니다. "
-            "클래식한 모노그램 패턴과 헤리티지 하드웨어가 조화를 이루며 "
-            "MCM의 아이덴티티를 완성합니다."
-        ),
-        order=1,
-        careguide={
-            "01": "지속적인 직사광선을 피해 주세요.",
-            "02": "제품이 거친 표면에 긁히거나 마찰되지 않도록 주의해 주세요.",
-            "03": "더스트 백에 넣어 직사광선이나 밝은 빛을 피해 서늘하고 건조한 곳에 보관해 주세요.",
-            "04": "제품 표면에 비누나 솔벤트를 사용하지 마세요.",
+        defaults={
+            "description": "MCM의 시그니처 비세토스 모노그램 캔버스를 바디에 사용했습니다. "
+                "클래식한 모노그램 패턴과 헤리티지 하드웨어가 조화를 이루며 "
+                "MCM의 아이덴티티를 완성합니다.",
+            "order": 1,
+            "careguide": {
+                "01": "지속적인 직사광선을 피해 주세요.",
+                "02": "제품이 거친 표면에 긁히거나 마찰되지 않도록 주의해 주세요.",
+                "03": "더스트 백에 넣어 직사광선이나 밝은 빛을 피해 서늘하고 건조한 곳에 보관해 주세요.",
+                "04": "제품 표면에 비누나 솔벤트를 사용하지 마세요.",
+            },
         },
     )
 
-    natural_leather = Material.objects.update_or_create(
+    natural_leather, _ = Material.objects.update_or_create(
         name="Natural Leather",
-        description=(
-            "천연 가죽으로 트림을 마감했습니다. "
-            "카드 슬롯과 가장자리 디테일에 가죽 소재가 적용되었습니다."
-        ),
-        order=2,
-        careguide=leather_careguide,
-    )
-
-    gold_plated_brass = Material.objects.update_or_create(
-        name="24K Gold-Plated Brass",
-        description=(
-            "브라스 하드웨어에 24K 골드 도금을 적용했습니다. "
-            "MCM 로고 장식 플레이트와 스냅 클로저에 사용됩니다."
-        ),
-        order=3,
-        careguide={
-            "01": "지속적인 직사광선을 피해 주세요.",
-            "02": "제품이 거친 표면에 긁히거나 마찰되지 않도록 주의해 주세요.",
-            "03": "더스트 백에 넣어 직사광선이나 밝은 빛을 피해 서늘하고 건조한 곳에 보관해 주세요.",
-            "04": "제품 표면에 비누나 솔벤트를 사용하지 마세요.",
+        defaults={
+            "description": "천연 가죽으로 트림을 마감했습니다. "
+                "카드 슬롯과 가장자리 디테일에 가죽 소재가 적용되었습니다.",
+            "order": 2,
+            "careguide": leather_careguide,
         },
     )
 
-    fabric_lining = Material.objects.update_or_create(
+    gold_plated_brass, _ = Material.objects.update_or_create(
+        name="24K Gold-Plated Brass",
+        defaults={
+            "description": "브라스 하드웨어에 24K 골드 도금을 적용했습니다. "
+                "MCM 로고 장식 플레이트와 스냅 클로저에 사용됩니다.",
+            "order": 3,
+            "careguide": {
+                "01": "지속적인 직사광선을 피해 주세요.",
+                "02": "제품이 거친 표면에 긁히거나 마찰되지 않도록 주의해 주세요.",
+                "03": "더스트 백에 넣어 직사광선이나 밝은 빛을 피해 서늘하고 건조한 곳에 보관해 주세요.",
+                "04": "제품 표면에 비누나 솔벤트를 사용하지 마세요.",
+            },
+        },
+    )
+
+    fabric_lining, _ = Material.objects.update_or_create(
         name="Fabric Lining",
-        description="지갑 내부에 패브릭 안감을 적용했습니다.",
-        order=4,
-        careguide={
-            "01": "지속적인 직사광선을 피해 주세요.",
-            "02": "제품이 거친 표면에 긁히거나 마찰되지 않도록 주의해 주세요.",
-            "03": "더스트 백에 넣어 직사광선이나 밝은 빛을 피해 서늘하고 건조한 곳에 보관해 주세요.",
+        defaults={
+            "description": "지갑 내부에 패브릭 안감을 적용했습니다.",
+            "order": 4,
+            "careguide": {
+                "01": "지속적인 직사광선을 피해 주세요.",
+                "02": "제품이 거친 표면에 긁히거나 마찰되지 않도록 주의해 주세요.",
+                "03": "더스트 백에 넣어 직사광선이나 밝은 빛을 피해 서늘하고 건조한 곳에 보관해 주세요.",
+            },
         },
     )
 
@@ -147,29 +155,31 @@ def seed_product_2():
     # 1. Product
     # =========================
 
-    product = Product.objects.update_or_create(
+    product, _ = Product.objects.update_or_create(
         name="모노그램 프린트 뿌띠 실크 스카프",
-        category=Product.Category.ACCESSORY,
-        specs={
-            "dimensions": "약 8 x 120 x 0 cm",
-            "design": "Reversible",
-            "construction": "Hand-Sewn",
-            "material": "Organic Silk 100%",
-        },
-        background={
-            "description": (
-                "두 가지 아이콘을 담은 리버서블 디자인. "
-                "앞면에는 비세토스 모노그램 프린트, "
-                "반대쪽 면에는 MCM 로고와 대비되는 스트라이프 컬러 블록 모티프를 "
-                "적용했습니다. "
-                "하나의 스카프로 두 가지 디자인을 즐길 수 있으며, "
-                "스카프·리본 매듭·가방 핸들 등 다양한 방식으로 스타일링할 수 있습니다."
-            ),
-            "design_details": {
-                "01": "MAIN SIDE Visetos Monogram Print",
-                "02": "REVERSE SIDE MCM Logo & Contrast Stripe Print",
-                "03": "REVERSIBLE 양면 디자인",
-                "04": "STYLING 스카프 · 리본 매듭 · 가방 핸들",
+        defaults={
+            "category": Product.Category.ACCESSORY,
+            "specs": {
+                "dimensions": "약 8 x 120 x 0 cm",
+                "design": "Reversible",
+                "construction": "Hand-Sewn",
+                "material": "Organic Silk 100%",
+            },
+            "background": {
+                "description": (
+                    "두 가지 아이콘을 담은 리버서블 디자인. "
+                    "앞면에는 비세토스 모노그램 프린트, "
+                    "반대쪽 면에는 MCM 로고와 대비되는 스트라이프 컬러 블록 모티프를 "
+                    "적용했습니다. "
+                    "하나의 스카프로 두 가지 디자인을 즐길 수 있으며, "
+                    "스카프·리본 매듭·가방 핸들 등 다양한 방식으로 스타일링할 수 있습니다."
+                ),
+                "design_details": {
+                    "01": "MAIN SIDE Visetos Monogram Print",
+                    "02": "REVERSE SIDE MCM Logo & Contrast Stripe Print",
+                    "03": "REVERSIBLE 양면 디자인",
+                    "04": "STYLING 스카프 · 리본 매듭 · 가방 핸들",
+                },
             },
         },
     )
@@ -178,32 +188,34 @@ def seed_product_2():
     # 2. ProductDetail
     # =========================
 
-    detail = ProductDetail.objects.update_or_create(
+    detail, _ = ProductDetail.objects.update_or_create(
         product=product,
         size="Free",
         color="Cognac",
-        price=175000,
+        defaults={
+            "price": 175000,
+        },
     )
 
     # =========================
     # 3. Material
     # =========================
 
-    organic_silk = Material.objects.update_or_create(
+    organic_silk, _ = Material.objects.update_or_create(
         name="Organic Silk 100%",
-        description=(
-            "오가닉 이탈리안 실크 100%를 사용해 가볍고 부드러운 촉감을 완성했습니다. "
-            "은은한 광택이 더해져 고급스러운 소재감을 보여줍니다."
-        ),
-        order=1,
-        careguide={
-            "01": "드라이클리닝 전용. 스카프는 드라이클리닝으로 관리해 주세요.",
-            "02": "물세탁은 피하고 제품의 소재 특성에 맞게 관리해 주세요.",
-            "03": "제품과 함께 제공되는 더스트 백에 넣어 직사광선이나 밝은 조명을 피해 서늘하고 건조한 곳에 보관해 주세요.",
-            "04": "젖거나 오염되지 않도록 주의해 주세요.",
-            "05": "표면이 젖거나 오염되었을 경우 보풀이 없는 밝은색의 흡수성 천으로 닦아 말려주세요.",
-            "06": "비누나 솔벤트를 사용하지 마세요.",
-            "07": "거친 표면과의 마찰에 주의해 주세요.",
+        defaults={
+            "description": "오가닉 이탈리안 실크 100%를 사용해 가볍고 부드러운 촉감을 완성했습니다. "
+                "은은한 광택이 더해져 고급스러운 소재감을 보여줍니다.",
+            "order": 1,
+            "careguide": {
+                "01": "드라이클리닝 전용. 스카프는 드라이클리닝으로 관리해 주세요.",
+                "02": "물세탁은 피하고 제품의 소재 특성에 맞게 관리해 주세요.",
+                "03": "제품과 함께 제공되는 더스트 백에 넣어 직사광선이나 밝은 조명을 피해 서늘하고 건조한 곳에 보관해 주세요.",
+                "04": "젖거나 오염되지 않도록 주의해 주세요.",
+                "05": "표면이 젖거나 오염되었을 경우 보풀이 없는 밝은색의 흡수성 천으로 닦아 말려주세요.",
+                "06": "비누나 솔벤트를 사용하지 마세요.",
+                "07": "거친 표면과의 마찰에 주의해 주세요.",
+            },
         },
     )
 
@@ -224,66 +236,66 @@ def seed_product_3():
     # 1. Product
     # =========================
 
-    product = Product.objects.update_or_create(
+    product, _ = Product.objects.update_or_create(
         name="에센셜 로고 프린트 티셔츠",
-        category=Product.Category.TOP,
-
-        specs={
-            "fit": "Regular Fit",
-            "design": "Short Sleeve",
-            "neckline": "Rib Knit",
-            "material": "100% Organic Cotton",
-
-            "size_measurements": {
-                "S": {
-                    "korean_size": 95,
-                    "height": "170 cm",
-                    "length": "67.0 cm",
-                    "shoulder": "44.0 cm",
-                    "sleeve": "22.1 cm",
-                    "chest": "96-98 cm",
-                },
-                "M": {
-                    "korean_size": 100,
-                    "height": "175 cm",
-                    "length": "69.0 cm",
-                    "shoulder": "46.0 cm",
-                    "sleeve": "22.8 cm",
-                    "chest": "108-110 cm",
-                },
-                "L": {
-                    "korean_size": 105,
-                    "height": "180 cm",
-                    "length": "71.0 cm",
-                    "shoulder": "48.0 cm",
-                    "sleeve": "23.5 cm",
-                    "chest": "118-122 cm",
-                },
-                "XL": {
-                    "korean_size": 110,
-                    "height": "185 cm",
-                    "length": "73.0 cm",
-                    "shoulder": "50.0 cm",
-                    "sleeve": "24.2 cm",
-                    "chest": "126-130 cm",
+        defaults={
+            "category": Product.Category.TOP,
+            "specs": {
+                "fit": "Regular Fit",
+                "design": "Short Sleeve",
+                "neckline": "Rib Knit",
+                "material": "100% Organic Cotton",
+    
+                "size_measurements": {
+                    "S": {
+                        "korean_size": 95,
+                        "height": "170 cm",
+                        "length": "67.0 cm",
+                        "shoulder": "44.0 cm",
+                        "sleeve": "22.1 cm",
+                        "chest": "96-98 cm",
+                    },
+                    "M": {
+                        "korean_size": 100,
+                        "height": "175 cm",
+                        "length": "69.0 cm",
+                        "shoulder": "46.0 cm",
+                        "sleeve": "22.8 cm",
+                        "chest": "108-110 cm",
+                    },
+                    "L": {
+                        "korean_size": 105,
+                        "height": "180 cm",
+                        "length": "71.0 cm",
+                        "shoulder": "48.0 cm",
+                        "sleeve": "23.5 cm",
+                        "chest": "118-122 cm",
+                    },
+                    "XL": {
+                        "korean_size": 110,
+                        "height": "185 cm",
+                        "length": "73.0 cm",
+                        "shoulder": "50.0 cm",
+                        "sleeve": "24.2 cm",
+                        "chest": "126-130 cm",
+                    },
                 },
             },
-        },
-
-        background={
-            "description": (
-                "메탈릭 로고로 완성한 미니멀한 시그니처. "
-                "오가닉 코튼 저지에 시그니처 라우렐 엠블럼을 "
-                "메탈릭 하이 프리퀀시 프린트로 담아냈습니다. "
-                "심플한 실루엣 위에 MCM의 상징적인 로고를 더해 "
-                "절제된 디자인에 감각적인 포인트를 완성했습니다."
-            ),
-
-            "design_details": {
-                "01": "SIGNATURE Laurel Emblem",
-                "02": "LOGO DETAIL Metallic High-Frequency Print",
-                "03": "NECKLINE Rib Knit Neckline",
-                "04": "FIT Regular Fit",
+            "background": {
+                "description": (
+                    "메탈릭 로고로 완성한 미니멀한 시그니처. "
+                    "오가닉 코튼 저지에 시그니처 라우렐 엠블럼을 "
+                    "메탈릭 하이 프리퀀시 프린트로 담아냈습니다. "
+                    "심플한 실루엣 위에 MCM의 상징적인 로고를 더해 "
+                    "절제된 디자인에 감각적인 포인트를 완성했습니다."
+                ),
+    
+                "design_details": {
+                    "01": "SIGNATURE Laurel Emblem",
+                    "02": "LOGO DETAIL Metallic High-Frequency Print",
+                    "03": "NECKLINE Rib Knit Neckline",
+                    "04": "FIT Regular Fit",
+                },
             },
         },
     )
@@ -301,29 +313,28 @@ def seed_product_3():
                 product=product,
                 size=size,
                 color=color,
-                price=270000,
+                defaults={
+                    "price": 270000,
+                },
             )
 
     # =========================
     # 3. Material
     # =========================
 
-    material = Material.objects.update_or_create(
+    material, _ = Material.objects.update_or_create(
         name="Organic Cotton 100%",
-
-        description=(
-            "100% 오가닉 코튼 저지 소재를 사용해 "
-            "부드럽고 편안한 착용감을 완성했습니다. "
-            "일상적인 착용에 적합한 소재입니다."
-        ),
-
-        order=1,
-
-        careguide={
-            "01": "세탁 또는 드라이클리닝으로 관리해 주세요.",
-            "02": "표백제를 사용하지 마세요.",
-            "03": "건조기 사용을 피해 주세요.",
-            "04": "다림질할 때는 천을 대고 다림질해 주세요.",
+        defaults={
+            "description": "100% 오가닉 코튼 저지 소재를 사용해 "
+                "부드럽고 편안한 착용감을 완성했습니다. "
+                "일상적인 착용에 적합한 소재입니다.",
+            "order": 1,
+            "careguide": {
+                "01": "세탁 또는 드라이클리닝으로 관리해 주세요.",
+                "02": "표백제를 사용하지 마세요.",
+                "03": "건조기 사용을 피해 주세요.",
+                "04": "다림질할 때는 천을 대고 다림질해 주세요.",
+            },
         },
     )
 
@@ -344,48 +355,48 @@ def seed_product_4():
     # 1. Product
     # =========================
 
-    product = Product.objects.update_or_create(
+    product, _ = Product.objects.update_or_create(
         name="오발 선글라스",
-        category=Product.Category.ACCESSORY,
-
-        specs={
-            "size": "53-16-145 mm",
-            "lens_color": "Solid Smoke",
-            "frame_color": "Shiny Black",
-            "case": "Logo-Embossed Pouch Case",
-
-            "design_details": {
-                "01": "SHAPE Oval",
-                "02": "TEMPLE MCM Logo",
-                "03": "TEMPLE TIP Bavarian Diamond Metal Stud",
-                "04": "STYLE Unisex",
+        defaults={
+            "category": Product.Category.ACCESSORY,
+            "specs": {
+                "size": "53-16-145 mm",
+                "lens_color": "Solid Smoke",
+                "frame_color": "Shiny Black",
+                "case": "Logo-Embossed Pouch Case",
+    
+                "design_details": {
+                    "01": "SHAPE Oval",
+                    "02": "TEMPLE MCM Logo",
+                    "03": "TEMPLE TIP Bavarian Diamond Metal Stud",
+                    "04": "STYLE Unisex",
+                },
             },
-        },
-
-        background={
-            "description": (
-                "부드러운 곡선으로 완성한 오발 실루엣이 특징인 "
-                "타원형 디자인으로 깔끔하고 미니멀한 디자인을 보여줍니다. "
-                "템플에는 클래식한 MCM 로고를 더하고, "
-                "팁에는 바이예른 다이아몬드 메탈 스터드를 장식했습니다."
-            ),
-
-            "materials": {
-                "frame": (
-                    "아세테이트 프레임내구성과 가벼운 착용감을 갖춘 "
-                    "아세테이트 소재로 프레임을 제작했습니다."
+            "background": {
+                "description": (
+                    "부드러운 곡선으로 완성한 오발 실루엣이 특징인 "
+                    "타원형 디자인으로 깔끔하고 미니멀한 디자인을 보여줍니다. "
+                    "템플에는 클래식한 MCM 로고를 더하고, "
+                    "팁에는 바이예른 다이아몬드 메탈 스터드를 장식했습니다."
                 ),
-                "lens": (
-                    "Solid Smoke Lens솔리드 스모크 컬러의 렌즈를 적용해 "
-                    "차분한 시각적 인상을 완성합니다."
-                ),
-                "hardware": (
-                    "Metal Hardware템플에 메탈 소재의 하드웨어 디테일을 적용했습니다."
-                ),
-                "case": (
-                    "Logo-Embossed Pouch Case제품 보관을 위한 "
-                    "로고 엠보싱 파우치 케이스가 함께 구성됩니다."
-                ),
+    
+                "materials": {
+                    "frame": (
+                        "아세테이트 프레임내구성과 가벼운 착용감을 갖춘 "
+                        "아세테이트 소재로 프레임을 제작했습니다."
+                    ),
+                    "lens": (
+                        "Solid Smoke Lens솔리드 스모크 컬러의 렌즈를 적용해 "
+                        "차분한 시각적 인상을 완성합니다."
+                    ),
+                    "hardware": (
+                        "Metal Hardware템플에 메탈 소재의 하드웨어 디테일을 적용했습니다."
+                    ),
+                    "case": (
+                        "Logo-Embossed Pouch Case제품 보관을 위한 "
+                        "로고 엠보싱 파우치 케이스가 함께 구성됩니다."
+                    ),
+                },
             },
         },
     )
@@ -401,7 +412,9 @@ def seed_product_4():
             product=product,
             size="Free",
             color=color,
-            price=260000,
+            defaults={
+                "price": 260000,
+            },
         )
 
     # =========================
@@ -417,43 +430,43 @@ def seed_product_4():
         "06": "제품이 거친 표면에 긁히거나 마찰되지 않도록 주의해 주세요.",
     }
 
-    acetate_frame = Material.objects.update_or_create(
+    acetate_frame, _ = Material.objects.update_or_create(
         name="Acetate Frame",
-        description=(
-            "아세테이트 프레임에 내구성과 가벼운 착용감을 갖춘 "
-            "아세테이트 소재로 프레임을 제작했습니다."
-        ),
-        order=1,
-        careguide=sunglasses_careguide,
+        defaults={
+            "description": "아세테이트 프레임에 내구성과 가벼운 착용감을 갖춘 "
+                "아세테이트 소재로 프레임을 제작했습니다.",
+            "order": 1,
+            "careguide": sunglasses_careguide,
+        },
     )
 
-    smoke_lens = Material.objects.update_or_create(
+    smoke_lens, _ = Material.objects.update_or_create(
         name="Solid Smoke Lens",
-        description=(
-            "솔리드 스모크 컬러의 렌즈를 적용해 "
-            "차분한 시각적 인상을 완성합니다."
-        ),
-        order=2,
-        careguide=sunglasses_careguide,
+        defaults={
+            "description": "솔리드 스모크 컬러의 렌즈를 적용해 "
+                "차분한 시각적 인상을 완성합니다.",
+            "order": 2,
+            "careguide": sunglasses_careguide,
+        },
     )
 
-    metal_hardware = Material.objects.update_or_create(
+    metal_hardware, _ = Material.objects.update_or_create(
         name="Metal Hardware",
-        description=(
-            "템플에 메탈 소재의 하드웨어 디테일을 적용했습니다."
-        ),
-        order=3,
-        careguide=sunglasses_careguide,
+        defaults={
+            "description": "템플에 메탈 소재의 하드웨어 디테일을 적용했습니다.",
+            "order": 3,
+            "careguide": sunglasses_careguide,
+        },
     )
 
-    pouch_case = Material.objects.update_or_create(
+    pouch_case, _ = Material.objects.update_or_create(
         name="Logo-Embossed Pouch Case",
-        description=(
-            "제품 보관을 위한 로고 엠보싱 파우치 케이스가 "
-            "함께 구성됩니다."
-        ),
-        order=4,
-        careguide=sunglasses_careguide,
+        defaults={
+            "description": "제품 보관을 위한 로고 엠보싱 파우치 케이스가 "
+                "함께 구성됩니다.",
+            "order": 4,
+            "careguide": sunglasses_careguide,
+        },
     )
 
     # =========================
@@ -479,69 +492,69 @@ def seed_product_5():
     # 1. Product
     # =========================
 
-    product = Product.objects.update_or_create(
+    product, _ = Product.objects.update_or_create(
         name="MCM 오 드 퍼퓸",
-        category=Product.Category.ACCESSORY,
-
-        specs={
-            "product_type": "Unisex Fragrance",
-
-            "top_notes": [
-                "Raspberry",
-                "Apricot",
-            ],
-
-            "heart_notes": [
-                "Hand-Picked Jasmine",
-                "White Peony",
-                "Violet Leaf",
-            ],
-
-            "base_notes": [
-                "White Moss",
-                "Vanilla",
-                "Sandalwood",
-                "Sheer Ambrox",
-            ],
-
-            "design_details": {
-                "01": "FORM Star Backpack-inspired Bottle",
-                "02": "DETAIL Gold-Tone Metal Details",
-                "03": "IDENTITY MCM Travel DNA",
-                "04": "STYLE Unisex",
+        defaults={
+            "category": Product.Category.ACCESSORY,
+            "specs": {
+                "product_type": "Unisex Fragrance",
+    
+                "top_notes": [
+                    "Raspberry",
+                    "Apricot",
+                ],
+    
+                "heart_notes": [
+                    "Hand-Picked Jasmine",
+                    "White Peony",
+                    "Violet Leaf",
+                ],
+    
+                "base_notes": [
+                    "White Moss",
+                    "Vanilla",
+                    "Sandalwood",
+                    "Sheer Ambrox",
+                ],
+    
+                "design_details": {
+                    "01": "FORM Star Backpack-inspired Bottle",
+                    "02": "DETAIL Gold-Tone Metal Details",
+                    "03": "IDENTITY MCM Travel DNA",
+                    "04": "STYLE Unisex",
+                },
             },
-        },
-
-        background={
-            "description": (
-                "MCM의 여행 DNA를 담은 스타크 백팩 보틀. "
-                "MCM의 여행 DNA를 표현한 향수 보틀은 "
-                "전설적인 스타크 백팩을 모델로 정교하게 제작되었습니다."
-            ),
-
-            "materials": {
-                "fragrance": (
-                    "Fragrance / Parfum "
-                    "할로라즈베리, 애프리콧, 재스민, 화이트 피오니, "
-                    "바이올렛 리프 등의 향료를 조합했습니다."
+            "background": {
+                "description": (
+                    "MCM의 여행 DNA를 담은 스타크 백팩 보틀. "
+                    "MCM의 여행 DNA를 표현한 향수 보틀은 "
+                    "전설적인 스타크 백팩을 모델로 정교하게 제작되었습니다."
                 ),
-
-                "alcohol_base": (
-                    "Alcohol Base "
-                    "SD Alcohol 40-B (Alcohol Denat.)를 베이스로 사용해 "
-                    "향이 자연스럽게 퍼지도록 구성했습니다."
-                ),
-
-                "purified_water": (
-                    "Purified Water "
-                    "정제수를 사용해 향료와 베이스 성분의 균형을 맞췄습니다."
-                ),
-
-                "additional_ingredients": (
-                    "Additional Ingredients "
-                    "Butylene Glycol · BHT · Ethylhexyl Methoxycinnamate · "
-                    "Ethylhexyl Salicylate · Butyl Methoxydibenzoylmethane"
-                ),
+    
+                "materials": {
+                    "fragrance": (
+                        "Fragrance / Parfum "
+                        "할로라즈베리, 애프리콧, 재스민, 화이트 피오니, "
+                        "바이올렛 리프 등의 향료를 조합했습니다."
+                    ),
+    
+                    "alcohol_base": (
+                        "Alcohol Base "
+                        "SD Alcohol 40-B (Alcohol Denat.)를 베이스로 사용해 "
+                        "향이 자연스럽게 퍼지도록 구성했습니다."
+                    ),
+    
+                    "purified_water": (
+                        "Purified Water "
+                        "정제수를 사용해 향료와 베이스 성분의 균형을 맞췄습니다."
+                    ),
+    
+                    "additional_ingredients": (
+                        "Additional Ingredients "
+                        "Butylene Glycol · BHT · Ethylhexyl Methoxycinnamate · "
+                        "Ethylhexyl Salicylate · Butyl Methoxydibenzoylmethane"
+                    ),
+                },
             },
         },
     )
@@ -566,35 +579,34 @@ def seed_product_5():
             product=product,
             size=size,
             color="Cognac",
-            price=141000,
+            defaults={
+                "price": 141000,
+            },
         )
 
     # =========================
     # 3. Material
     # =========================
 
-    material = Material.objects.update_or_create(
+    material, _ = Material.objects.update_or_create(
         name="Fragrance / Parfum",
-
-        description=(
-            "할로라즈베리, 애프리콧, 재스민, 화이트 피오니, "
-            "바이올렛 리프 등의 향료를 조합했습니다. "
-            "SD Alcohol 40-B (Alcohol Denat.)를 베이스로 사용해 "
-            "향이 자연스럽게 퍼지도록 구성했습니다. "
-            "정제수를 사용해 향료와 베이스 성분의 균형을 맞췄습니다."
-        ),
-
-        order=1,
-
-        careguide={
-            "01": "USE 피부에 바르는 용도로만 사용하세요.",
-            "02": "ALCOHOL 알코올이 포함되어 있습니다.",
-            "03": "FIRE 화기 근처에서 사용하지 마세요.",
-            "04": (
-                "STORAGE 서늘하고 건조한 곳에 보관하세요. "
-                "제품과 함께 제공되는 더스트 백에 넣어 직사광선이나 "
-                "밝은 빛을 피해 서늘하고 건조한 곳에 보관해 주세요."
-            ),
+        defaults={
+            "description": "할로라즈베리, 애프리콧, 재스민, 화이트 피오니, "
+                "바이올렛 리프 등의 향료를 조합했습니다. "
+                "SD Alcohol 40-B (Alcohol Denat.)를 베이스로 사용해 "
+                "향이 자연스럽게 퍼지도록 구성했습니다. "
+                "정제수를 사용해 향료와 베이스 성분의 균형을 맞췄습니다.",
+            "order": 1,
+            "careguide": {
+                "01": "USE 피부에 바르는 용도로만 사용하세요.",
+                "02": "ALCOHOL 알코올이 포함되어 있습니다.",
+                "03": "FIRE 화기 근처에서 사용하지 마세요.",
+                "04": (
+                    "STORAGE 서늘하고 건조한 곳에 보관하세요. "
+                    "제품과 함께 제공되는 더스트 백에 넣어 직사광선이나 "
+                    "밝은 빛을 피해 서늘하고 건조한 곳에 보관해 주세요."
+                ),
+            },
         },
     )
 
@@ -615,28 +627,28 @@ def seed_product_6():
     # 1. Product
     # =========================
 
-    product = Product.objects.update_or_create(
+    product, _ = Product.objects.update_or_create(
         name="클라우스 M 비세토스 리버서블 벨트 4.5cm",
-        category=Product.Category.ACCESSORY,
-
-        specs={
-            "dimensions": "약 0 x 130 x 5 cm",
-            "waist_size": "122 cm",
-            "design": "Reversible",
-            "adjustment": "Length Adjustable",
-        },
-
-        background={
-            "description": (
-                "하나의 벨트로 두 가지 시그니처한 면을 선보이는 "
-                "리버서블 디자인입니다. 아이코닉한 M 버클은 탈착이 가능하며, "
-                "스트랩을 잘라 원하는 길이로 조절할 수 있습니다."
-            ),
-
-            "design_details": {
-                "01": "REVERSIBLE Monogram Coated Canvas · Solid Leather",
-                "02": "BUCKLE Detachable M Buckle",
-                "03": "ADJUSTMENT Cut-to-Length",
+        defaults={
+            "category": Product.Category.ACCESSORY,
+            "specs": {
+                "dimensions": "약 0 x 130 x 5 cm",
+                "waist_size": "122 cm",
+                "design": "Reversible",
+                "adjustment": "Length Adjustable",
+            },
+            "background": {
+                "description": (
+                    "하나의 벨트로 두 가지 시그니처한 면을 선보이는 "
+                    "리버서블 디자인입니다. 아이코닉한 M 버클은 탈착이 가능하며, "
+                    "스트랩을 잘라 원하는 길이로 조절할 수 있습니다."
+                ),
+    
+                "design_details": {
+                    "01": "REVERSIBLE Monogram Coated Canvas · Solid Leather",
+                    "02": "BUCKLE Detachable M Buckle",
+                    "03": "ADJUSTMENT Cut-to-Length",
+                },
             },
         },
     )
@@ -656,57 +668,59 @@ def seed_product_6():
             product=product,
             size="Cut to Size",
             color=color,
-            price=450000,
+            defaults={
+                "price": 450000,
+            },
         )
 
     # =========================
     # 3. Material
     # =========================
 
-    coated_canvas = Material.objects.update_or_create(
+    coated_canvas, _ = Material.objects.update_or_create(
         name="Coated Canvas",
-        description=(
-            "코티드 캔버스의 내구성을 높인 코팅 캔버스를 사용해 "
-            "견고한 표면감과 실용성을 더했습니다."
-        ),
-        order=1,
-        careguide={
-            "01": "직사광선이나 밝은 빛을 피해 서늘하고 건조한 곳에 보관하세요.",
-            "02": "표면에 오염이 생겼을 경우 부드러운 천으로 가볍게 닦아주세요.",
-            "03": "비누나 솔벤트를 사용하지 마세요.",
+        defaults={
+            "description": "코티드 캔버스의 내구성을 높인 코팅 캔버스를 사용해 "
+                "견고한 표면감과 실용성을 더했습니다.",
+            "order": 1,
+            "careguide": {
+                "01": "직사광선이나 밝은 빛을 피해 서늘하고 건조한 곳에 보관하세요.",
+                "02": "표면에 오염이 생겼을 경우 부드러운 천으로 가볍게 닦아주세요.",
+                "03": "비누나 솔벤트를 사용하지 마세요.",
+            },
         },
     )
 
-    solid_leather = Material.objects.update_or_create(
+    solid_leather, _ = Material.objects.update_or_create(
         name="Solid Leather",
-        description=(
-            "반대쪽 면에는 솔리드 레더를 사용해 "
-            "서로 다른 소재감을 하나의 스트랩에 담았습니다."
-        ),
-        order=2,
-        careguide=leather_careguide,
+        defaults={
+            "description": "반대쪽 면에는 솔리드 레더를 사용해 "
+                "서로 다른 소재감을 하나의 스트랩에 담았습니다.",
+            "order": 2,
+            "careguide": leather_careguide,
+        },
     )
 
-    nappa_leather_trim = Material.objects.update_or_create(
+    nappa_leather_trim, _ = Material.objects.update_or_create(
         name="Nappa Leather Trim",
-        description=(
-            "부드러운 나파 가죽으로 가장자리와 트림을 "
-            "섬세하게 마감했습니다."
-        ),
-        order=3,
-        careguide=leather_careguide,
+        defaults={
+            "description": "부드러운 나파 가죽으로 가장자리와 트림을 "
+                "섬세하게 마감했습니다.",
+            "order": 3,
+            "careguide": leather_careguide,
+        },
     )
 
-    metal_hardware = Material.objects.update_or_create(
+    metal_hardware, _ = Material.objects.update_or_create(
         name="Metal Hardware",
-        description=(
-            "금속 하드웨어를 적용해 구조적인 완성도와 "
-            "내구성을 높였습니다."
-        ),
-        order=4,
-        careguide={
-            "01": "직사광선이나 밝은 빛을 피해 서늘하고 건조한 곳에 보관하세요.",
-            "02": "표면을 부드럽게 관리해주세요.",
+        defaults={
+            "description": "금속 하드웨어를 적용해 구조적인 완성도와 "
+                "내구성을 높였습니다.",
+            "order": 4,
+            "careguide": {
+                "01": "직사광선이나 밝은 빛을 피해 서늘하고 건조한 곳에 보관하세요.",
+                "02": "표면을 부드럽게 관리해주세요.",
+            },
         },
     )
     
@@ -733,32 +747,32 @@ def seed_product_7():
     # 1. Product
     # =========================
 
-    product = Product.objects.update_or_create(
+    product, _ = Product.objects.update_or_create(
         name="네오 테리엔 모노그램 레더 로우탑 스니커즈",
-        category=Product.Category.SHOES,
-
-        specs={
-            "product_type": "Low-Top Sneakers",
-            "upper": "100% Calf Leather",
-            "trim": "100% Calf Leather",
-            "lining": "Leather Lining with Mesh",
-            "insole": "Removable OrthoLite® Memory Foam Insole",
-            "outsole": "Rubber Outsole · MCM Logo Motif",
-        },
-
-        background={
-            "description": (
-                "비세토스 모노그램으로 완성한 로우탑 실루엣의 "
-                "비세토스 모노그램 스니커즈입니다. "
-                "가죽으로 완성된 옆면과 후면, 바이올렛 다이아몬드를 참고한 "
-                "루버 패치가 디자인에 포인트를 더합니다."
-            ),
-
-            "design_details": {
-                "01": "MONOGRAM Embossed Visetos Monogram",
-                "02": "TONGUE Laurel Logo Label",
-                "03": "HEEL Leather Diamond Patch",
-                "04": "OUTSOLE Rubber Outsole · MCM Logo Motif",
+        defaults={
+            "category": Product.Category.SHOES,
+            "specs": {
+                "product_type": "Low-Top Sneakers",
+                "upper": "100% Calf Leather",
+                "trim": "100% Calf Leather",
+                "lining": "Leather Lining with Mesh",
+                "insole": "Removable OrthoLite® Memory Foam Insole",
+                "outsole": "Rubber Outsole · MCM Logo Motif",
+            },
+            "background": {
+                "description": (
+                    "비세토스 모노그램으로 완성한 로우탑 실루엣의 "
+                    "비세토스 모노그램 스니커즈입니다. "
+                    "가죽으로 완성된 옆면과 후면, 바이올렛 다이아몬드를 참고한 "
+                    "루버 패치가 디자인에 포인트를 더합니다."
+                ),
+    
+                "design_details": {
+                    "01": "MONOGRAM Embossed Visetos Monogram",
+                    "02": "TONGUE Laurel Logo Label",
+                    "03": "HEEL Leather Diamond Patch",
+                    "04": "OUTSOLE Rubber Outsole · MCM Logo Motif",
+                },
             },
         },
     )
@@ -783,7 +797,9 @@ def seed_product_7():
             product=product,
             size=size,
             color="Egret",
-            price=770000,
+            defaults={
+                "price": 770000,
+            },
         )
 
     # =========================
@@ -798,44 +814,44 @@ def seed_product_7():
         "05": "어퍼는 살짝 물에 적신 코튼 천을 사용해 세척하세요.",
     }
 
-    calf_leather = Material.objects.update_or_create(
+    calf_leather, _ = Material.objects.update_or_create(
         name="100% Calf Leather",
-        description=(
-            "송아지 가죽 어퍼와 트림에 100% 송아지 가죽을 사용해 "
-            "부드러운 질감과 견고한 구조를 완성했습니다."
-        ),
-        order=1,
-        careguide=sneaker_careguide,
+        defaults={
+            "description": "송아지 가죽 어퍼와 트림에 100% 송아지 가죽을 사용해 "
+                "부드러운 질감과 견고한 구조를 완성했습니다.",
+            "order": 1,
+            "careguide": sneaker_careguide,
+        },
     )
 
-    leather_mesh_lining = Material.objects.update_or_create(
+    leather_mesh_lining, _ = Material.objects.update_or_create(
         name="Leather & Mesh Lining",
-        description=(
-            "가죽과 메쉬를 조합한 안감을 적용해 "
-            "편안한 착용감과 통기성을 높였습니다."
-        ),
-        order=2,
-        careguide=sneaker_careguide,
+        defaults={
+            "description": "가죽과 메쉬를 조합한 안감을 적용해 "
+                "편안한 착용감과 통기성을 높였습니다.",
+            "order": 2,
+            "careguide": sneaker_careguide,
+        },
     )
 
-    ortholite = Material.objects.update_or_create(
+    ortholite, _ = Material.objects.update_or_create(
         name="OrthoLite® Memory Foam",
-        description=(
-            "탈착 가능한 OrthoLite® 메모리폼 인솔을 적용해 "
-            "쿠셔닝과 발의 편안함을 강화했습니다."
-        ),
-        order=3,
-        careguide=sneaker_careguide,
+        defaults={
+            "description": "탈착 가능한 OrthoLite® 메모리폼 인솔을 적용해 "
+                "쿠셔닝과 발의 편안함을 강화했습니다.",
+            "order": 3,
+            "careguide": sneaker_careguide,
+        },
     )
 
-    rubber_outsole = Material.objects.update_or_create(
+    rubber_outsole, _ = Material.objects.update_or_create(
         name="Rubber Outsole",
-        description=(
-            "러버 아웃솔을 사용해 안정적인 접지력과 "
-            "내구성을 제공합니다."
-        ),
-        order=4,
-        careguide=sneaker_careguide,
+        defaults={
+            "description": "러버 아웃솔을 사용해 안정적인 접지력과 "
+                "내구성을 제공합니다.",
+            "order": 4,
+            "careguide": sneaker_careguide,
+        },
     )
     
     # =========================
