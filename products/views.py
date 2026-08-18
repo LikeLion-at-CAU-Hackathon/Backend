@@ -6,10 +6,16 @@ from rest_framework.response import Response
 from math import radians, sin, cos, sqrt, atan2
 from django.utils import timezone
 
-
 from .serializers import *
 from .models import *
 from .services import *
+
+from django.conf import settings
+
+current_lat = settings.CURRENT_LOCATION_LAT
+current_lon = settings.CURRENT_LOCATION_LON
+
+
 
 def calculate_distance(lat1, lon1, lat2, lon2):
     R = 6371

@@ -1,6 +1,9 @@
-from products.models import *
-from django.core.management.base import BaseCommand
+from datetime import datetime, time
 
+from django.core.management.base import BaseCommand
+from django.utils import timezone
+
+from products.models import *
 
 leather_careguide = {
     "01": "가죽 제품이 젖거나 얼룩지지 않도록 주의해 주세요.",
@@ -137,6 +140,8 @@ def seed_product_1():
         product=product,
     )
     
+    return product
+    
 def seed_product_2():
     # =========================
     # 1. Product
@@ -210,6 +215,8 @@ def seed_product_2():
         material=organic_silk,
         product=product,
     )
+    
+    return product
 
 def seed_product_3():
 
@@ -328,6 +335,8 @@ def seed_product_3():
         material=material,
         product=product,
     )
+    
+    return product
 
 def seed_product_4():
 
@@ -461,6 +470,8 @@ def seed_product_4():
             material=material,
             product=product,
         )
+        
+    return product
 
 def seed_product_5():
 
@@ -595,6 +606,8 @@ def seed_product_5():
         material=material,
         product=product,
     )
+    
+    return product
 
 def seed_product_6():
 
@@ -711,6 +724,8 @@ def seed_product_6():
             material=material,
             product=product,
         )
+        
+    return product
 
 def seed_product_7():
 
@@ -837,20 +852,251 @@ def seed_product_7():
             material=material,
             product=product,
         )
+        
+    return product
+
+
+
+def seed_branches():
+    branches = {}
+
+    branch_data = [
+        {
+            "name": "신세계 면세점 본점",
+            "latitude": 37.5603907,
+            "longitude": 126.9808854,
+            "open": time(11, 0),
+            "close": time(18, 0),
+        },
+        {
+            "name": "롯데백화점 본점",
+            "latitude": 37.5647299033135,
+            "longitude": 126.981730421825,
+            "open": time(10, 30),
+            "close": time(20, 0),
+        },
+        {
+            "name": "롯데면세점 명동본점",
+            "latitude": 37.5653458904198,
+            "longitude": 126.9810075639,
+            "open": time(9, 30),
+            "close": time(20, 0),
+        },
+        {
+            "name": "신라면세점 본점",
+            "latitude": 37.5573514,
+            "longitude": 127.0075502,
+            "open": time(9, 30),
+            "close": time(17, 30),
+        },
+    ]
+
+    for data in branch_data:
+        branch = Branch.objects.create(
+            name=data["name"],
+            latitude=data["latitude"],
+            longitude=data["longitude"],
+        )
+
+        BusinessHours.objects.create(
+            branch=branch,
+            open=data["open"],
+            close=data["close"],
+        )
+
+        branches[data["name"]] = branch
+
+    return branches
+
+def seed_stocks(products, branches):
+    stock_data = {
+        # =====================================================
+        # 1번 Aren 비세토스 3단 지갑
+        # =====================================================
+        1: {
+            "신세계 면세점 본점": 3,
+            "롯데백화점 본점": 2,
+            "롯데면세점 명동본점": 1,
+            "신라면세점 본점": 2,
+        },
+
+        # =====================================================
+        # 2번 모노그램 프린트 뿌띠 실크 스카프
+        # =====================================================
+        2: {
+            "신세계 면세점 본점": 2,
+            "롯데백화점 본점": 1,
+            "롯데면세점 명동본점": 3,
+            "신라면세점 본점": 1,
+        },
+
+        # =====================================================
+        # 3번 에센셜 로고 프린트 티셔츠
+        # =====================================================
+        3: {
+            "신세계 면세점 본점": {
+                "S": 2,
+                "M": 1,
+                "L": 0,
+                "XL": 1,
+            },
+            "롯데백화점 본점": {
+                "S": 1,
+                "M": 2,
+                "L": 1,
+                "XL": 0,
+            },
+            "롯데면세점 명동본점": {
+                "S": 3,
+                "M": 0,
+                "L": 1,
+                "XL": 2,
+            },
+            "신라면세점 본점": {
+                "S": 1,
+                "M": 1,
+                "L": 2,
+                "XL": 1,
+            },
+        },
+
+        # =====================================================
+        # 4번 오발 선글라스
+        # =====================================================
+        4: {
+            "신세계 면세점 본점": 3,
+            "롯데백화점 본점": 2,
+            "롯데면세점 명동본점": 1,
+            "신라면세점 본점": 2,
+        },
+
+        # =====================================================
+        # 5번 MCM 오 드 퍼퓸
+        # =====================================================
+        5: {
+            "신세계 면세점 본점": 2,
+            "롯데백화점 본점": 1,
+            "롯데면세점 명동본점": 2,
+            "신라면세점 본점": 1,
+        },
+
+        # =====================================================
+        # 6번 클라우스 M 비세토스 리버서블 벨트
+        # =====================================================
+        6: {
+            "신세계 면세점 본점": 3,
+            "롯데백화점 본점": 2,
+            "롯데면세점 명동본점": 1,
+            "신라면세점 본점": 2,
+        },
+
+        # =====================================================
+        # 7번 네오 테리엔 모노그램 레더 로우탑 스니커즈
+        # =====================================================
+        7: {
+            "신세계 면세점 본점": {
+                "36IT": 2,
+                "37IT": 0,
+                "38IT": 1,
+                "39IT": 1,
+                "40IT": 0,
+                "41IT": 2,
+                "42IT": 0,
+                "43IT": 1,
+            },
+
+            "롯데백화점 본점": {
+                "36IT": 1,
+                "37IT": 1,
+                "38IT": 2,
+                "39IT": 0,
+                "40IT": 1,
+                "41IT": 1,
+                "42IT": 0,
+                "43IT": 2,
+            },
+
+            "롯데면세점 명동본점": {
+                "36IT": 0,
+                "37IT": 1,
+                "38IT": 1,
+                "39IT": 2,
+                "40IT": 0,
+                "41IT": 1,
+                "42IT": 1,
+                "43IT": 0,
+            },
+
+            "신라면세점 본점": {
+                "36IT": 1,
+                "37IT": 0,
+                "38IT": 2,
+                "39IT": 1,
+                "40IT": 0,
+                "41IT": 1,
+                "42IT": 1,
+                "43IT": 0,
+            },
+        },
+    }
+
+    for product_id, branch_data in stock_data.items():
+
+        product = products[product_id - 1]
+
+        for branch_name, stock_info in branch_data.items():
+
+            branch = branches[branch_name]
+
+            for detail in product.details.all():
+
+                # 사이즈별 재고가 있는 경우
+                if isinstance(stock_info, dict):
+                    quantity = stock_info.get(detail.size, 0)
+
+                # 사이즈가 하나인 제품
+                else:
+                    quantity = stock_info
+
+                Stock.objects.create(
+                    branch=branch,
+                    detail=detail,
+                    quantity=quantity,
+                )
+
+
 
 
 class Command(BaseCommand):
-    help = "제품 초기 데이터를 생성합니다."
+    help = "제품, 지점, 재고 seed 데이터 생성"
 
     def handle(self, *args, **options):
-        seed_product_1()
-        seed_product_2()
-        seed_product_3()
-        seed_product_4()
-        seed_product_5()
-        seed_product_6()
-        seed_product_7()
+
+        Stock.objects.all().delete()
+        BusinessHours.objects.all().delete()
+        Branch.objects.all().delete()
+
+        MaterialProduct.objects.all().delete()
+        ProductDetail.objects.all().delete()
+        Material.objects.all().delete()
+        Product.objects.all().delete()
+
+        products = [
+            seed_product_1(),
+            seed_product_2(),
+            seed_product_3(),
+            seed_product_4(),
+            seed_product_5(),
+            seed_product_6(),
+            seed_product_7(),
+        ]
+
+        branches = seed_branches()
+
+        seed_stocks(products, branches)
 
         self.stdout.write(
-            self.style.SUCCESS("제품 1~7 seed 데이터 생성 완료")
+            self.style.SUCCESS(
+                "제품 1~7 및 지점/영업시간/재고 seed 데이터 생성 완료"
+            )
         )
