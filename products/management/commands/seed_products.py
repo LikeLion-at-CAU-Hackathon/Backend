@@ -1191,7 +1191,6 @@ def seed_product_9():
                     "DESIGN": "Softness & Structure",
                     "SIGNATURE": "Leather Hang Tag",
                     "HERITAGE": "MCM Luggage",
-                    "0SILHOUETTE": "Classic Hobo",
                 },
             },
         },
