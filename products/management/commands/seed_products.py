@@ -450,12 +450,20 @@ def seed_product_4():
         },
     )
 
+    # 4번 제품
     metal_hardware, _ = Material.objects.update_or_create(
         name="Metal Hardware",
         defaults={
-            "description": "템플에 메탈 소재의 하드웨어 디테일을 적용했습니다.",
+            "description": (
+                "금속 하드웨어를 사용해 제품에 구조적인 디테일과 "
+                "내구성을 더했습니다."
+            ),
             "order": 3,
-            "careguide": sunglasses_careguide,
+            "careguide": {
+                "01": "습기와 물에 장시간 노출되지 않도록 주의해 주세요.",
+                "02": "부드럽고 마른 천으로 표면을 관리해 주세요.",
+                "03": "거친 표면과의 마찰을 피해주세요.",
+            },
         },
     )
 
@@ -712,17 +720,20 @@ def seed_product_6():
     )
 
     metal_hardware, _ = Material.objects.update_or_create(
-        name="Metal Hardware",
-        defaults={
-            "description": "금속 하드웨어를 적용해 구조적인 완성도와 "
-                "내구성을 높였습니다.",
-            "order": 4,
-            "careguide": {
-                "01": "직사광선이나 밝은 빛을 피해 서늘하고 건조한 곳에 보관하세요.",
-                "02": "표면을 부드럽게 관리해주세요.",
-            },
+    name="Metal Hardware",
+    defaults={
+        "description": (
+            "금속 하드웨어를 사용해 제품에 구조적인 디테일과 "
+            "내구성을 더했습니다."
+        ),
+        "order": 3,
+        "careguide": {
+            "01": "습기와 물에 장시간 노출되지 않도록 주의해 주세요.",
+            "02": "부드럽고 마른 천으로 표면을 관리해 주세요.",
+            "03": "거친 표면과의 마찰을 피해주세요.",
         },
-    )
+    },
+)
     
     # =========================
     # 4. MaterialProduct
@@ -872,6 +883,120 @@ def seed_product_7():
     return product
 
 
+def seed_product_8():
+
+    # =========================
+    # 1. Product
+    # =========================
+
+    product, _ = Product.objects.update_or_create(
+        name="모노그램 프린트 트라이엥글 실크 스카프",
+        defaults={
+            "category": Product.Category.ACCESSORY,
+            "specs": {
+                "dimensions": "약 70 x 70 x 0 cm",
+                "material": "100% Silk",
+                "pattern": "Visetos Monogram Print · MCM Logo Stripe Motif",
+                "shape": "Triangular Silhouette",
+            },
+            "background": {
+                "description": (
+                    "뮌헨 하우스의 새로운 실루엣을 제안하는 실크 스카프입니다. "
+                    "비세토스 모노그램과 MCM 로고 모티프를 조화롭게 배치해 "
+                    "브랜드의 아이덴티티를 표현했습니다. "
+                    "삼각형 실루엣과 스트라이프 테두리가 어우러져 "
+                    "다양한 스타일링에 활용할 수 있는 디자인을 완성합니다."
+                ),
+
+                "design_details": {
+                    "01": "SILHOUETTE Triangular Shape",
+                    "02": "PATTERN Visetos Monogram",
+                    "03": "BORDER MCM Logo & Stripe",
+                    "04": "STYLING Scarf · Ribbon · Bag Handle",
+                },
+
+                "material_details": {
+                    "01": "MATERIAL 100% Silk",
+                    "02": "TEXTURE Soft & Smooth",
+                    "03": "FINISH Lightweight & Drapey",
+                    "04": "CRAFT Fine Edge Finish",
+                },
+            },
+        },
+    )
+
+    # =========================
+    # 2. ProductDetail
+    # =========================
+
+    colors = [
+        "Cognac",
+        "Soft Pink",
+    ]
+
+    for color in colors:
+        ProductDetail.objects.update_or_create(
+            product=product,
+            size="Free",
+            color=color,
+            defaults={
+                "price": 390000,
+            },
+        )
+
+    # =========================
+    # 3. Material
+    # =========================
+
+    italian_silk, _ = Material.objects.update_or_create(
+        name="100% Italian Silk",
+        defaults={
+            "description": (
+                "100% 이탈리아 실크를 사용해 부드러운 촉감과 "
+                "은은한 광택을 완성했습니다. "
+                "가볍고 유연한 소재감이 자연스러운 드레이프를 만들어 "
+                "다양한 연출이 가능합니다."
+            ),
+            "order": 1,
+            "careguide": {
+                "01": (
+                    "드라이클리닝 전용. 스카프는 드라이클리닝으로만 "
+                    "관리해 주세요."
+                ),
+                "02": (
+                    "물세탁은 피하고 제품의 소재 특성에 맞는 방식으로 "
+                    "관리하는 것을 권장합니다."
+                ),
+                "03": (
+                    "제공된 보호용 더스트 백에 넣어 직사광선이나 "
+                    "밝은 조명을 피해 서늘하고 건조한 곳에 보관해 주세요."
+                ),
+                "04": "제품이 젖거나 오염되지 않도록 주의해 주세요.",
+                "05": (
+                    "표면이 젖거나 오염되었을 경우 보풀이 없는 "
+                    "밝은 색상의 흡수성 천으로 닦아 말려주세요."
+                ),
+                "06": "비누 또는 솔벤트를 사용하지 마세요.",
+                "07": (
+                    "제품이 거친 표면에 긁히거나 마찰되지 않도록 "
+                    "주의해 주세요."
+                ),
+            },
+        },
+    )
+
+    # =========================
+    # 4. MaterialProduct
+    # =========================
+
+    MaterialProduct.objects.get_or_create(
+        material=italian_silk,
+        product=product,
+    )
+
+    return product
+
+
 
 def seed_branches():
     branches = {}
@@ -908,13 +1033,13 @@ def seed_branches():
     ]
 
     for data in branch_data:
-        branch = Branch.objects.create(
+        branch, _ = Branch.objects.update_or_create(
             name=data["name"],
             latitude=data["latitude"],
             longitude=data["longitude"],
         )
 
-        BusinessHours.objects.create(
+        BusinessHours.objects.update_or_create(
             branch=branch,
             open=data["open"],
             close=data["close"],
@@ -1074,10 +1199,12 @@ def seed_stocks(products, branches):
                 else:
                     quantity = stock_info
 
-                Stock.objects.create(
+                Stock.objects.update_or_create(
                     branch=branch,
                     detail=detail,
-                    quantity=quantity,
+                    defaults={
+                        "quantity": quantity,
+                    },
                 )
 
 
@@ -1088,15 +1215,6 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
 
-        Stock.objects.all().delete()
-        BusinessHours.objects.all().delete()
-        Branch.objects.all().delete()
-
-        MaterialProduct.objects.all().delete()
-        ProductDetail.objects.all().delete()
-        Material.objects.all().delete()
-        Product.objects.all().delete()
-
         products = [
             seed_product_1(),
             seed_product_2(),
@@ -1105,6 +1223,7 @@ class Command(BaseCommand):
             seed_product_5(),
             seed_product_6(),
             seed_product_7(),
+            seed_product_8(),
         ]
 
         branches = seed_branches()
@@ -1113,6 +1232,6 @@ class Command(BaseCommand):
 
         self.stdout.write(
             self.style.SUCCESS(
-                "제품 1~7 및 지점/영업시간/재고 seed 데이터 생성 완료"
+                "제품 1~8 및 지점/영업시간/재고 seed 데이터 생성 완료"
             )
         )
