@@ -199,6 +199,7 @@ CORS_ALLOWED_ORIGINS = [
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:5173",
     "https://frontend-zeta-eight-2ecx6xkvfm.vercel.app",
+    "https://mcm.p-e.kr",
 ]
 
 # drf-yasg (Swagger) 설정: Swagger UI에서 Bearer 토큰으로 인증 가능하도록 함
