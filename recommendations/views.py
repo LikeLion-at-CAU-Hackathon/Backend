@@ -252,6 +252,29 @@ class VisitHistoryAPIView(APIView):
             },
             status=status.HTTP_201_CREATED
         )
+        
+    def delete(self, request, session_id):
+        visit_session = get_object_or_404(
+            VisitSession,
+            id=session_id
+        )
+
+        histories = VisitHistory.objects.filter(
+            visit_session=visit_session
+        )
+
+        deleted_count = histories.count()
+
+        histories.delete()
+
+        return Response(
+            {
+                "success": True,
+                "deleted_count": deleted_count,
+                "message": "방문 기록이 삭제되었습니다.",
+            },
+            status=status.HTTP_200_OK
+        )
 
 
 # ==========================================
