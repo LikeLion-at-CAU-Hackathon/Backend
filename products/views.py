@@ -12,9 +12,6 @@ from .services import *
 
 from django.conf import settings
 
-current_lat = settings.CURRENT_LOCATION_LAT
-current_lon = settings.CURRENT_LOCATION_LON
-
 
 
 def calculate_distance(lat1, lon1, lat2, lon2):
@@ -54,31 +51,15 @@ class ProductAPIView(RetrieveAPIView):
         "details__images",
         "details__stocks__branch",
     )
+    
+    
 
 class ProductStockAPIView(APIView):
 
     def get(self, request, product_id):
-        latitude = request.query_params.get("latitude")
-        longitude = request.query_params.get("longitude")
 
-        if not latitude or not longitude:
-            return Response(
-                {
-                    "detail": "latitude와 longitude가 필요합니다."
-                },
-                status=400
-            )
-
-        try:
-            latitude = float(latitude)
-            longitude = float(longitude)
-        except ValueError:
-            return Response(
-                {
-                    "detail": "latitude와 longitude는 숫자여야 합니다."
-                },
-                status=400
-            )
+        latitude = settings.CURRENT_LOCATION_LAT
+        longitude = settings.CURRENT_LOCATION_LON
 
         branches = Branch.objects.prefetch_related(
             Prefetch(
