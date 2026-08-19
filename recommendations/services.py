@@ -1,3 +1,4 @@
+from copy import deepcopy
 import json
 
 from openai import OpenAI
@@ -220,7 +221,7 @@ STYLE_RULES = {
 
         "soft pink": 3,
         "blush pink": 3,
-        
+
         "pastel": 3,
         "파스텔": 3,
 
@@ -913,13 +914,7 @@ def save_looks(
             "StyleProfile에는 정확히 3개의 StyleChip이 있어야 합니다."
         )
 
-    required_types = {
-        LookProduct.ItemType.BAG,
-        LookProduct.ItemType.TOP,
-        LookProduct.ItemType.BOTTOM,
-        LookProduct.ItemType.SHOES,
-        LookProduct.ItemType.ACCESSORY,
-    }
+    required_types = set(Product.Category.values)
 
     valid_sources = {
         LookProduct.Source.VISITED,
@@ -1198,6 +1193,14 @@ def generate_ai_looks(
             "label"
         )
     )
+    profile_chip_codes = [
+        chip["code"]
+        for chip in profile_chips
+    ]
+    if len(profile_chip_codes) != 3:
+        raise ValueError(
+            "StyleProfile에는 정확히 3개의 StyleChip이 있어야 합니다."
+        )
 
     product_candidates = build_look_product_candidates()
 
@@ -1222,6 +1225,26 @@ def generate_ai_looks(
         for product in optional_products
     ]
 
+    # 현재 StyleProfile의 3개 StyleChip만
+    # AI가 반환할 수 있도록 schema 제한
+    response_schema = deepcopy(
+        LOOK_RESPONSE_SCHEMA
+    )
+
+    response_schema[
+        "properties"
+    ][
+        "looks"
+    ][
+        "items"
+    ][
+        "properties"
+    ][
+        "style_chip"
+    ][
+        "enum"
+    ] = profile_chip_codes
+
     prompt = f"""
 You are an MCM fashion styling assistant.
 
@@ -1243,52 +1266,70 @@ Rules:
 
 1. Create exactly one Look for each USER STYLE CHIP.
 
-2. Every product listed in REQUIRED MAIN PRODUCT FOR EACH STYLE CHIP
+2. You MUST use each of these style chip codes exactly once:
+   {json.dumps(profile_chip_codes, ensure_ascii=False)}
+
+3. Do not use any style chip that is not listed above.
+
+4. Every product listed in REQUIRED MAIN PRODUCT FOR EACH STYLE CHIP
    MUST be included in that Look.
 
-3. The required main product must use:
+5. The required main product must use:
    "source": "VISITED"
 
-4. OPTIONAL RECENTLY VISITED PRODUCTS may be included
+6. OPTIONAL RECENTLY VISITED PRODUCTS may be included
    only when they improve the styling.
 
-5. OPTIONAL RECENTLY VISITED PRODUCTS are not required
+7. OPTIONAL RECENTLY VISITED PRODUCTS are not required
    to appear in any Look.
 
-6. If an optional recently visited product is used,
+8. If an optional recently visited product is used,
    it must use:
    "source": "VISITED"
 
-7. Products that are not from the visited product lists
+9. Products that are not from the visited product lists
    must use:
    "source": "RECOMMENDED"
 
-8. Each Look must contain exactly:
-   BAG
-   TOP
-   BOTTOM
-   SHOES
-   ACCESSORY
+10. Each Look must contain exactly:
+    BAG
+    TOP
+    BOTTOM
+    SHOES
+    ACCESSORY
 
-9. Each item type must appear exactly once.
+11. Each item type must appear exactly once.
 
-10. Do not include two products of the same category
+12. Do not include two products of the same category
     in the same Look.
 
-11. Only use product IDs from AVAILABLE PRODUCTS.
+13. Only use product IDs from AVAILABLE PRODUCTS.
 
-12. Recommended products should complement the
+14. Recommended products should complement the
     visited products based on color, material,
     pattern, design, and overall style.
 
-13. description must be written in Korean
+15. title must be written in English
+    and should be short and stylish.
+
+16. subtitle must be written in English
+    and should be concise and natural.
+
+17. description must be written in Korean
     and must be one short sentence.
 
-14. reason must be written in Korean
+18. reason must be written in Korean
     and must be one or two short sentences.
 
-15. Keep description and reason concise and natural.
+19. Keep title, subtitle, description, and reason concise and natural.
 """
+
+
+    response_schema = deepcopy(LOOK_RESPONSE_SCHEMA)
+
+    response_schema["properties"]["looks"]["items"]["properties"]["style_chip"]["enum"] = (
+    profile_chip_codes
+)
 
     response = client.responses.create(
         model="gpt-5-mini",
@@ -1297,7 +1338,7 @@ Rules:
             "format": {
                 "type": "json_schema",
                 "name": "fashion_looks",
-                "schema": LOOK_RESPONSE_SCHEMA,
+                "schema": response_schema,
                 "strict": True,
             }
         },
@@ -1307,7 +1348,24 @@ Rules:
         response.output_text
     )
 
-    return data["looks"]
+    looks = data["looks"]
+
+    # 마지막 안전 검증
+    generated_chip_codes = [
+        look["style_chip"]
+        for look in looks
+    ]
+
+    if (
+        len(generated_chip_codes) != 3
+        or set(generated_chip_codes) != set(profile_chip_codes)
+    ):
+        raise ValueError(
+            "AI Look의 StyleChip 구성이 "
+            "StyleProfile의 StyleChip과 일치하지 않습니다."
+        )
+
+    return looks
 
 def create_ai_looks(
     style_profile,
