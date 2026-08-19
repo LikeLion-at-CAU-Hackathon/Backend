@@ -21,6 +21,7 @@ def ask_ai_assistant(question, product_context):
 
 2. 다음 정보를 포함하여 답변할 수 있다.
 - 제품명
+- 카테고리
 - 가격
 - 색상
 - 사이즈
@@ -178,9 +179,6 @@ def build_ai_assistant_context(product):
 
 제품명:
 {product.name}
-
-스타일 번호:
-{product.style_no}
 
 카테고리:
 {product.category}
