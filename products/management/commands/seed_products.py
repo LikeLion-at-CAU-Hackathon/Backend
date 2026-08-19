@@ -1227,49 +1227,51 @@ def seed_product_8():
             "주의해 주세요."
         ),
     }
-    
-    body, _ = Material.objects.update_or_create(
-        name="Body",
+
+    italian_silk, _ = Material.objects.update_or_create(
+        name="100% Italian Silk",
         defaults={
             "description": (
-                "스카프 전체 바디에 100% 실크 소재를 사용해 "
-                "가볍고 부드러운 착용감을 완성했습니다."
+                "100% 이탈리아 실크를 사용해 부드러운 촉감과 "
+                "은은한 광택을 완성했습니다. "
+                "가볍고 유연한 소재감이 자연스러운 드레이프를 만들어 "
+                "다양한 연출이 가능합니다."
             ),
             "order": 1,
             "careguide": scarf_careguide,
         },
     )
 
-    fabric, _ = Material.objects.update_or_create(
-        name="Fabric",
+    silk_texture, _ = Material.objects.update_or_create(
+        name="Silk Texture",
         defaults={
             "description": (
-                "은은한 광택과 매끄러운 촉감의 실크 패브릭으로 "
-                "자연스러운 드레이프를 연출할 수 있습니다."
+                "실크 특유의 매끄럽고 부드러운 표면감이 "
+                "고급스러운 텍스처를 완성합니다."
             ),
             "order": 2,
             "careguide": scarf_careguide,
         },
     )
 
-    elastic, _ = Material.objects.update_or_create(
-        name="Elastic",
+    lightweight_finish, _ = Material.objects.update_or_create(
+        name="Lightweight Finish",
         defaults={
             "description": (
-                "가볍고 유연한 소재감으로 목, 헤어, 가방 핸들 등 "
-                "다양한 스타일링에 편안하게 활용할 수 있습니다."
+                "가볍고 유연한 마감으로 자연스럽게 흐르는 "
+                "드레이프 실루엣을 연출할 수 있습니다."
             ),
             "order": 3,
             "careguide": scarf_careguide,
         },
     )
-    
-    embroidery, _ = Material.objects.update_or_create(
-        name="Embroidery",
+
+    fine_edge_finish, _ = Material.objects.update_or_create(
+        name="Fine Edge Finish",
         defaults={
             "description": (
-                "비세토스 모노그램과 MCM 로고 스트라이프 모티프를 "
-                "섬세하게 표현해 브랜드의 아이덴티티를 강조했습니다."
+                "섬세한 가장자리 마감으로 스카프의 형태와 "
+                "완성도를 높였습니다."
             ),
             "order": 4,
             "careguide": scarf_careguide,
@@ -1279,14 +1281,14 @@ def seed_product_8():
     # =========================
     # 4. MaterialProduct
     # =========================
-    
+
     connect_materials(
         product,
         [
-            body,
-            fabric,
-            elastic,
-            embroidery,
+            italian_silk,
+            silk_texture,
+            lightweight_finish,
+            fine_edge_finish,
         ],
     )
 
