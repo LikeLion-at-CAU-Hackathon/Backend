@@ -1,5 +1,3 @@
-import uuid
-
 from django.shortcuts import get_object_or_404
 
 from rest_framework.views import APIView
@@ -7,8 +5,17 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from products.models import Product
-from .models import SavedProduct, StyleProfile, VisitSession, Look,  VisitHistory
+
+from .models import (
+    SavedProduct,
+    StyleProfile,
+    VisitSession,
+    Look,
+    VisitHistory,
+)
+
 from .services import analyze_visit_session
+
 from .serializers import (
     StyleProfileSerializer,
     LookSerializer,
@@ -18,14 +25,18 @@ from .serializers import (
     VisitHistorySerializer,
 )
 
-# 분석, 저장 APIView
+from .utils import get_or_create_visit_session
+
+
+# ==========================================
+# 스타일 분석 실행
+# ==========================================
+
 class StyleAnalysisAPIView(APIView):
 
-    def post(self, request, session_id):
-        visit_session = get_object_or_404(
-            VisitSession,
-            id=session_id
-        )
+    def post(self, request):
+
+        visit_session = get_or_create_visit_session(request)
 
         try:
             result = analyze_visit_session(
@@ -56,14 +67,15 @@ class StyleAnalysisAPIView(APIView):
         )
 
 
-# 스타일 분석 결과 조회 APIView
+# ==========================================
+# 스타일 분석 결과 조회
+# ==========================================
+
 class StyleResultAPIView(APIView):
 
-    def get(self, request, session_id):
-        visit_session = get_object_or_404(
-            VisitSession,
-            id=session_id
-        )
+    def get(self, request):
+
+        visit_session = get_or_create_visit_session(request)
 
         style_profile = (
             StyleProfile.objects
@@ -78,36 +90,16 @@ class StyleResultAPIView(APIView):
             return Response(
                 {
                     "success": False,
-                    "message": "스타일 분석 결과가 없습니다."
+                    "message": "스타일 분석 결과가 없습니다.",
                 },
                 status=status.HTTP_404_NOT_FOUND
             )
 
         serializer = StyleProfileSerializer(
             style_profile,
-            context={"request": request}
-        )
-
-        return Response(
-            {
-                "success": True,
-                "data": serializer.data
-            },
-            status=status.HTTP_200_OK
-        )
-
-# 개별 Look 상세 조회 APIView
-class LookDetailAPIView(APIView):
-
-    def get(self, request, look_id):
-        look = get_object_or_404(
-            Look,
-            id=look_id
-        )
-
-        serializer = LookDetailSerializer(
-            look,
-            context={"request": request}
+            context={
+                "request": request
+            }
         )
 
         return Response(
@@ -119,12 +111,48 @@ class LookDetailAPIView(APIView):
         )
 
 
+# ==========================================
+# 개별 Look 상세 조회
+# ==========================================
+
+class LookDetailAPIView(APIView):
+
+    def get(self, request, look_id):
+
+        look = get_object_or_404(
+            Look,
+            id=look_id
+        )
+
+        serializer = LookDetailSerializer(
+            look,
+            context={
+                "request": request
+            }
+        )
+
+        return Response(
+            {
+                "success": True,
+                "data": serializer.data,
+            },
+            status=status.HTTP_200_OK
+        )
+
+
+# ==========================================
+# 현재 방문 세션 확인/생성
+#
+# 필수 API는 아님.
+# VisitHistoryAPIView 등이 알아서 세션을 생성하므로
+# 테스트용 또는 세션 확인용으로 남겨둘 수 있음.
+# ==========================================
+
 class VisitSessionCreateAPIView(APIView):
 
     def post(self, request):
-        visit_session = VisitSession.objects.create(
-            session_key=str(uuid.uuid4())
-        )
+
+        visit_session = get_or_create_visit_session(request)
 
         serializer = VisitSessionSerializer(
             visit_session
@@ -135,20 +163,25 @@ class VisitSessionCreateAPIView(APIView):
                 "success": True,
                 "session": serializer.data,
             },
-            status=status.HTTP_201_CREATED
+            status=status.HTTP_200_OK
         )
+
+
+# ==========================================
+# 방문 기록 조회 / 추가
+# ==========================================
 
 class VisitHistoryAPIView(APIView):
 
-    def get(self, request, session_id):
-        visit_session = get_object_or_404(
-            VisitSession,
-            id=session_id
-        )
+    def get(self, request):
+
+        visit_session = get_or_create_visit_session(request)
 
         histories = (
             VisitHistory.objects
-            .filter(visit_session=visit_session)
+            .filter(
+                visit_session=visit_session
+            )
             .select_related("product")
             .order_by("sequence")
         )
@@ -167,11 +200,9 @@ class VisitHistoryAPIView(APIView):
             status=status.HTTP_200_OK
         )
 
-    def post(self, request, session_id):
-        visit_session = get_object_or_404(
-            VisitSession,
-            id=session_id
-        )
+    def post(self, request):
+
+        visit_session = get_or_create_visit_session(request)
 
         product_id = request.data.get("product_id")
 
@@ -191,7 +222,9 @@ class VisitHistoryAPIView(APIView):
 
         last_history = (
             VisitHistory.objects
-            .filter(visit_session=visit_session)
+            .filter(
+                visit_session=visit_session
+            )
             .order_by("-sequence")
             .first()
         )
@@ -220,20 +253,20 @@ class VisitHistoryAPIView(APIView):
             status=status.HTTP_201_CREATED
         )
 
-    
-# 저장 제품 추가/삭제 APIView
+
+# ==========================================
+# 저장 제품 추가 / 삭제
+# ==========================================
+
 class SavedProductAPIView(APIView):
 
     def post(
         self,
         request,
-        session_id,
         product_id
     ):
-        visit_session = get_object_or_404(
-            VisitSession,
-            id=session_id
-        )
+
+        visit_session = get_or_create_visit_session(request)
 
         product = get_object_or_404(
             Product,
@@ -253,21 +286,20 @@ class SavedProductAPIView(APIView):
                 "saved": True,
                 "created": created,
             },
-            status=status.HTTP_201_CREATED
-            if created
-            else status.HTTP_200_OK
+            status=(
+                status.HTTP_201_CREATED
+                if created
+                else status.HTTP_200_OK
+            )
         )
 
     def delete(
         self,
         request,
-        session_id,
         product_id
     ):
-        visit_session = get_object_or_404(
-            VisitSession,
-            id=session_id
-        )
+
+        visit_session = get_or_create_visit_session(request)
 
         saved_product = get_object_or_404(
             SavedProduct,
@@ -286,18 +318,15 @@ class SavedProductAPIView(APIView):
         )
 
 
-# 저장 제품 전체 조회 APIView
+# ==========================================
+# 저장 제품 전체 조회
+# ==========================================
+
 class SavedProductListAPIView(APIView):
 
-    def get(
-        self,
-        request,
-        session_id
-    ):
-        visit_session = get_object_or_404(
-            VisitSession,
-            id=session_id
-        )
+    def get(self, request):
+
+        visit_session = get_or_create_visit_session(request)
 
         saved_products = (
             SavedProduct.objects
@@ -318,22 +347,24 @@ class SavedProductListAPIView(APIView):
                 "success": True,
                 "count": saved_products.count(),
                 "saved_products": serializer.data,
-            }
+            },
+            status=status.HTTP_200_OK
         )
 
+
+# ==========================================
+# 저장 제품의 분석 결과 조회
+# ==========================================
 
 class SavedProductAnalysisAPIView(APIView):
 
     def get(
         self,
         request,
-        session_id,
         product_id
     ):
-        visit_session = get_object_or_404(
-            VisitSession,
-            id=session_id
-        )
+
+        visit_session = get_or_create_visit_session(request)
 
         product = get_object_or_404(
             Product,
@@ -362,7 +393,7 @@ class SavedProductAnalysisAPIView(APIView):
                     "success": False,
                     "message": (
                         "아직 저장된 분석 결과가 없습니다."
-                    )
+                    ),
                 },
                 status=status.HTTP_404_NOT_FOUND
             )
