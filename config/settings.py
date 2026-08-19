@@ -242,3 +242,10 @@ LOGGING = {
         "level": "INFO",
     },
 }
+
+# Django Session Cookie
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SECURE = True
+SESSION_COOKIE_SAMESITE = "None"
+
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
