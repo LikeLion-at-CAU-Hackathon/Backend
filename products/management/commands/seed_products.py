@@ -1,7 +1,6 @@
-from datetime import datetime, time
+from datetime import time
 
 from django.core.management.base import BaseCommand
-from django.utils import timezone
 
 from products.models import *
 
@@ -12,6 +11,183 @@ leather_careguide = {
     "04": "제품이 거친 표면에 긁히거나 마찰되지 않도록 주의해 주세요.",
     "05": "더스트 백에 넣어 직사광선이나 밝은 빛을 피해 서늘하고 건조한 곳에 보관해 주세요.",
 }
+
+metal_careguide = {
+    "01": "습기와 물에 장시간 노출되지 않도록 주의해 주세요.",
+    "02": "부드럽고 마른 천으로 표면을 관리해 주세요.",
+    "03": "거친 표면과의 마찰을 피해주세요.",
+}
+
+
+visetos_careguide = {
+    "01": "지속적인 직사광선을 피해 주세요.",
+    "02": "제품이 거친 표면에 긁히거나 마찰되지 않도록 주의해 주세요.",
+    "03": "더스트 백에 넣어 직사광선이나 밝은 빛을 피해 서늘하고 건조한 곳에 보관해 주세요.",
+    "04": "제품 표면에 비누나 솔벤트를 사용하지 마세요.",
+}
+
+
+fabric_careguide = {
+    "01": "오염 시 부드러운 천으로 가볍게 관리해 주세요.",
+    "02": "습기와 직사광선을 피해 서늘하고 건조한 곳에 보관해 주세요.",
+}
+
+COMMON_MATERIALS = {
+    "Visetos Monogram Canvas": {
+        "description": (
+            "MCM의 시그니처 비세토스 모노그램을 적용한 캔버스 소재로, "
+            "클래식한 패턴과 견고한 소재감을 특징으로 합니다."
+        ),
+        "careguide": visetos_careguide,
+    },
+
+    "Natural Leather": {
+        "description": (
+            "천연 가죽 소재로 부드러운 질감과 견고한 마감을 제공합니다."
+        ),
+        "careguide": leather_careguide,
+    },
+
+    "Natural Nappa Leather": {
+        "description": (
+            "천연 나파 가죽 소재로 부드러운 촉감과 유연한 표면감을 제공합니다."
+        ),
+        "careguide": leather_careguide,
+    },
+
+    "Nappa Leather": {
+        "description": (
+            "부드럽고 유연한 나파 가죽 소재로 정교하고 고급스러운 마감을 제공합니다."
+        ),
+        "careguide": leather_careguide,
+    },
+
+    "24K Gold-Plated Brass": {
+        "description": (
+            "브라스 소재의 하드웨어에 24K 골드 도금을 적용해 "
+            "고급스러운 금속 디테일을 완성했습니다."
+        ),
+        "careguide": metal_careguide,
+    },
+
+    "24K Gold-Plated Metal": {
+        "description": (
+            "금속 하드웨어에 24K 골드 도금을 적용해 "
+            "고급스러운 장식 디테일을 완성했습니다."
+        ),
+        "careguide": metal_careguide,
+    },
+
+    "Suede-Finish Microfiber": {
+        "description": (
+            "스웨이드 질감으로 마감한 마이크로파이버 소재로 "
+            "부드러운 촉감과 깔끔한 내부 마감을 제공합니다."
+        ),
+        "careguide": fabric_careguide,
+    },
+
+    "Fabric Lining": {
+        "description": (
+            "내부에 패브릭 안감을 적용해 "
+            "깔끔하고 실용적인 내부 공간을 완성했습니다."
+        ),
+        "careguide": fabric_careguide,
+    },
+
+    "Organic Cotton Jersey": {
+        "description": (
+            "오가닉 코튼을 사용한 저지 소재로 "
+            "부드럽고 편안한 착용감을 제공합니다."
+        ),
+        "careguide": {
+            "01": "손세탁 또는 드라이클리닝으로 관리해 주세요.",
+            "02": "표백제를 사용하지 마세요.",
+            "03": "건조기 사용을 피해주세요.",
+            "04": "다림질할 때는 천을 대고 다림질해 주세요.",
+        },
+    },
+
+    "Metallic Lurex Denim": {
+        "description": (
+            "메탈릭 루렉스 섬유를 직조한 데님 소재로 "
+            "은은한 광택과 독특한 표면감을 제공합니다. "
+            "66.2% 코튼, 22.8% 폴리에스터, "
+            "11% 금속 코팅 섬유로 구성되어 있습니다."
+        ),
+        "careguide": {
+            "01": "손세탁 또는 드라이클리닝으로 관리해 주세요.",
+            "02": "표백제를 사용하지 마세요.",
+            "03": "건조기 사용을 피해주세요.",
+            "04": "제품의 형태와 디테일이 손상되지 않도록 주의해 주세요.",
+        },
+    },
+
+    "OrthoLite® Memory Foam": {
+        "description": (
+            "OrthoLite® 메모리폼 소재를 적용해 "
+            "쿠셔닝과 편안한 착화감을 제공합니다."
+        ),
+        "careguide": {
+            "01": "오염 시 부드러운 천으로 가볍게 관리해 주세요.",
+            "02": "세척 후에는 실온에서 충분히 건조해 주세요.",
+        },
+    },
+
+    "Rubber Outsole": {
+        "description": (
+            "러버 아웃솔을 사용해 안정적인 접지력과 내구성을 제공합니다."
+        ),
+        "careguide": {
+            "01": "부드러운 브러시를 사용해 표면을 관리해 주세요.",
+            "02": "세척 후에는 실온에서 충분히 건조해 주세요.",
+        },
+    },
+
+    "Italian Calfskin Leather": {
+        "description": (
+            "이탈리아산 카프스킨 가죽으로 "
+            "부드러운 질감과 견고한 구조감을 제공합니다."
+        ),
+        "careguide": leather_careguide,
+    },
+
+    "Gold-Tone Metal Hardware": {
+        "description": (
+            "골드톤 메탈 하드웨어를 적용해 "
+            "고급스럽고 구조적인 금속 디테일을 완성했습니다."
+        ),
+        "careguide": metal_careguide,
+    },
+
+    "Cobalt Brass Hardware": {
+        "description": (
+            "코발트 브라스 하드웨어를 사용해 "
+            "세련된 금속 장식과 구조적인 디테일을 완성했습니다."
+        ),
+        "careguide": metal_careguide,
+    },
+}
+
+def get_common_material(name, order):
+    data = COMMON_MATERIALS[name]
+
+    material, _ = Material.objects.update_or_create(
+        name=name,
+        defaults={
+            "description": data["description"],
+            "order": order,
+            "careguide": data["careguide"],
+        },
+    )
+
+    return material
+
+def connect_materials(product, materials):
+    for material in materials:
+        MaterialProduct.objects.get_or_create(
+            material=material,
+            product=product,
+        )
 
 
 def seed_product_1():
@@ -31,7 +207,7 @@ def seed_product_1():
             },
             "background": {
                 "description": (
-                    "헤리티지 하드웨어로 완성한 모노그램 지갑. "
+                    "헤리티지 하드웨어를 더한 모노그램 지갑입니다. "
                     "비세토스 모노그램 캔버스에 MCM 로고 브라스 플레이트와 "
                     "스냅 클로저를 더했습니다. "
                     "트라이폴드 구조로 구성된 지갑으로, "
@@ -39,10 +215,10 @@ def seed_product_1():
                     "MCM의 디자인 아이덴티티를 보여줍니다."
                 ),
                 "design_details": {
-                    "01": "VISETOS MONOGRAM 비세토스 모노그램 캔버스",
-                    "02": "LOGO BRASS PLATE MCM 로고 브라스 장식 플레이트",
-                    "03": "SNAP CLOSURE 스냅 클로저",
-                    "04": "TRI-FOLD 트라이폴드 구조",
+                    "VISETOS MONOGRAM": "비세토스 모노그램 캔버스",
+                    "LOGO BRASS PLATE MCM": "로고 브라스 장식 플레이트",
+                    "SNAP CLOSURE": "스냅 클로저",
+                    "TRI-FOLD": "트라이폴드 구조",
                 },
             },
         },
@@ -74,82 +250,38 @@ def seed_product_1():
     # 3. Material
     # =========================
 
-    visetos, _ = Material.objects.update_or_create(
-        name="Visetos Monogram Canvas",
-        defaults={
-            "description": "MCM의 시그니처 비세토스 모노그램 캔버스를 바디에 사용했습니다. "
-                "클래식한 모노그램 패턴과 헤리티지 하드웨어가 조화를 이루며 "
-                "MCM의 아이덴티티를 완성합니다.",
-            "order": 1,
-            "careguide": {
-                "01": "지속적인 직사광선을 피해 주세요.",
-                "02": "제품이 거친 표면에 긁히거나 마찰되지 않도록 주의해 주세요.",
-                "03": "더스트 백에 넣어 직사광선이나 밝은 빛을 피해 서늘하고 건조한 곳에 보관해 주세요.",
-                "04": "제품 표면에 비누나 솔벤트를 사용하지 마세요.",
-            },
-        },
+    visetos = get_common_material(
+        "Visetos Monogram Canvas",
+        order=1,
     )
 
-    natural_leather, _ = Material.objects.update_or_create(
-        name="Natural Leather",
-        defaults={
-            "description": "천연 가죽으로 트림을 마감했습니다. "
-                "카드 슬롯과 가장자리 디테일에 가죽 소재가 적용되었습니다.",
-            "order": 2,
-            "careguide": leather_careguide,
-        },
+    natural_leather = get_common_material(
+        "Natural Leather",
+        order=2,
     )
 
-    gold_plated_brass, _ = Material.objects.update_or_create(
-        name="24K Gold-Plated Brass",
-        defaults={
-            "description": "브라스 하드웨어에 24K 골드 도금을 적용했습니다. "
-                "MCM 로고 장식 플레이트와 스냅 클로저에 사용됩니다.",
-            "order": 3,
-            "careguide": {
-                "01": "지속적인 직사광선을 피해 주세요.",
-                "02": "제품이 거친 표면에 긁히거나 마찰되지 않도록 주의해 주세요.",
-                "03": "더스트 백에 넣어 직사광선이나 밝은 빛을 피해 서늘하고 건조한 곳에 보관해 주세요.",
-                "04": "제품 표면에 비누나 솔벤트를 사용하지 마세요.",
-            },
-        },
+    gold_plated_brass = get_common_material(
+        "24K Gold-Plated Brass",
+        order=3,
     )
 
-    fabric_lining, _ = Material.objects.update_or_create(
-        name="Fabric Lining",
-        defaults={
-            "description": "지갑 내부에 패브릭 안감을 적용했습니다.",
-            "order": 4,
-            "careguide": {
-                "01": "지속적인 직사광선을 피해 주세요.",
-                "02": "제품이 거친 표면에 긁히거나 마찰되지 않도록 주의해 주세요.",
-                "03": "더스트 백에 넣어 직사광선이나 밝은 빛을 피해 서늘하고 건조한 곳에 보관해 주세요.",
-            },
-        },
+    fabric_lining = get_common_material(
+        "Fabric Lining",
+        order=4,
     )
 
     # =========================
     # 4. MaterialProduct
     # =========================
 
-    MaterialProduct.objects.get_or_create(
-        material=visetos,
-        product=product,
-    )
-
-    MaterialProduct.objects.get_or_create(
-        material=natural_leather,
-        product=product,
-    )
-
-    MaterialProduct.objects.get_or_create(
-        material=gold_plated_brass,
-        product=product,
-    )
-
-    MaterialProduct.objects.get_or_create(
-        material=fabric_lining,
-        product=product,
+    connect_materials(
+        product,
+        [
+            visetos,
+            natural_leather,
+            gold_plated_brass,
+            fabric_lining,
+        ],
     )
     
     return product
@@ -179,10 +311,10 @@ def seed_product_2():
                     "스카프·리본 매듭·가방 핸들 등 다양한 방식으로 스타일링할 수 있습니다."
                 ),
                 "design_details": {
-                    "01": "MAIN SIDE Visetos Monogram Print",
-                    "02": "REVERSE SIDE MCM Logo & Contrast Stripe Print",
-                    "03": "REVERSIBLE 양면 디자인",
-                    "04": "STYLING 스카프 · 리본 매듭 · 가방 핸들",
+                    "MAIN SIDE": "Visetos Monogram Print",
+                    "REVERSE SIDE": "MCM Logo & Contrast Stripe Print",
+                    "REVERSIBLE": "양면 디자인",
+                    "STYLING": "스카프 · 리본 매듭 · 가방 핸들",
                 },
             },
         },
@@ -278,17 +410,16 @@ def seed_product_2():
     # 4. MaterialProduct
     # =========================
 
-    for material in [
-        organic_silk,
-        hand_sewn,
-        silk_finish,
-        lightweight_fabric,
-    ]:
-        MaterialProduct.objects.get_or_create(
-            material=material,
-            product=product,
-        )
-        
+    connect_materials(
+        product,
+        [
+            organic_silk,
+            hand_sewn,
+            silk_finish,
+            lightweight_fabric,
+        ],
+    )
+
     return product
 
 def seed_product_3():
@@ -352,10 +483,10 @@ def seed_product_3():
                 ),
     
                 "design_details": {
-                    "01": "SIGNATURE Laurel Emblem",
-                    "02": "LOGO DETAIL Metallic High-Frequency Print",
-                    "03": "NECKLINE Rib Knit Neckline",
-                    "04": "FIT Regular Fit",
+                    "SIGNATURE": "Laurel Emblem",
+                    "LOGO DETAIL": "Metallic High-Frequency Print",
+                    "NECKLINE": "Rib Knit Neckline",
+                    "FIT": "Regular Fit",
                 },
             },
         },
@@ -444,17 +575,16 @@ def seed_product_3():
     # 4. MaterialProduct
     # =========================
 
-    for material in [
-        organic_cotton,
-        cotton_jersey,
-        rib_knit,
-        regular_construction,
-    ]:
-        MaterialProduct.objects.get_or_create(
-            material=material,
-            product=product,
-        )
-        
+    connect_materials(
+        product,
+        [
+            organic_cotton,
+            cotton_jersey,
+            rib_knit,
+            regular_construction,
+        ],
+    )
+
     return product
 
 def seed_product_4():
@@ -474,38 +604,20 @@ def seed_product_4():
                 "case": "Logo-Embossed Pouch Case",
     
                 "design_details": {
-                    "01": "SHAPE Oval",
-                    "02": "TEMPLE MCM Logo",
-                    "03": "TEMPLE TIP Bavarian Diamond Metal Stud",
-                    "04": "STYLE Unisex",
+                    "SHAPE": "Oval",
+                    "TEMPLE": "MCM Logo",
+                    "TEMPLE TIP": "Bavarian Diamond Metal Stud",
+                    "STYLE": "Unisex",
                 },
             },
             "background": {
                 "description": (
-                    "부드러운 곡선으로 완성한 오발 실루엣이 특징인 "
-                    "타원형 디자인으로 깔끔하고 미니멀한 디자인을 보여줍니다. "
-                    "템플에는 클래식한 MCM 로고를 더하고, "
-                    "팁에는 바이예른 다이아몬드 메탈 스터드를 장식했습니다."
+                    "부드러운 곡선의 오발 실루엣이 돋보이는 미니멀한 선글라스입니다. "
+                    "템플에는 클래식한 MCM 로고를 적용하고, "
+                    "템플 팁에는 바이에른 다이아몬드에서 영감을 받은 "
+                    "메탈 스터드를 더해 시그니처 디테일을 완성했습니다."
                 ),
-    
-                "materials": {
-                    "frame": (
-                        "아세테이트 프레임내구성과 가벼운 착용감을 갖춘 "
-                        "아세테이트 소재로 프레임을 제작했습니다."
-                    ),
-                    "lens": (
-                        "Solid Smoke Lens솔리드 스모크 컬러의 렌즈를 적용해 "
-                        "차분한 시각적 인상을 완성합니다."
-                    ),
-                    "hardware": (
-                        "Metal Hardware템플에 메탈 소재의 하드웨어 디테일을 적용했습니다."
-                    ),
-                    "case": (
-                        "Logo-Embossed Pouch Case제품 보관을 위한 "
-                        "로고 엠보싱 파우치 케이스가 함께 구성됩니다."
-                    ),
-                },
-            },
+            }
         },
     )
 
@@ -591,17 +703,16 @@ def seed_product_4():
     # 4. MaterialProduct
     # =========================
     
-    for material in [
-        acetate_frame,
-        smoke_lens,
-        metal_hardware,
-        logo_embossed_pouch_case,
-    ]:
-        MaterialProduct.objects.get_or_create(
-            material=material,
-            product=product,
-        )
-        
+    connect_materials(
+        product,
+        [
+            acetate_frame,
+            smoke_lens,
+            metal_hardware,
+            logo_embossed_pouch_case,
+        ],
+    )
+
     return product
 
 def seed_product_5():
@@ -616,57 +727,59 @@ def seed_product_5():
             "category": Product.Category.ACCESSORY,
             "specs": {
                 "product_type": "Unisex Fragrance",
-    
+
                 "top_notes": [
                     "Raspberry",
                     "Apricot",
                 ],
-    
+
                 "heart_notes": [
                     "Hand-Picked Jasmine",
                     "White Peony",
                     "Violet Leaf",
                 ],
-    
+
                 "base_notes": [
                     "White Moss",
                     "Vanilla",
                     "Sandalwood",
                     "Sheer Ambrox",
                 ],
-    
-                "design_details": {
-                    "01": "FORM Star Backpack-inspired Bottle",
-                    "02": "DETAIL Gold-Tone Metal Details",
-                    "03": "IDENTITY MCM Travel DNA",
-                    "04": "STYLE Unisex",
-                },
             },
+
             "background": {
                 "description": (
-                    "MCM의 여행 DNA를 담은 스타크 백팩 보틀. "
-                    "MCM의 여행 DNA를 표현한 향수 보틀은 "
-                    "전설적인 스타크 백팩을 모델로 정교하게 제작되었습니다."
+                    "MCM의 여행 DNA와 아이코닉한 스타크 백팩에서 영감을 받은 "
+                    "유니섹스 오 드 퍼퓸입니다. "
+                    "스타크 백팩의 실루엣을 재해석한 보틀에 골드 톤 메탈 디테일을 더해 "
+                    "MCM의 브랜드 아이덴티티를 담았습니다."
                 ),
-    
+                
+                "design_details": {
+                    "FORM": "Star Backpack-inspired Bottle",
+                    "DETAIL": "Gold-Tone Metal Details",
+                    "IDENTITY": "MCM Travel DNA",
+                    "STYLE": "Unisex",
+                },
+
                 "materials": {
                     "fragrance": (
                         "Fragrance / Parfum "
                         "라즈베리, 애프리콧, 재스민, 화이트 피오니, "
                         "바이올렛 리프 등의 향료를 조합했습니다."
                     ),
-    
+
                     "alcohol_base": (
                         "Alcohol Base "
                         "SD Alcohol 40-B (Alcohol Denat.)를 베이스로 사용해 "
                         "향이 자연스럽게 퍼지도록 구성했습니다."
                     ),
-    
+
                     "purified_water": (
                         "Purified Water "
                         "정제수를 사용해 향료와 베이스 성분의 균형을 맞췄습니다."
                     ),
-    
+
                     "additional_ingredients": (
                         "Additional Ingredients "
                         "Butylene Glycol · BHT · Ethylhexyl Methoxycinnamate · "
@@ -769,16 +882,15 @@ def seed_product_5():
     # 4. MaterialProduct
     # =========================
 
-    for material in [
-        fragrance,
-        alcohol_base,
-        purified_water,
-        additional_ingredients,
-    ]:
-        MaterialProduct.objects.get_or_create(
-            material=material,
-            product=product,
-        )
+    connect_materials(
+        product,
+        [
+            fragrance,
+            alcohol_base,
+            purified_water,
+            additional_ingredients,
+        ],
+    )
 
     return product
 
@@ -807,9 +919,9 @@ def seed_product_6():
                     "스트랩을 잘라 원하는 길이로 조절할 수 있습니다."
                 ),
                 "design_details": {
-                    "01": "REVERSIBLE Monogram Coated Canvas · Solid Leather",
-                    "02": "BUCKLE Detachable M Buckle",
-                    "03": "ADJUSTMENT Cut-to-Length",
+                    "REVERSIBLE": "Monogram Coated Canvas · Solid Leather",
+                    "BUCKLE": "Detachable M Buckle",
+                    "ADJUSTMENT": "Cut-to-Length",
                 },
             },
         },
@@ -880,30 +992,25 @@ def seed_product_6():
                 "금속 하드웨어를 사용해 제품에 구조적인 디테일과 "
                 "내구성을 더했습니다."
             ),
-            "order": 3,
-            "careguide": {
-                "01": "습기와 물에 장시간 노출되지 않도록 주의해 주세요.",
-                "02": "부드럽고 마른 천으로 표면을 관리해 주세요.",
-                "03": "거친 표면과의 마찰을 피해주세요.",
-            },
+            "order": 4,
+            "careguide": metal_careguide,
         },
-)
+    )
     
     # =========================
     # 4. MaterialProduct
     # =========================
 
-    for material in [
-        coated_canvas,
-        solid_leather,
-        nappa_leather_trim,
-        metal_hardware,
-    ]:
-        MaterialProduct.objects.get_or_create(
-            material=material,
-            product=product,
-        )
-        
+    connect_materials(
+        product,
+        [
+            coated_canvas,
+            solid_leather,
+            nappa_leather_trim,
+            metal_hardware,
+        ],
+    )
+
     return product
 
 def seed_product_7():
@@ -926,17 +1033,16 @@ def seed_product_7():
             },
             "background": {
                 "description": (
-                    "비세토스 모노그램으로 완성한 로우탑 실루엣. "
-                    "클래식한 비세토스 모노그램이 새겨진 "
+                    "클래식한 비세토스 모노그램을 새긴 "
                     "이탈리안 송아지 가죽 어퍼로 완성한 로우탑 스니커즈입니다. "
-                    "바이에른 다이아몬드를 참고한 우븐 텅 라벨과 "
+                    "바이에른 다이아몬드에서 영감을 받은 우븐 텅 라벨과 "
                     "가죽 힐 패치가 디자인에 포인트를 더합니다."
                 ),
                 "design_details": {
-                    "01": "MONOGRAM Embossed Visetos Monogram",
-                    "02": "TONGUE Laurel Logo Label",
-                    "03": "HEEL Leather Diamond Patch",
-                    "04": "OUTSOLE Rubber Outsole · MCM Logo Motif",
+                    "MONOGRAM": "Embossed Visetos Monogram",
+                    "TONGUE": "Laurel Logo Label",
+                    "HEEL": "Leather Diamond Patch",
+                    "OUTSOLE": "Rubber Outsole · MCM Logo Motif",
                 },
             },
         },
@@ -982,8 +1088,10 @@ def seed_product_7():
     calf_leather, _ = Material.objects.update_or_create(
         name="100% Calf Leather",
         defaults={
-            "description": "송아지 가죽 어퍼와 트림에 100% 송아지 가죽을 사용해 "
-                "부드러운 질감과 견고한 구조를 완성했습니다.",
+            "description": (
+                "송아지 가죽 어퍼와 트림에 100% 송아지 가죽을 사용해 "
+                "부드러운 질감과 견고한 구조를 완성했습니다."
+            ),
             "order": 1,
             "careguide": sneaker_careguide,
         },
@@ -992,48 +1100,39 @@ def seed_product_7():
     leather_mesh_lining, _ = Material.objects.update_or_create(
         name="Leather & Mesh Lining",
         defaults={
-            "description": "가죽과 메쉬를 조합한 안감을 적용해 "
-                "편안한 착용감과 통기성을 높였습니다.",
+            "description": (
+                "가죽과 메쉬를 조합한 안감을 적용해 "
+                "편안한 착용감과 통기성을 높였습니다."
+            ),
             "order": 2,
             "careguide": sneaker_careguide,
         },
     )
 
-    ortholite, _ = Material.objects.update_or_create(
-        name="OrthoLite® Memory Foam",
-        defaults={
-            "description": "탈착 가능한 OrthoLite® 메모리폼 인솔을 적용해 "
-                "쿠셔닝과 발의 편안함을 강화했습니다.",
-            "order": 3,
-            "careguide": sneaker_careguide,
-        },
+    ortholite = get_common_material(
+        "OrthoLite® Memory Foam",
+        order=3,
     )
 
-    rubber_outsole, _ = Material.objects.update_or_create(
-        name="Rubber Outsole",
-        defaults={
-            "description": "러버 아웃솔을 사용해 안정적인 접지력과 "
-                "내구성을 제공합니다.",
-            "order": 4,
-            "careguide": sneaker_careguide,
-        },
+    rubber_outsole = get_common_material(
+        "Rubber Outsole",
+        order=4,
     )
     
     # =========================
     # 4. MaterialProduct
     # =========================
 
-    for material in [
-        calf_leather,
-        leather_mesh_lining,
-        ortholite,
-        rubber_outsole,
-    ]:
-        MaterialProduct.objects.get_or_create(
-            material=material,
-            product=product,
-        )
-        
+    connect_materials(
+        product,
+        [
+            calf_leather,
+            leather_mesh_lining,
+            ortholite,
+            rubber_outsole,
+        ],
+    )
+    
     return product
 
 
@@ -1063,17 +1162,17 @@ def seed_product_8():
                 ),
 
                 "design_details": {
-                    "01": "SILHOUETTE Triangular Shape",
-                    "02": "PATTERN Visetos Monogram",
-                    "03": "BORDER MCM Logo & Stripe",
-                    "04": "STYLING Scarf · Ribbon · Bag Handle",
+                    "SILHOUETTE": "Triangular Shape",
+                    "PATTERN": "Visetos Monogram",
+                    "BORDER": "MCM Logo & Stripe",
+                    "STYLING": "Scarf · Ribbon · Bag Handle",
                 },
 
                 "material_details": {
-                    "01": "MATERIAL 100% Silk",
-                    "02": "TEXTURE Soft & Smooth",
-                    "03": "FINISH Lightweight & Drapey",
-                    "04": "CRAFT Fine Edge Finish",
+                    "MATERIAL": "100% Silk",
+                    "TEXTURE": "Soft & Smooth",
+                    "FINISH": "Lightweight & Drapey",
+                    "CRAFT": "Fine Edge Finish",
                 },
             },
         },
@@ -1142,10 +1241,12 @@ def seed_product_8():
     # =========================
     # 4. MaterialProduct
     # =========================
-
-    MaterialProduct.objects.get_or_create(
-        material=italian_silk,
-        product=product,
+    
+    connect_materials(
+        product,
+        [
+            italian_silk,
+        ],
     )
 
     return product
@@ -1226,100 +1327,40 @@ def seed_product_9():
     # 3. Material
     # =========================
 
-    # 기존 제품과 공유하는 소재이므로 동일 정보 사용
-    visetos, _ = Material.objects.update_or_create(
-        name="Visetos Monogram Canvas",
-        defaults={
-            "description": (
-                "MCM의 시그니처 비세토스 모노그램 캔버스를 바디에 사용했습니다. "
-                "클래식한 모노그램 패턴과 헤리티지 하드웨어가 조화를 이루며 "
-                "MCM의 아이덴티티를 완성합니다."
-            ),
-            "order": 1,
-            "careguide": {
-                "01": "지속적인 직사광선을 피해 주세요.",
-                "02": "제품이 거친 표면에 긁히거나 마찰되지 않도록 주의해 주세요.",
-                "03": (
-                    "더스트 백에 넣어 직사광선이나 밝은 빛을 피해 "
-                    "서늘하고 건조한 곳에 보관해 주세요."
-                ),
-                "04": "제품 표면에 비누나 솔벤트를 사용하지 마세요.",
-            },
-        },
+    visetos = get_common_material(
+        "Visetos Monogram Canvas",
+        order=1,
     )
 
-    nappa_leather, _ = Material.objects.update_or_create(
-        name="Natural Nappa Leather",
-        defaults={
-            "description": (
-                "천연 나파 가죽을 트림에 사용했습니다. "
-                "가죽 행택과 패드락 주변에도 가죽 소재를 적용해 "
-                "부드러운 촉감과 정교한 마감을 완성했습니다."
-            ),
-            "order": 2,
-            "careguide": leather_careguide,
-        },
+    nappa_leather = get_common_material(
+        "Natural Nappa Leather",
+        order=2,
     )
 
-    # 기존 1번 제품과 공유하는 소재이므로 동일 정보 사용
-    gold_plated_brass, _ = Material.objects.update_or_create(
-        name="24K Gold-Plated Brass",
-        defaults={
-            "description": (
-                "브라스 하드웨어에 24K 골드 도금을 적용했습니다. "
-                "MCM 로고 장식과 금속 디테일에 사용됩니다."
-            ),
-            "order": 3,
-            "careguide": {
-                "01": "지속적인 직사광선을 피해 주세요.",
-                "02": "제품이 거친 표면에 긁히거나 마찰되지 않도록 주의해 주세요.",
-                "03": (
-                    "더스트 백에 넣어 직사광선이나 밝은 빛을 피해 "
-                    "서늘하고 건조한 곳에 보관해 주세요."
-                ),
-                "04": "제품 표면에 비누나 솔벤트를 사용하지 마세요.",
-            },
-        },
+    gold_plated_brass = get_common_material(
+        "24K Gold-Plated Brass",
+        order=3,
     )
 
-    suede_microfiber, _ = Material.objects.update_or_create(
-        name="Suede-Finish Microfiber",
-        defaults={
-            "description": (
-                "가방 내부에 스웨이드 마감의 마이크로파이버 안감을 사용해 "
-                "부드러운 촉감과 깔끔한 내부 마감을 완성했습니다."
-            ),
-            "order": 4,
-            "careguide": {
-                "01": (
-                    "더스트 백에 넣어 직사광선과 밝은 빛을 피해 "
-                    "서늘하고 건조한 곳에 보관해 주세요."
-                ),
-                "02": (
-                    "표면이 젖거나 오염되었을 경우 밝은색의 "
-                    "흡수성 천으로 닦아주세요."
-                ),
-                "03": "비누나 솔벤트를 사용하지 마세요.",
-                "04": "거친 표면과의 마찰을 피해주세요.",
-            },
-        },
+    suede_microfiber = get_common_material(
+        "Suede-Finish Microfiber",
+        order=4,
     )
 
     # =========================
     # 4. MaterialProduct
     # =========================
 
-    for material in [
-        visetos,
-        nappa_leather,
-        gold_plated_brass,
-        suede_microfiber,
-    ]:
-        MaterialProduct.objects.get_or_create(
-            material=material,
-            product=product,
-        )
-
+    connect_materials(
+        product,
+        [
+            visetos,
+            nappa_leather,
+            gold_plated_brass,
+            suede_microfiber,
+        ],
+    )
+    
     return product
 
 def seed_product_10():
@@ -1365,16 +1406,16 @@ def seed_product_10():
                     "깔끔하면서도 개성 있는 스타일을 보여줍니다."
                 ),
                 "design_details": {
-                    "01": "SIGNATURE Tone-on-Tone Laurel Logo",
-                    "02": "DETAIL Visetos Jacquard Elastic",
-                    "03": "SILHOUETTE Cropped Length",
-                    "04": "FIT Slim Fit",
+                    "SIGNATURE": "Tone-on-Tone Laurel Logo",
+                    "DETAIL": "Visetos Jacquard Elastic",
+                    "SILHOUETTE": "Cropped Length",
+                    "FIT": "Slim Fit",
                 },
                 "material_details": {
-                    "01": "BODY 100% Organic Cotton",
-                    "02": "FABRIC Cotton Jersey",
-                    "03": "ELASTIC Visetos Monogram Jacquard Elastic",
-                    "04": "EMBROIDERY Tone-on-Tone Laurel Logo Embroidery",
+                    "BODY": "100% Organic Cotton",
+                    "FABRIC": "Cotton Jersey",
+                    "ELASTIC": "Visetos Monogram Jacquard Elastic",
+                    "EMBROIDERY": "Tone-on-Tone Laurel Logo Embroidery",
                 },
             },
         },
@@ -1404,34 +1445,22 @@ def seed_product_10():
     # 3. Material
     # =========================
 
-    organic_cotton_jersey, _ = Material.objects.update_or_create(
-        name="Organic Cotton Jersey",
-        defaults={
-            "description": (
-                "바디에 100% 오가닉 면을 사용한 코튼 저지 소재로 제작했습니다. "
-                "부드럽고 편안한 소재감이 크롭 실루엣과 자연스럽게 어우러집니다. "
-                "밑단에는 비세토스 모노그램 자카드 신축성 밴드를 적용하고 "
-                "가슴 부분에는 톤온톤 라우렐 로고 자수를 더했습니다."
-            ),
-            "order": 1,
-            "careguide": {
-                "01": "손세탁 또는 드라이클리닝으로 관리해 주세요.",
-                "02": "표백제를 사용하지 마세요.",
-                "03": "건조기 사용을 피해주세요.",
-                "04": "다림질할 때는 천을 대고 다림질해 주세요.",
-            },
-        },
+    organic_cotton_jersey = get_common_material(
+        "Organic Cotton Jersey",
+        order=1,
     )
+
+
 
     # =========================
     # 4. MaterialProduct
     # =========================
 
-    MaterialProduct.objects.get_or_create(
-        material=organic_cotton_jersey,
-        product=product,
+    connect_materials(
+        product,
+        [organic_cotton_jersey],
     )
-
+    
     return product
 
 def seed_product_11():
@@ -1459,10 +1488,10 @@ def seed_product_11():
                     "MCM의 시그니처 아이덴티티를 표현했습니다."
                 ),
                 "design_details": {
-                    "01": "SILHOUETTE Flared Silhouette",
-                    "02": "POCKET 5-Pocket Style",
-                    "03": "BACK DETAIL Visetos Monogram Patch",
-                    "04": "LOGO DETAIL Silicon Logo Plate Patch",
+                    "SILHOUETTE": "Flared Silhouette",
+                    "POCKET": "5-Pocket Style",
+                    "BACK DETAIL": "Visetos Monogram Patch",
+                    "LOGO DETAIL": "Silicon Logo Plate Patch",
                 },
             },
         },
@@ -1488,35 +1517,21 @@ def seed_product_11():
     # 3. Material
     # =========================
 
-    metallic_lurex_denim, _ = Material.objects.update_or_create(
-        name="Metallic Lurex Denim",
-        defaults={
-            "description": (
-                "메탈릭 루렉스 섬유를 직조한 데님 소재로 "
-                "은은한 광택과 독특한 표면감을 완성했습니다. "
-                "66.2% 코튼, 22.8% 폴리에스터, "
-                "11% 금속 코팅 섬유로 구성되어 있습니다."
-            ),
-            "order": 1,
-            "careguide": {
-                "01": "손세탁으로 관리해 주세요.",
-                "02": "표백제를 사용하지 마세요.",
-                "03": "건조기 사용을 피해주세요.",
-            },
-        },
+    metallic_lurex_denim = get_common_material(
+        "Metallic Lurex Denim",
+        order=1,
     )
 
     # =========================
     # 4. MaterialProduct
     # =========================
 
-    MaterialProduct.objects.get_or_create(
-        material=metallic_lurex_denim,
-        product=product,
+    connect_materials(
+        product,
+        [metallic_lurex_denim],
     )
-
+    
     return product
-
 
 def seed_product_12():
 
@@ -1545,9 +1560,9 @@ def seed_product_12():
                 ),
                 "collection": "Visetos Collection",
                 "design_details": {
-                    "01": "DESIGN Platform Sandal",
-                    "02": "SIGNATURE Visetos Monogram",
-                    "03": "HERITAGE Bavarian Diamond",
+                    "DESIGN": "Platform Sandal",
+                    "SIGNATURE": "Visetos Monogram",
+                    "HERITAGE": "Bavarian Diamond",
                 },
             },
         },
@@ -1616,33 +1631,25 @@ def seed_product_12():
         },
     )
 
-    gold_tone_hardware, _ = Material.objects.update_or_create(
-        name="Gold-Tone Metal Hardware",
-        defaults={
-            "description": (
-                "골드톤 메탈 하드웨어에 바이에른 다이아몬드에서 "
-                "영감을 받은 버클과 스터드 디테일을 적용했습니다."
-            ),
-            "order": 4,
-            "careguide": footwear_careguide,
-        },
+    gold_tone_hardware = get_common_material(
+        "Gold-Tone Metal Hardware",
+        order=4,
     )
 
     # =========================
     # 4. MaterialProduct
     # =========================
 
-    for material in [
-        lambskin_leather,
-        eva_platform,
-        visetos_print,
-        gold_tone_hardware,
-    ]:
-        MaterialProduct.objects.get_or_create(
-            material=material,
-            product=product,
-        )
-
+    connect_materials(
+        product,
+        [
+            lambskin_leather,
+            eva_platform,
+            visetos_print,
+            gold_tone_hardware,
+        ],
+    )
+    
     return product
 
 
@@ -1671,10 +1678,10 @@ def seed_product_13():
                     "MCM의 헤리티지를 은은하게 표현했습니다."
                 ),
                 "design_details": {
-                    "01": "SHOULDER Western-Style Shoulder Panel",
-                    "02": "MOTIF Bavarian Diamond-Inspired Geometric Detail",
-                    "03": "POCKET Visetos Monogram Flock Print Pocket",
-                    "04": "COLOR Della Robbia Blue",
+                    "SHOULDER": "Western-Style Shoulder Panel",
+                    "MOTIF": "Bavarian Diamond-Inspired Geometric Detail",
+                    "POCKET": "Visetos Monogram Flock Print Pocket",
+                    "COLOR": "Della Robbia Blue",
                 },
             },
         },
@@ -1754,10 +1761,10 @@ def seed_product_14():
                     "매칭 재킷과 함께 셋업으로 연출할 수 있습니다."
                 ),
                 "design_details": {
-                    "01": "SILHOUETTE Wide Leg Design",
-                    "02": "COLOR Navy · White Contrast",
-                    "03": "HARDWARE Logo-Engraved Gold-Tone Metal Buttons",
-                    "04": "STYLING Matching Jacket Styling",
+                    "SILHOUETTE": "Wide Leg Design",
+                    "COLOR": "Navy · White Contrast",
+                    "HARDWARE": "Logo-Engraved Gold-Tone Metal Buttons",
+                    "STYLING": "Matching Jacket Styling",
                 },
             },
         },
@@ -1843,9 +1850,9 @@ def seed_product_15():
                 ),
                 "collection": "MCM Footwear",
                 "design_details": {
-                    "01": "DESIGN Platform Loafer",
-                    "02": "SIGNATURE Bavarian Diamond Studs",
-                    "03": "HERITAGE MCM Leather Craftsmanship",
+                    "DESIGN": "Platform Loafer",
+                    "SIGNATURE": "Bavarian Diamond Studs",
+                    "HERITAGE": "MCM Leather Craftsmanship",
                 },
             },
         },
@@ -1886,16 +1893,9 @@ def seed_product_15():
         "04": "제품이 젖었을 경우 실온에서 충분히 건조해 주세요.",
     }
 
-    italian_calfskin, _ = Material.objects.update_or_create(
-        name="Italian Calfskin Leather",
-        defaults={
-            "description": (
-                "고급스러운 이탈리아산 카프스킨 100%를 "
-                "어퍼에 사용했습니다."
-            ),
-            "order": 1,
-            "careguide": footwear_careguide,
-        },
+    italian_calfskin = get_common_material(
+        "Italian Calfskin Leather",
+        order=1,
     )
 
     calfskin_footbed, _ = Material.objects.update_or_create(
@@ -1921,33 +1921,25 @@ def seed_product_15():
         },
     )
 
-    gold_tone_hardware, _ = Material.objects.update_or_create(
-        name="Gold-Tone Metal Hardware",
-        defaults={
-            "description": (
-                "골드톤 메탈 하드웨어에 바이에른 다이아몬드에서 "
-                "영감을 받은 버클과 스터드 디테일을 적용했습니다."
-            ),
-            "order": 4,
-            "careguide": footwear_careguide,
-        },
+    gold_tone_hardware = get_common_material(
+        "Gold-Tone Metal Hardware",
+        order=4,
     )
 
     # =========================
     # 4. MaterialProduct
     # =========================
 
-    for material in [
-        italian_calfskin,
-        calfskin_footbed,
-        vibram_platform,
-        gold_tone_hardware,
-    ]:
-        MaterialProduct.objects.get_or_create(
-            material=material,
-            product=product,
-        )
-
+    connect_materials(
+        product,
+        [
+            italian_calfskin,
+            calfskin_footbed,
+            vibram_platform,
+            gold_tone_hardware,
+        ],
+    )
+    
     return product
 
 
@@ -1976,9 +1968,9 @@ def seed_product_16():
                 ),
                 "collection": "Visetos Collection",
                 "design_details": {
-                    "01": "DESIGN Adjustable Strap Sandal",
-                    "02": "SIGNATURE Bavarian Diamond Buckle",
-                    "03": "HERITAGE MCM Leather Craftsmanship",
+                    "DESIGN": "Adjustable Strap Sandal",
+                    "SIGNATURE": "Bavarian Diamond Buckle",
+                    "HERITAGE": "MCM Leather Craftsmanship",
                 },
             },
         },
@@ -2023,25 +2015,9 @@ def seed_product_16():
     }
 
     # 기존 공통 소재와 동일 정보 유지
-    visetos, _ = Material.objects.update_or_create(
-        name="Visetos Monogram Canvas",
-        defaults={
-            "description": (
-                "MCM의 시그니처 비세토스 모노그램 캔버스를 바디에 사용했습니다. "
-                "클래식한 모노그램 패턴과 헤리티지 하드웨어가 조화를 이루며 "
-                "MCM의 아이덴티티를 완성합니다."
-            ),
-            "order": 1,
-            "careguide": {
-                "01": "지속적인 직사광선을 피해 주세요.",
-                "02": "제품이 거친 표면에 긁히거나 마찰되지 않도록 주의해 주세요.",
-                "03": (
-                    "더스트 백에 넣어 직사광선이나 밝은 빛을 피해 "
-                    "서늘하고 건조한 곳에 보관해 주세요."
-                ),
-                "04": "제품 표면에 비누나 솔벤트를 사용하지 마세요.",
-            },
-        },
+    visetos = get_common_material(
+        "Visetos Monogram Canvas",
+        order=1,
     )
 
     italian_calf_leather, _ = Material.objects.update_or_create(
@@ -2083,19 +2059,17 @@ def seed_product_16():
     # 4. MaterialProduct
     # =========================
 
-    for material in [
-        visetos,
-        italian_calf_leather,
-        eva_outsole,
-        silver_buckle,
-    ]:
-        MaterialProduct.objects.get_or_create(
-            material=material,
-            product=product,
-        )
-
+    connect_materials(
+        product,
+        [
+            visetos,
+            italian_calf_leather,
+            eva_outsole,
+            silver_buckle,
+        ],
+    )
+    
     return product
-
 
 def seed_product_17():
 
@@ -2122,10 +2096,10 @@ def seed_product_17():
                     "가죽의 정제된 실루엣에 선명한 대비를 더합니다."
                 ),
                 "design_details": {
-                    "01": "LOGO PATCH Diamond Logo Leather Patch",
-                    "02": "SIDE DETAIL White Contrast Logo Trim",
-                    "03": "POCKET Back Welt Pocket",
-                    "04": "SILHOUETTE Regular Fit",
+                    "LOGO PATCH": "Diamond Logo Leather Patch",
+                    "SIDE DETAIL": "White Contrast Logo Trim",
+                    "POCKET": "Back Welt Pocket",
+                    "SILHOUETTE": "Regular Fit",
                 },
             },
         },
@@ -2195,7 +2169,6 @@ def seed_product_17():
 
     return product
 
-
 def seed_product_18():
 
     # =========================
@@ -2221,10 +2194,10 @@ def seed_product_18():
                     "MCM의 헤리티지를 표현했습니다."
                 ),
                 "design_details": {
-                    "01": "POCKET Visetos Monogram Embroidery",
-                    "02": "CLOSURE Metal Logo Button",
-                    "03": "COLLAR Diamond Stud Detail",
-                    "04": "SILHOUETTE Oversized Unisex Fit",
+                    "POCKET": "Visetos Monogram Embroidery",
+                    "CLOSURE": "Metal Logo Button",
+                    "COLLAR": "Diamond Stud Detail",
+                    "SILHOUETTE": "Oversized Unisex Fit",
                 },
             },
         },
@@ -2251,35 +2224,21 @@ def seed_product_18():
     # =========================
 
     # 11번과 동일한 Material이므로 내용/order도 동일
-    metallic_lurex_denim, _ = Material.objects.update_or_create(
-        name="Metallic Lurex Denim",
-        defaults={
-            "description": (
-                "메탈릭 루렉스 섬유를 직조한 데님 소재로 "
-                "은은한 광택과 독특한 표면감을 완성했습니다. "
-                "66.2% 코튼, 22.8% 폴리에스터, "
-                "11% 금속 코팅 섬유로 구성되어 있습니다."
-            ),
-            "order": 1,
-            "careguide": {
-                "01": "손세탁으로 관리해 주세요.",
-                "02": "표백제를 사용하지 마세요.",
-                "03": "건조기 사용을 피해주세요.",
-            },
-        },
+    metallic_lurex_denim = get_common_material(
+        "Metallic Lurex Denim",
+        order=1,
     )
 
     # =========================
     # 4. MaterialProduct
     # =========================
 
-    MaterialProduct.objects.get_or_create(
-        material=metallic_lurex_denim,
-        product=product,
+    connect_materials(
+        product,
+        [metallic_lurex_denim],
     )
-
+    
     return product
-
 
 def seed_product_19():
 
@@ -2317,9 +2276,9 @@ def seed_product_19():
                 ),
                 "collection": "Liz Collection",
                 "design_details": {
-                    "01": "DESIGN Embossed Visetos",
-                    "02": "SIGNATURE Detachable Leather Pouch",
-                    "03": "HERITAGE MCM Monogram",
+                    "DESIGN": "Embossed Visetos",
+                    "SIGNATURE": "Detachable Leather Pouch",
+                    "HERITAGE": "MCM Monogram",
                 },
             },
         },
@@ -2374,44 +2333,29 @@ def seed_product_19():
         },
     )
 
-    cobalt_brass, _ = Material.objects.update_or_create(
-        name="Cobalt Brass Hardware",
-        defaults={
-            "description": (
-                "실버톤 코발트 브라스 하드웨어를 사용해 "
-                "로고 플레이트와 금속 장식 디테일을 완성했습니다."
-            ),
-            "order": 3,
-            "careguide": bag_careguide,
-        },
+    cobalt_brass = get_common_material(
+        "Cobalt Brass Hardware",
+        order=3,
     )
 
-    suede_microfiber, _ = Material.objects.update_or_create(
-        name="Suede-Finish Microfiber",
-        defaults={
-            "description": (
-                "가방 내부에 스웨이드 마감의 마이크로파이버 안감을 사용해 "
-                "부드러운 촉감과 깔끔한 내부 마감을 완성했습니다."
-            ),
-            "order": 4,
-            "careguide": bag_careguide,
-        },
+    suede_microfiber = get_common_material(
+        "Suede-Finish Microfiber",
+        order=4,
     )
 
     # =========================
     # 4. MaterialProduct
     # =========================
 
-    for material in [
-        full_grain_leather,
-        cobalt_brass,
-        suede_microfiber,
-    ]:
-        MaterialProduct.objects.get_or_create(
-            material=material,
-            product=product,
-        )
-
+    connect_materials(
+        product,
+        [
+            full_grain_leather,
+            cobalt_brass,
+            suede_microfiber,
+        ],
+    )
+    
     return product
 
 
@@ -2456,9 +2400,9 @@ def seed_product_20():
                 ),
                 "collection": "Visetos Collection",
                 "design_details": {
-                    "01": "DESIGN Geometric Structure",
-                    "02": "SIGNATURE Leather Top Handle",
-                    "03": "HERITAGE MCM Luggage",
+                    "DESIGN": "Geometric Structure",
+                    "SIGNATURE": "Leather Top Handle",
+                    "HERITAGE": "MCM Luggage",
                 },
             },
         },
@@ -2498,92 +2442,40 @@ def seed_product_20():
     # 3. Material
     # =========================
 
-    bag_careguide = {
-        "01": (
-            "더스트 백에 넣어 직사광선과 밝은 빛을 피해 "
-            "서늘하고 건조한 곳에 보관해 주세요."
-        ),
-        "02": (
-            "표면이 젖거나 오염되었을 경우 "
-            "밝은색의 흡수성 천으로 닦아주세요."
-        ),
-        "03": "가죽이 젖거나 얼룩지지 않도록 주의해 주세요.",
-        "04": "비누나 솔벤트를 사용하지 말고 거친 표면과의 마찰을 피해주세요.",
-    }
-
-    # 기존 공통 소재와 동일 정보 유지
-    visetos, _ = Material.objects.update_or_create(
-        name="Visetos Monogram Canvas",
-        defaults={
-            "description": (
-                "MCM의 시그니처 비세토스 모노그램 캔버스를 바디에 사용했습니다. "
-                "클래식한 모노그램 패턴과 헤리티지 하드웨어가 조화를 이루며 "
-                "MCM의 아이덴티티를 완성합니다."
-            ),
-            "order": 1,
-            "careguide": {
-                "01": "지속적인 직사광선을 피해 주세요.",
-                "02": "제품이 거친 표면에 긁히거나 마찰되지 않도록 주의해 주세요.",
-                "03": (
-                    "더스트 백에 넣어 직사광선이나 밝은 빛을 피해 "
-                    "서늘하고 건조한 곳에 보관해 주세요."
-                ),
-                "04": "제품 표면에 비누나 솔벤트를 사용하지 마세요.",
-            },
-        },
+    visetos = get_common_material(
+        "Visetos Monogram Canvas",
+        order=1,
     )
 
-    nappa_leather, _ = Material.objects.update_or_create(
-        name="Nappa Leather",
-        defaults={
-            "description": (
-                "나파 가죽을 트림과 스트랩에 적용해 "
-                "부드러운 질감과 고급스러운 마감을 더했습니다."
-            ),
-            "order": 2,
-            "careguide": bag_careguide,
-        },
+    nappa_leather = get_common_material(
+        "Nappa Leather",
+        order=2,
     )
 
-    cobalt_brass, _ = Material.objects.update_or_create(
-        name="Cobalt Brass Hardware",
-        defaults={
-            "description": (
-                "실버톤 코발트 브라스 하드웨어를 사용해 "
-                "로고 플레이트와 금속 장식 디테일을 완성했습니다."
-            ),
-            "order": 3,
-            "careguide": bag_careguide,
-        },
+    cobalt_brass = get_common_material(
+        "Cobalt Brass Hardware",
+        order=3,
     )
 
-    suede_microfiber, _ = Material.objects.update_or_create(
-        name="Suede-Finish Microfiber",
-        defaults={
-            "description": (
-                "가방 내부에 스웨이드 마감의 마이크로파이버 안감을 사용해 "
-                "부드러운 촉감과 깔끔한 내부 마감을 완성했습니다."
-            ),
-            "order": 4,
-            "careguide": bag_careguide,
-        },
+    suede_microfiber = get_common_material(
+        "Suede-Finish Microfiber",
+        order=4,
     )
 
     # =========================
     # 4. MaterialProduct
     # =========================
 
-    for material in [
-        visetos,
-        nappa_leather,
-        cobalt_brass,
-        suede_microfiber,
-    ]:
-        MaterialProduct.objects.get_or_create(
-            material=material,
-            product=product,
-        )
-
+    connect_materials(
+        product,
+        [
+            visetos,
+            nappa_leather,
+            cobalt_brass,
+            suede_microfiber,
+        ],
+    )
+    
     return product
 
 def seed_product_21():
@@ -2621,9 +2513,9 @@ def seed_product_21():
                 ),
                 "collection": "Visetos Collection",
                 "design_details": {
-                    "01": "DESIGN Bowler Silhouette",
-                    "02": "SIGNATURE Metal Stud Details",
-                    "03": "HERITAGE Bavarian Diamond & Laurel",
+                    "DESIGN": "Bowler Silhouette",
+                    "SIGNATURE": "Metal Stud Details",
+                    "HERITAGE": "Bavarian Diamond & Laurel",
                 },
             },
         },
@@ -2652,66 +2544,34 @@ def seed_product_21():
     # 3. Material
     # =========================
 
-    visetos, _ = Material.objects.update_or_create(
-        name="Visetos Monogram Canvas",
-        defaults={
-            "description": (
-                "MCM의 시그니처 비세토스 모노그램 캔버스를 바디에 사용했습니다. "
-                "클래식한 모노그램 패턴과 헤리티지 하드웨어가 조화를 이루며 "
-                "MCM의 아이덴티티를 완성합니다."
-            ),
-            "order": 1,
-            "careguide": {
-                "01": "지속적인 직사광선을 피해 주세요.",
-                "02": "제품이 거친 표면에 긁히거나 마찰되지 않도록 주의해 주세요.",
-                "03": "더스트 백에 넣어 직사광선이나 밝은 빛을 피해 서늘하고 건조한 곳에 보관해 주세요.",
-                "04": "제품 표면에 비누나 솔벤트를 사용하지 마세요.",
-            },
-        },
+    visetos = get_common_material(
+        "Visetos Monogram Canvas",
+        order=1,
     )
 
-    nappa_leather, _ = Material.objects.update_or_create(
-        name="Nappa Leather",
-        defaults={
-            "description": (
-                "부드러운 나파 가죽을 트림과 스트랩 등에 적용해 "
-                "유연한 질감과 고급스러운 마감을 더했습니다."
-            ),
-            "order": 2,
-            "careguide": leather_careguide,
-        },
+    nappa_leather = get_common_material(
+        "Nappa Leather",
+        order=2,
     )
 
-    gold_plated_brass, _ = Material.objects.update_or_create(
-        name="24K Gold-Plated Brass",
-        defaults={
-            "description": (
-                "브라스 하드웨어에 24K 골드 도금을 적용해 "
-                "MCM의 시그니처 금속 장식과 로고 디테일을 완성했습니다."
-            ),
-            "order": 3,
-            "careguide": {
-                "01": "습기와 물에 장시간 노출되지 않도록 주의해 주세요.",
-                "02": "부드럽고 마른 천으로 표면을 관리해 주세요.",
-                "03": "거친 표면과의 마찰을 피해주세요.",
-            },
-        },
+    gold_plated_brass = get_common_material(
+        "24K Gold-Plated Brass",
+        order=3,
     )
 
     # =========================
     # 4. MaterialProduct
     # =========================
 
-    for material in [
-        visetos,
-        nappa_leather,
-        gold_plated_brass,
-    ]:
-        MaterialProduct.objects.get_or_create(
-            material=material,
-            product=product,
-        )
-
+    connect_materials(
+        product,
+        [
+            visetos,
+            nappa_leather,
+            gold_plated_brass,
+        ],
+    )
+    
     return product
 
 
@@ -2741,9 +2601,9 @@ def seed_product_22():
                 ),
                 "collection": "MCM Accessories",
                 "design_details": {
-                    "01": "DESIGN Bear Charm",
-                    "02": "SIGNATURE Visetos Monogram",
-                    "03": "HERITAGE MCM Bear",
+                    "DESIGN": "Bear Charm",
+                    "SIGNATURE": "Visetos Monogram",
+                    "HERITAGE": "MCM Bear",
                 },
             },
         },
@@ -2766,50 +2626,19 @@ def seed_product_22():
     # 3. Material
     # =========================
 
-    visetos, _ = Material.objects.update_or_create(
-        name="Visetos Monogram Canvas",
-        defaults={
-            "description": (
-                "MCM의 시그니처 비세토스 모노그램 캔버스를 바디에 사용했습니다. "
-                "클래식한 모노그램 패턴과 헤리티지 하드웨어가 조화를 이루며 "
-                "MCM의 아이덴티티를 완성합니다."
-            ),
-            "order": 1,
-            "careguide": {
-                "01": "지속적인 직사광선을 피해 주세요.",
-                "02": "제품이 거친 표면에 긁히거나 마찰되지 않도록 주의해 주세요.",
-                "03": "더스트 백에 넣어 직사광선이나 밝은 빛을 피해 서늘하고 건조한 곳에 보관해 주세요.",
-                "04": "제품 표면에 비누나 솔벤트를 사용하지 마세요.",
-            },
-        },
+    visetos = get_common_material(
+        "Visetos Monogram Canvas",
+        order=1,
     )
 
-    natural_leather, _ = Material.objects.update_or_create(
-        name="Natural Leather",
-        defaults={
-            "description": (
-                "천연 가죽을 트림과 제품의 세부 디테일에 적용해 "
-                "부드러운 질감과 견고한 마감을 더했습니다."
-            ),
-            "order": 2,
-            "careguide": leather_careguide,
-        },
+    natural_leather = get_common_material(
+        "Natural Leather",
+        order=2,
     )
 
-    gold_plated_metal, _ = Material.objects.update_or_create(
-        name="24K Gold-Plated Metal",
-        defaults={
-            "description": (
-                "24K 골드 도금 메탈 하드웨어를 사용해 "
-                "고급스러운 금속 장식과 로고 디테일을 완성했습니다."
-            ),
-            "order": 3,
-            "careguide": {
-                "01": "습기와 물에 장시간 노출되지 않도록 주의해 주세요.",
-                "02": "부드럽고 마른 천으로 표면을 관리해 주세요.",
-                "03": "거친 표면과의 마찰을 피해주세요.",
-            },
-        },
+    gold_plated_metal = get_common_material(
+        "24K Gold-Plated Metal",
+        order=3,
     )
 
     key_ring, _ = Material.objects.update_or_create(
@@ -2831,17 +2660,16 @@ def seed_product_22():
     # 4. MaterialProduct
     # =========================
 
-    for material in [
-        visetos,
-        natural_leather,
-        gold_plated_metal,
-        key_ring,
-    ]:
-        MaterialProduct.objects.get_or_create(
-            material=material,
-            product=product,
-        )
-
+    connect_materials(
+        product,
+        [
+            visetos,
+            natural_leather,
+            gold_plated_metal,
+            key_ring,
+        ],
+    )
+    
     return product
 
 
@@ -2870,10 +2698,10 @@ def seed_product_23():
                     "심플한 실루엣으로 데일리하게 연출할 수 있도록 완성했습니다."
                 ),
                 "design_details": {
-                    "01": "GRAPHIC MCM Disco Logo",
-                    "02": "DETAIL Sequin Embroidery",
-                    "03": "THEME 1970s Music & Culture",
-                    "04": "FIT Regular Fit",
+                    "GRAPHIC": "MCM Disco Logo",
+                    "DETAIL": "Sequin Embroidery",
+                    "THEME": "1970s Music & Culture",
+                    "FIT": "Regular Fit",
                 },
             },
         },
@@ -2897,32 +2725,20 @@ def seed_product_23():
     # 3. Material
     # =========================
 
-    organic_cotton_jersey, _ = Material.objects.update_or_create(
-        name="Organic Cotton Jersey",
-        defaults={
-            "description": (
-                "100% 오가닉 코튼 원사를 사용한 저지 소재로 "
-                "부드럽고 편안한 착용감을 제공합니다."
-            ),
-            "order": 1,
-            "careguide": {
-                "01": "손세탁 또는 드라이클리닝으로 관리해 주세요.",
-                "02": "표백제를 사용하지 마세요.",
-                "03": "건조기 사용을 피해주세요.",
-                "04": "다림질할 때는 천을 대고 다림질해 주세요.",
-            },
-        },
+    organic_cotton_jersey = get_common_material(
+        "Organic Cotton Jersey",
+        order=1,
     )
 
     # =========================
     # 4. MaterialProduct
     # =========================
 
-    MaterialProduct.objects.get_or_create(
-        material=organic_cotton_jersey,
-        product=product,
+    connect_materials(
+        product,
+        [organic_cotton_jersey],
     )
-
+    
     return product
 
 
@@ -2960,9 +2776,9 @@ def seed_product_24():
                 ),
                 "collection": "Stark Collection",
                 "design_details": {
-                    "01": "DESIGN Maxi Monogram",
-                    "02": "SIGNATURE Visetos Monogram",
-                    "03": "HERITAGE MCM Mobility",
+                    "DESIGN": "Maxi Monogram",
+                    "SIGNATURE": "Visetos Monogram",
+                    "HERITAGE": "MCM Mobility",
                 },
             },
         },
@@ -3005,16 +2821,9 @@ def seed_product_24():
         },
     )
 
-    natural_nappa, _ = Material.objects.update_or_create(
-        name="Natural Nappa Leather",
-        defaults={
-            "description": (
-                "천연 나파 가죽을 사용해 "
-                "부드러운 촉감과 고급스러운 표면감을 완성했습니다."
-            ),
-            "order": 2,
-            "careguide": leather_careguide,
-        },
+    natural_nappa = get_common_material(
+        "Natural Nappa Leather",
+        order=2,
     )
 
     dark_metal, _ = Material.objects.update_or_create(
@@ -3032,38 +2841,26 @@ def seed_product_24():
         },
     )
 
-    suede_microfiber, _ = Material.objects.update_or_create(
-        name="Suede-Finish Microfiber",
-        defaults={
-            "description": (
-                "스웨이드 마감의 마이크로파이버 안감을 사용해 "
-                "부드러운 촉감과 깔끔한 내부 공간을 완성했습니다."
-            ),
-            "order": 4,
-            "careguide": {
-                "01": "직사광선과 밝은 빛을 피해 서늘하고 건조한 곳에 보관해 주세요.",
-                "02": "오염 시 부드러운 천으로 가볍게 관리해 주세요.",
-            },
-        },
+    suede_microfiber = get_common_material(
+        "Suede-Finish Microfiber",
+        order=4,
     )
 
     # =========================
     # 4. MaterialProduct
     # =========================
 
-    for material in [
-        natural_full_grain,
-        natural_nappa,
-        dark_metal,
-        suede_microfiber,
-    ]:
-        MaterialProduct.objects.get_or_create(
-            material=material,
-            product=product,
-        )
-
+    connect_materials(
+        product,
+        [
+            natural_full_grain,
+            natural_nappa,
+            dark_metal,
+            suede_microfiber,
+        ],
+    )
+    
     return product
-
 
 def seed_product_25():
 
@@ -3103,9 +2900,9 @@ def seed_product_25():
                 ),
                 "collection": "Aren Collection",
                 "design_details": {
-                    "01": "DESIGN Hands-Free & Mobility",
-                    "02": "SIGNATURE Visetos Monogram & Logo Plate",
-                    "03": "HERITAGE MCM Global Nomad",
+                    "DESIGN": "Hands-Free & Mobility",
+                    "SIGNATURE": "Visetos Monogram & Logo Plate",
+                    "HERITAGE": "MCM Global Nomad",
                 },
             },
         },
@@ -3150,32 +2947,14 @@ def seed_product_25():
         },
     )
 
-    nappa_leather, _ = Material.objects.update_or_create(
-        name="Nappa Leather",
-        defaults={
-            "description": (
-                "부드러운 나파 가죽을 트림과 스트랩 등에 적용해 "
-                "유연한 질감과 고급스러운 마감을 더했습니다."
-            ),
-            "order": 2,
-            "careguide": leather_careguide,
-        },
+    nappa_leather = get_common_material(
+        "Nappa Leather",
+        order=2,
     )
 
-    gold_plated_metal, _ = Material.objects.update_or_create(
-        name="24K Gold-Plated Metal",
-        defaults={
-            "description": (
-                "24K 골드 도금 메탈 하드웨어를 사용해 "
-                "고급스러운 금속 장식과 로고 디테일을 완성했습니다."
-            ),
-            "order": 3,
-            "careguide": {
-                "01": "습기와 물에 장시간 노출되지 않도록 주의해 주세요.",
-                "02": "부드럽고 마른 천으로 표면을 관리해 주세요.",
-                "03": "거친 표면과의 마찰을 피해주세요.",
-            },
-        },
+    gold_plated_metal = get_common_material(
+        "24K Gold-Plated Metal",
+        order=3,
     )
 
     cotton_twill, _ = Material.objects.update_or_create(
@@ -3197,17 +2976,16 @@ def seed_product_25():
     # 4. MaterialProduct
     # =========================
 
-    for material in [
-        visetos_coated,
-        nappa_leather,
-        gold_plated_metal,
-        cotton_twill,
-    ]:
-        MaterialProduct.objects.get_or_create(
-            material=material,
-            product=product,
-        )
-
+    connect_materials(
+        product,
+        [
+            visetos_coated,
+            nappa_leather,
+            gold_plated_metal,
+            cotton_twill,
+        ],
+    )
+    
     return product
 
 
@@ -3237,9 +3015,9 @@ def seed_product_26():
                 ),
                 "collection": "Aren Collection",
                 "design_details": {
-                    "01": "DESIGN Mini Shopper & Hands-Free",
-                    "02": "SIGNATURE Visetos Monogram Leather Charm",
-                    "03": "HERITAGE Bavarian Diamond & Laurel",
+                    "DESIGN": "Mini Shopper & Hands-Free",
+                    "SIGNATURE": "Visetos Monogram Leather Charm",
+                    "HERITAGE": "Bavarian Diamond & Laurel",
                 },
             },
         },
@@ -3304,38 +3082,26 @@ def seed_product_26():
         },
     )
 
-    fabric_lining, _ = Material.objects.update_or_create(
-        name="Fabric Lining",
-        defaults={
-            "description": (
-                "내부에 패브릭 안감을 적용해 "
-                "깔끔하고 실용적인 수납 공간을 완성했습니다."
-            ),
-            "order": 4,
-            "careguide": {
-                "01": "오염 시 부드러운 천으로 가볍게 관리해 주세요.",
-                "02": "습기와 직사광선을 피해 보관해 주세요.",
-            },
-        },
+    fabric_lining = get_common_material(
+        "Fabric Lining",
+        order=4,
     )
 
     # =========================
     # 4. MaterialProduct
     # =========================
 
-    for material in [
-        recycled_nylon,
-        visetos_leather,
-        cobalt_metal,
-        fabric_lining,
-    ]:
-        MaterialProduct.objects.get_or_create(
-            material=material,
-            product=product,
-        )
-
+    connect_materials(
+        product,
+        [
+            recycled_nylon,
+            visetos_leather,
+            cobalt_metal,
+            fabric_lining,
+        ],
+    )
+    
     return product
-
 
 def seed_product_27():
 
@@ -3361,10 +3127,10 @@ def seed_product_27():
                     "앞면 사이드 포켓에는 정교한 스티치 패턴을 적용했습니다."
                 ),
                 "design_details": {
-                    "01": "WAISTBAND Visetos Monogram Jacquard Elastic",
-                    "02": "POCKET DETAIL Stitch Pattern",
-                    "03": "CLOSURE Hidden Zip Closure",
-                    "04": "SILHOUETTE Oversized Fit",
+                    "WAISTBAND": "Visetos Monogram Jacquard Elastic",
+                    "POCKET DETAIL": "Stitch Pattern",
+                    "CLOSURE": "Hidden Zip Closure",
+                    "SILHOUETTE": "Oversized Fit",
                 },
             },
         },
@@ -3443,9 +3209,9 @@ def seed_product_28():
                 ),
                 "collection": "MCM Footwear",
                 "design_details": {
-                    "01": "DESIGN Low-Top Sneaker",
-                    "02": "SIGNATURE Embossed Visetos Monogram",
-                    "03": "HERITAGE Bavarian Diamond",
+                    "DESIGN": "Low-Top Sneaker",
+                    "SIGNATURE": "Embossed Visetos Monogram",
+                    "HERITAGE": "Bavarian Diamond",
                 },
             },
         },
@@ -3476,16 +3242,9 @@ def seed_product_28():
         "04": "직사광선과 밝은 조명을 피해 서늘하고 건조한 곳에 보관해 주세요.",
     }
 
-    italian_calfskin, _ = Material.objects.update_or_create(
-        name="Italian Calfskin Leather",
-        defaults={
-            "description": (
-                "고급스러운 이탈리아산 카프스킨 100%를 "
-                "어퍼와 가죽 디테일에 사용했습니다."
-            ),
-            "order": 1,
-            "careguide": sneaker_careguide,
-        },
+    italian_calfskin = get_common_material(
+        "Italian Calfskin Leather",
+        order=1,
     )
 
     embossed_visetos, _ = Material.objects.update_or_create(
@@ -3500,16 +3259,14 @@ def seed_product_28():
         },
     )
 
-    ortholite, _ = Material.objects.update_or_create(
-        name="OrthoLite® Memory Foam",
-        defaults={
-            "description": (
-                "탈착 가능한 OrthoLite® 메모리 폼 인솔을 적용해 "
-                "쿠셔닝과 편안한 착화감을 제공합니다."
-            ),
-            "order": 3,
-            "careguide": sneaker_careguide,
-        },
+    ortholite = get_common_material(
+        "OrthoLite® Memory Foam",
+        order=3,
+    )
+    
+    rubber_outsole = get_common_material(
+        "Rubber Outsole",
+        order=4,
     )
 
     mesh_lined_leather, _ = Material.objects.update_or_create(
@@ -3518,18 +3275,6 @@ def seed_product_28():
             "description": (
                 "메시를 덧댄 가죽 안감을 사용해 "
                 "부드러운 착용감과 통기성을 제공합니다."
-            ),
-            "order": 4,
-            "careguide": sneaker_careguide,
-        },
-    )
-
-    rubber_outsole, _ = Material.objects.update_or_create(
-        name="Rubber Outsole",
-        defaults={
-            "description": (
-                "러버 아웃솔을 사용해 안정적인 접지력과 "
-                "내구성을 제공합니다."
             ),
             "order": 5,
             "careguide": sneaker_careguide,
@@ -3540,20 +3285,18 @@ def seed_product_28():
     # 4. MaterialProduct
     # =========================
 
-    for material in [
-        italian_calfskin,
-        embossed_visetos,
-        ortholite,
-        mesh_lined_leather,
-        rubber_outsole,
-    ]:
-        MaterialProduct.objects.get_or_create(
-            material=material,
-            product=product,
-        )
-
+    connect_materials(
+        product,
+        [
+            italian_calfskin,
+            embossed_visetos,
+            ortholite,
+            rubber_outsole,
+            mesh_lined_leather,
+        ],
+    )
+    
     return product
-
 
 def seed_product_29():
 
@@ -3579,10 +3322,10 @@ def seed_product_29():
                     "뒷면의 비세토스 모노그램 패치가 브랜드의 헤리티지를 표현합니다."
                 ),
                 "design_details": {
-                    "01": "LOGO PLATE Silicone MCM Logo Plate",
-                    "02": "BACK DETAIL Visetos Monogram Patch",
-                    "03": "POCKET Front & Back Pockets",
-                    "04": "HARDWARE Logo-Engraved Metal Buttons · Diamond Studs",
+                    "LOGO PLATE": "Silicone MCM Logo Plate",
+                    "BACK DETAIL": "Visetos Monogram Patch",
+                    "POCKET": "Front & Back Pockets",
+                    "HARDWARE": "Logo-Engraved Metal Buttons · Diamond Studs",
                 },
             },
         },
@@ -3606,37 +3349,21 @@ def seed_product_29():
     # 3. Material
     # =========================
 
-    # 11, 18번과 동일 조성의 소재이므로 같은 Material을 재사용
-    metallic_lurex_denim, _ = Material.objects.update_or_create(
-        name="Metallic Lurex Denim",
-        defaults={
-            "description": (
-                "메탈릭 루렉스 섬유를 직조한 데님 소재로 "
-                "은은한 광택과 독특한 표면감을 완성했습니다. "
-                "66.2% 코튼, 22.8% 폴리에스터, "
-                "11% 금속 코팅 섬유로 구성되어 있습니다."
-            ),
-            "order": 1,
-            "careguide": {
-                "01": "손세탁 또는 드라이클리닝으로 관리해 주세요.",
-                "02": "표백제를 사용하지 마세요.",
-                "03": "건조기 사용을 피해주세요.",
-                "04": "제품의 형태와 디테일이 손상되지 않도록 주의해 주세요.",
-            },
-        },
+    metallic_lurex_denim = get_common_material(
+        "Metallic Lurex Denim",
+        order=1,
     )
 
     # =========================
     # 4. MaterialProduct
     # =========================
 
-    MaterialProduct.objects.get_or_create(
-        material=metallic_lurex_denim,
-        product=product,
+    connect_materials(
+        product,
+        [metallic_lurex_denim],
     )
-
+    
     return product
-
 
 def seed_product_30():
 
@@ -3665,9 +3392,9 @@ def seed_product_30():
                 ),
                 "collection": "MCM Footwear",
                 "design_details": {
-                    "01": "DESIGN Quilted Low-Top Sneaker",
-                    "02": "SIGNATURE Visetos Monogram Print",
-                    "03": "HERITAGE Bavarian Diamond",
+                    "DESIGN": "Quilted Low-Top Sneaker",
+                    "SIGNATURE": "Visetos Monogram Print",
+                    "HERITAGE": "Bavarian Diamond",
                 },
             },
         },
@@ -3714,16 +3441,9 @@ def seed_product_30():
         },
     )
 
-    natural_leather, _ = Material.objects.update_or_create(
-        name="Natural Leather",
-        defaults={
-            "description": (
-                "천연 가죽을 트림과 제품의 세부 디테일에 적용해 "
-                "부드러운 질감과 견고한 마감을 더했습니다."
-            ),
-            "order": 2,
-            "careguide": leather_careguide,
-        },
+    natural_leather = get_common_material(
+        "Natural Leather",
+        order=2,
     )
 
     mesh_lining, _ = Material.objects.update_or_create(
@@ -3754,17 +3474,16 @@ def seed_product_30():
     # 4. MaterialProduct
     # =========================
 
-    for material in [
-        quilted_leather,
-        natural_leather,
-        mesh_lining,
-        diamante_rubber,
-    ]:
-        MaterialProduct.objects.get_or_create(
-            material=material,
-            product=product,
-        )
-
+    connect_materials(
+        product,
+        [
+            quilted_leather,
+            natural_leather,
+            mesh_lining,
+            diamante_rubber,
+        ],
+    )
+    
     return product
 
 def seed_product_31():
@@ -3807,23 +3526,23 @@ def seed_product_31():
             },
             "background": {
                 "description": (
-                    "슈퍼파인 울과 재활용 캐시미어로 짜여진 "
-                    "크롭 V넥 카디건에 MCM의 시그니처 디테일을 더했습니다. "
-                    "풍성한 라우렐 로고 자수로 클래식한 아이덴티티를 표현하고, "
+                    "슈퍼파인 울과 재활용 캐시미어로 짜인 "
+                    "크롭 V넥 카디건입니다. "
+                    "라우렐 로고 자수로 MCM의 클래식한 아이덴티티를 표현하고, "
                     "오른쪽 소매에는 MCM 이니셜 자수를 더해 "
                     "절제된 포인트를 완성했습니다."
                 ),
                 "design_details": {
-                    "01": "NECKLINE V-Neck",
-                    "02": "LOGO Laurel Logo Embroidery",
-                    "03": "SLEEVE DETAIL MCM Initials Embroidery",
-                    "04": "SILHOUETTE Cropped Cardigan",
+                    "NECKLINE": "V-Neck",
+                    "LOGO": "Laurel Logo Embroidery",
+                    "SLEEVE DETAIL": "MCM Initials Embroidery",
+                    "SILHOUETTE": "Cropped Cardigan",
                 },
                 "material_details": {
-                    "01": "BODY 70% Wool",
-                    "02": "CASHMERE 30% Recycled Cashmere",
-                    "03": "KNIT Wool & Cashmere Knit",
-                    "04": "TRIM Rib Knit Trim",
+                    "BODY": "70% Wool",
+                    "CASHMERE": "30% Recycled Cashmere",
+                    "KNIT": "Wool & Cashmere Knit",
+                    "TRIM": "Rib Knit Trim",
                 },
             },
         },
@@ -3927,16 +3646,16 @@ def seed_product_32():
                     "코냑 컬러 가죽 패치를 적용했습니다."
                 ),
                 "design_details": {
-                    "01": "PRINT Laser-Printed Visetos Monogram",
-                    "02": "POCKET 5-Pocket Design",
-                    "03": "BACK DETAIL Visetos Monogram Leather Patch",
-                    "04": "SILHOUETTE Oversized Fit",
+                    "PRINT": "Laser-Printed Visetos Monogram",
+                    "POCKET": "5-Pocket Design",
+                    "BACK DETAIL": "Visetos Monogram Leather Patch",
+                    "SILHOUETTE": "Oversized Fit",
                 },
                 "material_details": {
-                    "01": "BODY 100% Cotton",
-                    "02": "POCKET LINING 82% Polyester · 18% Cotton",
-                    "03": "PATCH Grain Leather",
-                    "04": "PRINT Laser-Printed Visetos Monogram",
+                    "BODY": "100% Cotton",
+                    "POCKET LINING": "82% Polyester · 18% Cotton",
+                    "PATCH": "Grain Leather",
+                    "PRINT": "Laser-Printed Visetos Monogram",
                 },
             },
         },
@@ -4044,20 +3763,19 @@ def seed_product_33():
             },
             "background": {
                 "description": (
-                    "비세토스 모노그램 캔버스와 카프스킨 레더를 조합해 "
-                    "완성한 클래식한 로우탑 스니커즈입니다. "
-                    "부드러운 핑크 컬러와 선형적인 가죽 오버레이가 조화를 이루며 "
-                    "깔끔하고 구조적인 실루엣을 보여줍니다. "
+                    "비세토스 모노그램 캔버스와 카프스킨 레더를 조합한 "
+                    "클래식한 로우탑 스니커즈입니다. "
+                    "선형적인 가죽 오버레이가 깔끔하고 구조적인 실루엣을 완성하며, "
                     "바이에른 다이아몬드에서 영감을 받은 가죽 힐 패치와 "
                     "라우렐 로고 텅 라벨로 MCM의 시그니처 헤리티지를 표현했습니다. "
                     "메시가 결합된 카프스킨 라이닝과 OrthoLite® 인솔을 적용해 "
-                    "일상적인 착용감까지 고려했습니다."
+                    "편안한 착화감을 제공합니다."
                 ),
                 "collection": "Visetos Collection",
                 "design_details": {
-                    "01": "DESIGN Low-Top Sneaker",
-                    "02": "SIGNATURE Leather Diamond Patch",
-                    "03": "HERITAGE Bavarian Diamond & Laurel Logo",
+                    "DESIGN": "Low-Top Sneaker",
+                    "SIGNATURE": "Leather Diamond Patch",
+                    "HERITAGE": "Bavarian Diamond & Laurel Logo",
                 },
             },
         },
@@ -4116,26 +3834,9 @@ def seed_product_33():
         ),
     }
 
-    # 기존 공통 소재와 동일 정보 유지
-    visetos, _ = Material.objects.update_or_create(
-        name="Visetos Monogram Canvas",
-        defaults={
-            "description": (
-                "MCM의 시그니처 비세토스 모노그램 캔버스를 바디에 사용했습니다. "
-                "클래식한 모노그램 패턴과 헤리티지 하드웨어가 조화를 이루며 "
-                "MCM의 아이덴티티를 완성합니다."
-            ),
-            "order": 1,
-            "careguide": {
-                "01": "지속적인 직사광선을 피해 주세요.",
-                "02": "제품이 거친 표면에 긁히거나 마찰되지 않도록 주의해 주세요.",
-                "03": (
-                    "더스트 백에 넣어 직사광선이나 밝은 빛을 피해 "
-                    "서늘하고 건조한 곳에 보관해 주세요."
-                ),
-                "04": "제품 표면에 비누나 솔벤트를 사용하지 마세요.",
-            },
-        },
+    visetos = get_common_material(
+        "Visetos Monogram Canvas",
+        order=1,
     )
 
     calfskin_leather, _ = Material.objects.update_or_create(
@@ -4178,17 +3879,16 @@ def seed_product_33():
     # 4. MaterialProduct
     # =========================
 
-    for material in [
-        visetos,
-        calfskin_leather,
-        mesh_calfskin,
-        ortholite_insole,
-    ]:
-        MaterialProduct.objects.get_or_create(
-            material=material,
-            product=product,
-        )
-
+    connect_materials(
+        product,
+        [
+            visetos,
+            calfskin_leather,
+            mesh_calfskin,
+            ortholite_insole,
+        ],
+    )
+    
     return product
 
 
