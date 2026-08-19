@@ -39,6 +39,7 @@ MEDIA_URL = "/media/"
 DEBUG = True
 
 ALLOWED_HOSTS = [
+    "mcm.p-e.kr",
     "1.201.117.114",
     "localhost",
     "127.0.0.1",
