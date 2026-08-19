@@ -101,6 +101,12 @@ class Look(models.Model):
 
     reason = models.TextField()
 
+    image = models.ImageField(
+        upload_to="looks/",
+        null=True,
+        blank=True
+    )
+
     class Meta:
         ordering = ["look_order"]
 

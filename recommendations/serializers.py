@@ -106,6 +106,11 @@ class LookSerializer(serializers.ModelSerializer):
         read_only=True
     )
 
+    # 생성된 Look 이미지
+    image = serializers.ImageField(
+        read_only=True
+    )
+
     class Meta:
         model = Look
         fields = [
@@ -115,6 +120,7 @@ class LookSerializer(serializers.ModelSerializer):
             "subtitle",
             "description",
             "reason",
+            "image",
             "style_chip",
             "products",
         ]
