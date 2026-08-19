@@ -205,16 +205,67 @@ def seed_product_2():
         name="Organic Silk 100%",
         defaults={
             "description": "오가닉 이탈리안 실크 100%를 사용해 가볍고 부드러운 촉감을 완성했습니다. "
-                "은은한 광택이 더해져 고급스러운 소재감을 보여줍니다.",
+            "은은한 광택이 더해져 고급스러운 소재감을 보여줍니다.",
             "order": 1,
             "careguide": {
-                "01": "드라이클리닝 전용. 스카프는 드라이클리닝으로 관리해 주세요.",
-                "02": "물세탁은 피하고 제품의 소재 특성에 맞게 관리해 주세요.",
-                "03": "제품과 함께 제공되는 더스트 백에 넣어 직사광선이나 밝은 조명을 피해 서늘하고 건조한 곳에 보관해 주세요.",
-                "04": "젖거나 오염되지 않도록 주의해 주세요.",
-                "05": "표면이 젖거나 오염되었을 경우 보풀이 없는 밝은색의 흡수성 천으로 닦아 말려주세요.",
-                "06": "비누나 솔벤트를 사용하지 마세요.",
-                "07": "거친 표면과의 마찰에 주의해 주세요.",
+                "01": "드라이클리닝 전용. 스카프는 드라이클리닝으로만 관리해 주세요.",
+                "02": "물세탁은 피하고 제품의 소재 특성에 맞는 방식으로 관리해 주세요.",
+                "03": "제공된 보호용 더스트 백에 넣어 직사광선이나 밝은 조명을 피해 서늘하고 건조한 곳에 보관해 주세요.",
+                "04": "제품이 젖거나 오염되지 않도록 주의해 주세요.",
+                "05": "표면이 젖거나 오염되었을 경우 보풀이 없는 밝은 색상의 흡수성 천으로 닦아 말려주세요.",
+                "06": "비누 또는 솔벤트를 사용하지 마세요.",
+                "07": "제품이 거친 표면에 긁히거나 마찰되지 않도록 주의해 주세요.",
+            },
+        },
+    )
+
+    hand_sewn, _ = Material.objects.update_or_create(
+        name="Hand-Sewn Construction",
+        defaults={
+            "description": "가장자리와 마감 부분을 수작업으로 봉제해 섬세하게 완성했습니다.",
+            "order": 2,
+            "careguide": {
+                "01": "드라이클리닝 전용. 제품의 형태와 섬세한 봉제 상태를 고려하여 관리해 주세요.",
+                "02": "물세탁은 피하고 소재의 특성에 맞는 방식으로 관리해 주세요.",
+                "03": "보관 시 제품이 눌리거나 접힌 상태로 장시간 방치되지 않도록 주의해 주세요.",
+                "04": "봉제된 가장자리와 마감 부분이 거친 표면에 걸리거나 긁히지 않도록 주의해 주세요.",
+                "05": "실밥이 풀리거나 봉제 부분이 손상되지 않도록 강한 마찰을 피해주세요.",
+                "06": "오염이 발생한 경우 직접 세척하기보다 전문적인 클리닝을 권장합니다.",
+                "07": "직사광선이나 밝은 조명을 피해 서늘하고 건조한 곳에 보관해 주세요.",
+            },
+        },
+    )
+
+    silk_finish, _ = Material.objects.update_or_create(
+        name="Silk Finish",
+        defaults={
+            "description": "실크 특유의 매끄러운 표면감과 자연스러운 드레이프를 살렸습니다.",
+            "order": 3,
+            "careguide": {
+                "01": "드라이클리닝 전용. 실크 특유의 표면감을 유지할 수 있도록 관리해 주세요.",
+                "02": "물세탁은 피하고 제품의 소재 특성에 맞는 방식으로 관리해 주세요.",
+                "03": "표면에 얼룩이나 오염이 생겼을 경우 강하게 문지르지 마세요.",
+                "04": "표면이 젖거나 오염되었을 경우 보풀이 없는 밝은 색상의 흡수성 천으로 닦아 말려주세요.",
+                "05": "비누나 솔벤트를 사용하지 마세요.",
+                "06": "거친 표면과의 마찰을 피하고 제품 표면이 긁히지 않도록 주의해 주세요.",
+                "07": "직사광선이나 밝은 조명을 피해 서늘하고 건조한 곳에 보관해 주세요.",
+            },
+        },
+    )
+
+    lightweight_fabric, _ = Material.objects.update_or_create(
+        name="Lightweight Fabric",
+        defaults={
+            "description": "가볍고 유연한 소재로 다양한 스타일링에 편안하게 활용할 수 있습니다.",
+            "order": 4,
+            "careguide": {
+                "01": "드라이클리닝 전용. 가벼운 소재의 형태를 유지할 수 있도록 관리해 주세요.",
+                "02": "물세탁은 피하고 제품의 소재 특성에 맞는 방식으로 관리해 주세요.",
+                "03": "강한 마찰이나 거친 표면과의 접촉을 피해주세요.",
+                "04": "제품이 젖거나 오염되지 않도록 주의해 주세요.",
+                "05": "표면이 젖거나 오염되었을 경우 보풀이 없는 밝은 색상의 흡수성 천으로 닦아 말려주세요.",
+                "06": "비누 또는 솔벤트를 사용하지 마세요.",
+                "07": "제공된 보호용 더스트 백에 넣어 직사광선이나 밝은 조명을 피해 서늘하고 건조한 곳에 보관해 주세요.",
             },
         },
     )
@@ -223,11 +274,17 @@ def seed_product_2():
     # 4. MaterialProduct
     # =========================
 
-    MaterialProduct.objects.get_or_create(
-        material=organic_silk,
-        product=product,
-    )
-    
+    for material in [
+        organic_silk,
+        hand_sewn,
+        silk_finish,
+        lightweight_fabric,
+    ]:
+        MaterialProduct.objects.get_or_create(
+            material=material,
+            product=product,
+        )
+        
     return product
 
 def seed_product_3():
@@ -322,13 +379,54 @@ def seed_product_3():
     # 3. Material
     # =========================
 
-    material, _ = Material.objects.update_or_create(
+    organic_cotton, _ = Material.objects.update_or_create(
         name="Organic Cotton 100%",
         defaults={
             "description": "100% 오가닉 코튼 저지 소재를 사용해 "
-                "부드럽고 편안한 착용감을 완성했습니다. "
-                "일상적인 착용에 적합한 소재입니다.",
+            "부드럽고 편안한 착용감을 완성했습니다.",
             "order": 1,
+            "careguide": {
+                "01": "세탁 또는 드라이클리닝으로 관리해 주세요.",
+                "02": "표백제를 사용하지 마세요.",
+                "03": "건조기 사용을 피해 주세요.",
+                "04": "다림질할 때는 천을 대고 다림질해 주세요.",
+            },
+        },
+    )
+
+    cotton_jersey, _ = Material.objects.update_or_create(
+        name="Cotton Jersey",
+        defaults={
+            "description": "일상적인 착용에 적합한 부드러운 코튼 저지 소재를 사용했습니다.",
+            "order": 2,
+            "careguide": {
+                "01": "세탁 또는 드라이클리닝으로 관리해 주세요.",
+                "02": "표백제를 사용하지 마세요.",
+                "03": "건조기 사용을 피해 주세요.",
+                "04": "다림질할 때는 천을 대고 다림질해 주세요.",
+            },
+        },
+    )
+
+    rib_knit, _ = Material.objects.update_or_create(
+        name="Rib Knit",
+        defaults={
+            "description": "넥라인에 탄탄한 리브 니트 소재를 적용해 형태를 안정적으로 유지합니다.",
+            "order": 3,
+            "careguide": {
+                "01": "세탁 또는 드라이클리닝으로 관리해 주세요.",
+                "02": "표백제를 사용하지 마세요.",
+                "03": "건조기 사용을 피해 주세요.",
+                "04": "다림질할 때는 천을 대고 다림질해 주세요.",
+            },
+        },
+    )
+
+    regular_construction, _ = Material.objects.update_or_create(
+        name="Regular Construction",
+        defaults={
+            "description": "여유 있는 기본 구조로 제작해 편안한 데일리 착용감을 제공합니다.",
+            "order": 4,
             "careguide": {
                 "01": "세탁 또는 드라이클리닝으로 관리해 주세요.",
                 "02": "표백제를 사용하지 마세요.",
@@ -342,11 +440,17 @@ def seed_product_3():
     # 4. MaterialProduct
     # =========================
 
-    MaterialProduct.objects.get_or_create(
-        material=material,
-        product=product,
-    )
-    
+    for material in [
+        organic_cotton,
+        cotton_jersey,
+        rib_knit,
+        regular_construction,
+    ]:
+        MaterialProduct.objects.get_or_create(
+            material=material,
+            product=product,
+        )
+        
     return product
 
 def seed_product_4():
@@ -430,48 +534,50 @@ def seed_product_4():
         "06": "제품이 거친 표면에 긁히거나 마찰되지 않도록 주의해 주세요.",
     }
 
+
     acetate_frame, _ = Material.objects.update_or_create(
         name="Acetate Frame",
         defaults={
-            "description": "아세테이트 프레임에 내구성과 가벼운 착용감을 갖춘 "
-                "아세테이트 소재로 프레임을 제작했습니다.",
+            "description": (
+                "내구성과 가벼운 착용감을 갖춘 아세테이트 소재로 "
+                "프레임을 제작했습니다."
+            ),
             "order": 1,
             "careguide": sunglasses_careguide,
         },
     )
 
+
     smoke_lens, _ = Material.objects.update_or_create(
         name="Solid Smoke Lens",
         defaults={
-            "description": "솔리드 스모크 컬러의 렌즈를 적용해 "
-                "차분한 시각적 인상을 완성합니다.",
+            "description": (
+                "솔리드 스모크 컬러의 렌즈를 적용해 "
+                "차분한 시각적 인상을 완성합니다."
+            ),
             "order": 2,
             "careguide": sunglasses_careguide,
         },
     )
 
-    # 4번 제품
+
     metal_hardware, _ = Material.objects.update_or_create(
         name="Metal Hardware",
         defaults={
-            "description": (
-                "금속 하드웨어를 사용해 제품에 구조적인 디테일과 "
-                "내구성을 더했습니다."
-            ),
+            "description": "템플에 메탈 소재의 하드웨어 디테일을 적용했습니다.",
             "order": 3,
-            "careguide": {
-                "01": "습기와 물에 장시간 노출되지 않도록 주의해 주세요.",
-                "02": "부드럽고 마른 천으로 표면을 관리해 주세요.",
-                "03": "거친 표면과의 마찰을 피해주세요.",
-            },
+            "careguide": sunglasses_careguide,
         },
     )
 
-    pouch_case, _ = Material.objects.update_or_create(
+
+    logo_embossed_pouch_case, _ = Material.objects.update_or_create(
         name="Logo-Embossed Pouch Case",
         defaults={
-            "description": "제품 보관을 위한 로고 엠보싱 파우치 케이스가 "
-                "함께 구성됩니다.",
+            "description": (
+                "제품 보관을 위한 로고 엠보싱 파우치 케이스가 "
+                "함께 구성됩니다."
+            ),
             "order": 4,
             "careguide": sunglasses_careguide,
         },
@@ -485,7 +591,7 @@ def seed_product_4():
         acetate_frame,
         smoke_lens,
         metal_hardware,
-        pouch_case,
+        logo_embossed_pouch_case,
     ]:
         MaterialProduct.objects.get_or_create(
             material=material,
@@ -542,7 +648,7 @@ def seed_product_5():
                 "materials": {
                     "fragrance": (
                         "Fragrance / Parfum "
-                        "할로라즈베리, 애프리콧, 재스민, 화이트 피오니, "
+                        "라즈베리, 애프리콧, 재스민, 화이트 피오니, "
                         "바이올렛 리프 등의 향료를 조합했습니다."
                     ),
     
@@ -591,30 +697,67 @@ def seed_product_5():
                 "price": 141000,
             },
         )
-
+        
     # =========================
     # 3. Material
     # =========================
 
-    material, _ = Material.objects.update_or_create(
+    fragrance_careguide = {
+        "01": "USE 피부에 바르는 용도로만 사용하세요.",
+        "02": "ALCOHOL 알코올이 포함되어 있습니다.",
+        "03": "FIRE 화기 근처에서 사용하지 마세요.",
+        "04": (
+            "STORAGE 서늘하고 건조한 곳에 보관하세요. "
+            "제품과 함께 제공되는 더스트 백에 넣어 직사광선이나 "
+            "밝은 빛을 피해 서늘하고 건조한 곳에 보관해 주세요."
+        ),
+    }
+
+    fragrance, _ = Material.objects.update_or_create(
         name="Fragrance / Parfum",
         defaults={
-            "description": "할로라즈베리, 애프리콧, 재스민, 화이트 피오니, "
-                "바이올렛 리프 등의 향료를 조합했습니다. "
-                "SD Alcohol 40-B (Alcohol Denat.)를 베이스로 사용해 "
-                "향이 자연스럽게 퍼지도록 구성했습니다. "
-                "정제수를 사용해 향료와 베이스 성분의 균형을 맞췄습니다.",
+            "description": (
+                "라즈베리, 애프리콧, 재스민, 화이트 피오니, "
+                "바이올렛 리프 등의 향료를 조합했습니다."
+            ),
             "order": 1,
-            "careguide": {
-                "01": "USE 피부에 바르는 용도로만 사용하세요.",
-                "02": "ALCOHOL 알코올이 포함되어 있습니다.",
-                "03": "FIRE 화기 근처에서 사용하지 마세요.",
-                "04": (
-                    "STORAGE 서늘하고 건조한 곳에 보관하세요. "
-                    "제품과 함께 제공되는 더스트 백에 넣어 직사광선이나 "
-                    "밝은 빛을 피해 서늘하고 건조한 곳에 보관해 주세요."
-                ),
-            },
+            "careguide": fragrance_careguide,
+        },
+    )
+
+    alcohol_base, _ = Material.objects.update_or_create(
+        name="Alcohol Base",
+        defaults={
+            "description": (
+                "SD Alcohol 40-B (Alcohol Denat.)를 베이스로 사용해 "
+                "향이 자연스럽게 퍼지도록 구성했습니다."
+            ),
+            "order": 2,
+            "careguide": fragrance_careguide,
+        },
+    )
+
+    purified_water, _ = Material.objects.update_or_create(
+        name="Purified Water",
+        defaults={
+            "description": (
+                "정제수를 사용해 향료와 베이스 성분의 균형을 맞췄습니다."
+            ),
+            "order": 3,
+            "careguide": fragrance_careguide,
+        },
+    )
+
+    additional_ingredients, _ = Material.objects.update_or_create(
+        name="Additional Ingredients",
+        defaults={
+            "description": (
+                "Butylene Glycol · BHT · Ethylhexyl Methoxycinnamate · "
+                "Ethylhexyl Salicylate · Butyl Methoxydibenzoylmethane "
+                "등을 포함합니다."
+            ),
+            "order": 4,
+            "careguide": fragrance_careguide,
         },
     )
 
@@ -622,11 +765,17 @@ def seed_product_5():
     # 4. MaterialProduct
     # =========================
 
-    MaterialProduct.objects.get_or_create(
-        material=material,
-        product=product,
-    )
-    
+    for material in [
+        fragrance,
+        alcohol_base,
+        purified_water,
+        additional_ingredients,
+    ]:
+        MaterialProduct.objects.get_or_create(
+            material=material,
+            product=product,
+        )
+
     return product
 
 def seed_product_6():
@@ -720,19 +869,19 @@ def seed_product_6():
     )
 
     metal_hardware, _ = Material.objects.update_or_create(
-    name="Metal Hardware",
-    defaults={
-        "description": (
-            "금속 하드웨어를 사용해 제품에 구조적인 디테일과 "
-            "내구성을 더했습니다."
-        ),
-        "order": 3,
-        "careguide": {
-            "01": "습기와 물에 장시간 노출되지 않도록 주의해 주세요.",
-            "02": "부드럽고 마른 천으로 표면을 관리해 주세요.",
-            "03": "거친 표면과의 마찰을 피해주세요.",
+        name="M Buckle Metal Hardware",
+        defaults={
+            "description": (
+                "금속 하드웨어를 사용해 제품에 구조적인 디테일과 "
+                "내구성을 더했습니다."
+            ),
+            "order": 3,
+            "careguide": {
+                "01": "습기와 물에 장시간 노출되지 않도록 주의해 주세요.",
+                "02": "부드럽고 마른 천으로 표면을 관리해 주세요.",
+                "03": "거친 표면과의 마찰을 피해주세요.",
+            },
         },
-    },
 )
     
     # =========================
