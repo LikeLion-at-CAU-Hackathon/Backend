@@ -1,14 +1,13 @@
 from copy import deepcopy
 import json
+import base64
 
 from openai import OpenAI
 
-
-client = OpenAI()
-
 from django.db import transaction
+from django.core.files.base import ContentFile
 
-from products.models import Product
+from products.models import Product, ProductImage
 from .models import (   
     VisitHistory,
     StyleProfile,
@@ -17,6 +16,8 @@ from .models import (
     LookProduct,
 )
 from .schemas import LOOK_RESPONSE_SCHEMA
+
+client = OpenAI()
 
 
 # 규칙 (StyleChip 판단 규칙)
@@ -768,6 +769,16 @@ def analyze_visit_session(visit_session):
         visited_products=visited_products
     )
 
+    # 8. 각 Look 이미지 생성
+    for look in looks:
+        try:
+            generate_look_image(look)
+        except Exception as e:
+            print(
+                f"[LOOK IMAGE ERROR] "
+                f"look_id={look.id}: {e}"
+            )
+
     return {
         "profile": style_profile,
         "products": visited_products,
@@ -866,6 +877,129 @@ def generate_mock_looks(style_profile):
         },
     ]
 
+
+def get_product_image(product):
+    """
+    Product에 연결된 대표 이미지 1장을 가져온다.
+    """
+
+    return (
+        ProductImage.objects
+        .filter(detail__product=product)
+        .order_by("order", "id")
+        .first()
+    )
+
+def generate_look_image(look):
+    """
+    Look에 포함된 5개 제품의 이미지를 OpenAI에 전달해서
+    하나의 룩북 이미지를 생성하고 Look.image에 저장한다.
+    """
+
+    look_products = list(
+        look.look_products
+        .select_related("product")
+        .all()
+    )
+
+    if len(look_products) != 5:
+        raise ValueError(
+            f"Look {look.id}에는 정확히 5개의 제품이 필요합니다."
+        )
+
+    image_files = []
+    product_descriptions = []
+
+    try:
+        for index, look_product in enumerate(
+            look_products,
+            start=1,
+        ):
+            product = look_product.product
+
+            product_image = get_product_image(product)
+
+            if not product_image or not product_image.image:
+                raise ValueError(
+                    f"Product {product.id}의 이미지가 없습니다."
+                )
+
+            # OpenAI에 보낼 실제 이미지 파일
+            image_files.append(
+                open(product_image.image.path, "rb")
+            )
+
+            product_descriptions.append(
+                f"{index}. "
+                f"{product.category}: "
+                f"{product.name}"
+            )
+
+        product_text = "\n".join(
+            product_descriptions
+        )
+
+        prompt = f"""
+Create a premium full-body fashion editorial image
+using all five reference product images.
+
+The reference images are provided in the same order
+as the product list below.
+
+PRODUCTS:
+{product_text}
+
+LOOK INFORMATION:
+Title: {look.title}
+Subtitle: {look.subtitle}
+Description: {look.description}
+
+Requirements:
+- Use all five referenced products in one complete outfit.
+- Include exactly one BAG, TOP, BOTTOM, SHOES, and ACCESSORY.
+- Preserve each reference product as faithfully as possible.
+- Preserve the original colors, shapes, patterns, materials,
+  logos, and recognizable product details.
+- Do not replace any referenced product with another design.
+- Style the five products together naturally.
+- Show a full-body fashion look.
+- Premium luxury fashion editorial photography.
+- Clean and sophisticated background.
+- No text, captions, logos added to the background,
+  or graphic overlays.
+"""
+
+        result = client.images.edit(
+            model="gpt-image-2",
+            image=image_files,
+            prompt=prompt,
+            # input_fidelity="high",
+            size="1024x1536",
+            quality="medium",
+        )
+
+        image_base64 = result.data[0].b64_json
+        image_bytes = base64.b64decode(
+            image_base64
+        )
+
+        filename = (
+            f"look_"
+            f"{look.style_profile_id}_"
+            f"{look.look_order}.png"
+        )
+
+        look.image.save(
+            filename,
+            ContentFile(image_bytes),
+            save=True,
+        )
+
+        return look.image
+
+    finally:
+        for image_file in image_files:
+            image_file.close()
 
 # looks 저장
 @transaction.atomic
