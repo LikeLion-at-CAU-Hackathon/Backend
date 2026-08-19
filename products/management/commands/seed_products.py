@@ -1187,11 +1187,11 @@ def seed_product_9():
                     "현대적으로 담아낸 제품입니다."
                 ),
                 "design_details": {
-                    "01": "Visetos Collection",
-                    "02": "DESIGN Softness & Structure",
-                    "03": "SIGNATURE Leather Hang Tag",
-                    "04": "HERITAGE MCM Luggage",
-                    "05": "SILHOUETTE Classic Hobo",
+                    "COLLECTION": "Visetos Collection",
+                    "DESIGN": "Softness & Structure",
+                    "SIGNATURE": "Leather Hang Tag",
+                    "HERITAGE": "MCM Luggage",
+                    "0SILHOUETTE": "Classic Hobo",
                 },
             },
         },
