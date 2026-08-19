@@ -20,76 +20,520 @@ from .schemas import LOOK_RESPONSE_SCHEMA
 
 # 규칙 (StyleChip 판단 규칙)
 STYLE_RULES = {
+
+    # =====================================================
+    # CLASSIC
+    # 전통적이고 유행을 타지 않는 정돈된 스타일
+    # =====================================================
     "CLASSIC": {
         "classic": 5,
-        "timeless": 4,
-        "structured": 4,
-        "elegant": 3,
-        "traditional": 3,
+        "클래식": 5,
+        "timeless": 5,
+        "타임리스": 5,
+
+        "traditional": 4,
+        "전통적": 4,
+
+        "classic silhouette": 4,
+        "클래식한 실루엣": 4,
+
+        "structured": 3,
+        "구조적인": 3,
+        "구조감": 3,
+
+        "v-neck": 2,
+        "button closure": 2,
+        "loafer": 3,
+        "로퍼": 3,
+        "cardigan": 2,
+        "카디건": 2,
+        "bouclé": 2,
+        "부클레": 2,
     },
 
+
+    # =====================================================
+    # HERITAGE
+    # MCM의 모노그램 / 상징 / 전통 / 브랜드 유산
+    # =====================================================
     "HERITAGE": {
         "heritage": 5,
-        "monogram": 5,
-        "signature": 4,
+        "헤리티지": 5,
+
+        "bavarian diamond": 5,
+        "바이에른 다이아몬드": 5,
+        "바이예른 다이아몬드": 5,
+
+        "mcm luggage": 5,
+        "mcm leather craftsmanship": 5,
+        "mcm global nomad": 4,
+
         "iconic": 4,
-        "traditional": 3,
+        "아이코닉": 4,
+
+        "signature": 4,
+        "시그니처": 4,
+
+        "laurel": 4,
+        "라우렐": 4,
+
+        "visetos": 3,
+        "비세토스": 3,
+
+        # 제품 대부분에 들어가므로 너무 높은 점수는 주지 않음
+        "monogram": 2,
+        "모노그램": 2,
+
+        "emblem": 2,
+        "엠블럼": 2,
+
+        "house": 2,
+        "하우스": 2,
     },
 
+
+    # =====================================================
+    # REFINED
+    # 세련되고 정제된, 깔끔하게 완성된 스타일
+    # =====================================================
     "REFINED": {
         "refined": 5,
-        "polished": 4,
-        "sophisticated": 4,
-        "elegant": 3,
-        "clean": 2,
+        "정제된": 5,
+
+        "polished": 5,
+        "sophisticated": 5,
+        "세련된": 5,
+
+        "elegant": 4,
+        "우아한": 4,
+
+        "clean silhouette": 4,
+        "깔끔한 실루엣": 4,
+
+        "clean": 3,
+        "깔끔한": 3,
+
+        "structured silhouette": 3,
+        "구조적인 실루엣": 3,
+
+        "tailored": 3,
+        "정교한": 3,
+
+        "subtle": 3,
+        "은은한": 2,
+
+        "understated": 3,
+        "절제된": 4,
+
+        "smooth": 2,
+        "부드러운 마감": 2,
+
+        "고급스러운 마감": 3,
     },
 
-    "CONTEMPORARY": {
-        "contemporary": 5,
-        "modern": 4,
-        "sleek": 4,
-        "geometric": 3,
-        "urban": 3,
-    },
 
+    # =====================================================
+    # MINIMAL
+    # 장식을 절제하고 단순하며 깨끗한 스타일
+    # =====================================================
     "MINIMAL": {
         "minimal": 5,
-        "simple": 4,
+        "미니멀": 5,
+
+        "simple": 5,
+        "심플": 5,
+
+        "understated": 5,
+        "절제된": 5,
+
         "clean": 4,
-        "understated": 4,
-        "sleek": 3,
+        "깔끔한": 4,
+
+        "clean silhouette": 4,
+        "깔끔한 실루엣": 4,
+
+        "sleek": 4,
+
+        "tone-on-tone": 4,
+        "tone on tone": 4,
+        "톤온톤": 4,
+
+        "monochrome": 4,
+        "모노크롬": 4,
+
+        "solid": 2,
+
+        "subtle": 3,
+        "은은한": 2,
+
+        "simple silhouette": 4,
+        "심플한 실루엣": 4,
     },
 
+
+    # =====================================================
+    # CONTEMPORARY
+    # 전통적인 요소를 현대적으로 재해석한 스타일
+    # =====================================================
+    "CONTEMPORARY": {
+        "contemporary": 5,
+        "컨템포러리": 5,
+
+        "modern": 5,
+        "모던": 5,
+        "현대적": 5,
+
+        "modern reinterpretation": 5,
+        "현대적으로 재해석": 5,
+        "현대적인 재해석": 5,
+
+        "geometric": 4,
+        "geometric structure": 5,
+        "기하학": 4,
+        "기하학적인": 4,
+
+        "linear": 3,
+        "선형적인": 3,
+
+        "structured": 3,
+        "구조적인": 3,
+
+        "platform": 2,
+        "플랫폼": 2,
+
+        "asymmetric": 3,
+        "architectural": 4,
+
+        "new silhouette": 3,
+        "새로운 실루엣": 3,
+    },
+
+
+    # =====================================================
+    # FEMININE
+    # 부드러운 컬러 / 곡선 / 섬세한 실루엣
+    # =====================================================
     "FEMININE": {
         "feminine": 5,
-        "soft": 4,
-        "delicate": 4,
+        "페미닌": 5,
+        "여성스러운": 5,
+
+        "soft pink": 3,
+        "blush pink": 3,
+        
         "pastel": 3,
-        "curved": 3,
+        "파스텔": 3,
+
+        "delicate": 4,
+        "섬세한": 4,
+
+        "curved": 4,
+        "곡선": 4,
+        "부드러운 곡선": 5,
+
+        "drapey": 4,
+        "drape": 4,
+        "드레이프": 4,
+
+        "cropped cardigan": 3,
+        "크롭 카디건": 3,
+
+        "cropped": 2,
+        "크롭": 2,
+
+        "v-neck": 2,
+
+        "silk scarf": 3,
+        "실크 스카프": 3,
+
+        "ribbon": 2,
+        "리본": 2,
     },
 
+
+    # =====================================================
+    # BOLD
+    # 강한 그래픽 / 광택 / 대비 / 볼륨 / 스터드
+    # =====================================================
     "BOLD": {
         "bold": 5,
+        "볼드": 5,
+
         "statement": 5,
+        "강한 존재감": 5,
+
+        "graphic": 5,
+        "그래픽": 5,
+
         "contrast": 4,
-        "graphic": 4,
-        "vibrant": 3,
+        "contrast detail": 4,
+        "배색": 4,
+        "대비": 4,
+
+        "metallic": 4,
+        "메탈릭": 4,
+
+        "lurex": 5,
+        "루렉스": 5,
+
+        "sequin": 5,
+        "시퀸": 5,
+
+        "stud": 4,
+        "studs": 4,
+        "스터드": 4,
+
+        "oversized": 4,
+        "오버사이즈": 4,
+
+        "maxi": 3,
+        "맥시": 3,
+
+        "platform": 3,
+        "플랫폼": 3,
+
+        "volume": 3,
+        "볼륨": 3,
+
+        "high-frequency print": 3,
     },
 
-    "CASUAL": {
-        "casual": 5,
-        "relaxed": 4,
-        "everyday": 4,
-        "comfortable": 3,
-        "weekend": 3,
-    },
 
+    # =====================================================
+    # PLAYFUL
+    # 재미 / 위트 / 컬러 / 시즌 그래픽 / 참 장식
+    # =====================================================
     "PLAYFUL": {
         "playful": 5,
+        "플레이풀": 5,
+
+        "fun": 5,
+        "위트": 5,
+
+        "quirky": 5,
+
+        "bear charm": 5,
+        "베어 참": 5,
+
+        "charm": 3,
+        "참": 3,
+
+        "disco": 5,
+        "디스코": 5,
+
+        "constellation": 5,
+        "별자리": 5,
+
+        "sequin": 4,
+        "시퀸": 4,
+
         "colorful": 4,
-        "fun": 4,
-        "quirky": 4,
+        "컬러풀": 4,
+
         "bright": 3,
+
+        "reversible": 3,
+        "리버서블": 3,
+
+        "ribbon": 3,
+        "리본": 3,
+
+        "graphic": 2,
+        "그래픽": 2,
+    },
+
+
+    # =====================================================
+    # CASUAL
+    # 일상적이고 편안하며 부담 없이 착용 가능한 스타일
+    # =====================================================
+    "CASUAL": {
+        "casual": 5,
+        "캐주얼": 5,
+
+        "everyday": 5,
+        "데일리": 5,
+        "일상": 4,
+        "일상적인": 4,
+
+        "relaxed": 4,
+        "여유로운": 4,
+
+        "comfortable": 4,
+        "comfort": 4,
+        "편안": 4,
+
+        "regular fit": 3,
+
+        "t-shirt": 3,
+        "티셔츠": 3,
+
+        "denim": 3,
+        "데님": 3,
+
+        "cotton jersey": 3,
+        "코튼 저지": 3,
+
+        "sneaker": 2,
+        "sneakers": 2,
+        "스니커즈": 2,
+
+        "hands-free": 2,
+        "핸즈프리": 2,
+    },
+
+
+    # =====================================================
+    # URBAN
+    # 도시적 / 기능적 / 구조적 / 모빌리티 중심
+    # =====================================================
+    "URBAN": {
+        "urban": 5,
+        "어반": 5,
+        "도시적": 5,
+
+        "mobility": 5,
+        "모빌리티": 5,
+
+        "hands-free": 4,
+        "핸즈프리": 4,
+
+        "crossbody": 4,
+        "크로스바디": 4,
+
+        "backpack": 4,
+        "백팩": 4,
+
+        "geometric": 4,
+        "기하학": 4,
+
+        "structured": 3,
+        "구조적인": 3,
+
+        "monochrome": 4,
+        "모노크롬": 4,
+
+        "oversized": 3,
+        "오버사이즈": 3,
+
+        "shopper": 2,
+        "쇼퍼": 2,
+
+        "low-top": 2,
+        "로우탑": 2,
+
+        "utility": 3,
+        "functional": 3,
+        "실용적인": 3,
+        "실용성": 3,
+    },
+
+
+    # =====================================================
+    # LUXURIOUS
+    # 고급 소재 / 가죽 / 실크 / 캐시미어 / 골드 하드웨어
+    # =====================================================
+    "LUXURIOUS": {
+        "luxurious": 5,
+        "luxury": 5,
+        "럭셔리": 5,
+
+        "premium": 5,
+        "고급스러운": 5,
+        "고급": 4,
+
+        "cashmere": 5,
+        "캐시미어": 5,
+
+        "silk": 5,
+        "실크": 5,
+
+        "24k gold": 5,
+        "24k gold-plated": 5,
+        "24k 골드": 5,
+
+        "full-grain leather": 5,
+        "풀그레인": 5,
+
+        "italian calfskin": 5,
+        "italian calf leather": 5,
+        "이탈리아산 카프": 5,
+
+        "lambskin": 4,
+        "램스킨": 4,
+        "양가죽": 4,
+
+        "nappa leather": 4,
+        "나파 가죽": 4,
+
+        "calfskin": 3,
+        "카프스킨": 3,
+
+        "suede": 3,
+        "스웨이드": 3,
+
+        "superfine wool": 4,
+        "슈퍼파인 울": 4,
+
+        "gold-tone": 3,
+        "골드톤": 3,
+        "골드 톤": 3,
+
+        # leather 자체는 너무 자주 등장하므로 낮게
+        "leather": 1,
+        "가죽": 1,
+    },
+
+
+    # =====================================================
+    # SPORTY
+    # 운동화 / 기능성 솔 / 쿠셔닝 / 메시 등의 스포츠 요소
+    # =====================================================
+    "SPORTY": {
+        "sporty": 5,
+        "스포티": 5,
+
+        "sneaker": 5,
+        "sneakers": 5,
+        "스니커즈": 5,
+
+        "running": 5,
+        "러닝": 5,
+
+        "low-top sneaker": 5,
+        "low-top sneakers": 5,
+        "로우탑 스니커즈": 5,
+
+        "ortholite": 5,
+        "ortholite®": 5,
+
+        "memory foam": 4,
+        "메모리 폼": 4,
+        "메모리폼": 4,
+
+        "rubber outsole": 4,
+        "러버 아웃솔": 4,
+        "고무 아웃솔": 4,
+
+        "eva outsole": 4,
+        "eva platform": 3,
+
+        "vibram": 4,
+        "vibram®": 4,
+
+        "mesh": 4,
+        "메시": 4,
+        "메쉬": 4,
+
+        "cushion": 3,
+        "cushioning": 3,
+        "쿠셔닝": 3,
+
+        "footbed": 2,
+        "풋베드": 2,
+
+        "comfortable": 2,
+        "편안한 착화감": 3,
     },
 }
 
@@ -123,6 +567,32 @@ def get_analysis_products(visit_session):
     return products
 
 
+def flatten_feature(value):
+    """
+    dict / list / 문자열을 재귀적으로 펼쳐서
+    스타일 분석에 사용할 문자열 목록으로 변환한다.
+    """
+
+    features = []
+
+    if value is None:
+        return features
+
+    if isinstance(value, dict):
+        for key, val in value.items():
+            features.append(str(key))
+            features.extend(flatten_feature(val))
+
+    elif isinstance(value, (list, tuple, set)):
+        for item in value:
+            features.extend(flatten_feature(item))
+
+    else:
+        features.append(str(value))
+
+    return features
+
+
 # 제품 특징 추출
 def extract_product_features(product):
     """
@@ -131,34 +601,19 @@ def extract_product_features(product):
 
     features = []
 
-    # 기본 Product 정보
+    # Product
     features.append(product.name)
     features.append(product.category)
 
     # specs
-    if product.specs:
-        if isinstance(product.specs, list):
-            for spec in product.specs:
-                features.append(str(spec))
-
-        elif isinstance(product.specs, dict):
-            for key, value in product.specs.items():
-                features.append(str(key))
-                features.append(str(value))
+    features.extend(
+        flatten_feature(product.specs)
+    )
 
     # background
-    if product.background:
-        if isinstance(product.background, dict):
-            for key, value in product.background.items():
-                features.append(str(key))
-                features.append(str(value))
-
-        elif isinstance(product.background, list):
-            for value in product.background:
-                features.append(str(value))
-
-        else:
-            features.append(str(product.background))
+    features.extend(
+        flatten_feature(product.background)
+    )
 
     # ProductDetail
     for detail in product.details.all():
@@ -173,11 +628,12 @@ def extract_product_features(product):
         features.append(material.description)
 
     return " ".join(
-        feature.lower()
+        str(feature).lower()
         for feature in features
         if feature
     )
 
+MAX_SCORE_PER_PRODUCT = 12
 
 # StyleChip 별 점수 계산
 def calculate_style_scores(products):
@@ -191,10 +647,21 @@ def calculate_style_scores(products):
 
         for style_code, rules in STYLE_RULES.items():
 
+            product_score = 0
+
             for keyword, weight in rules.items():
 
                 if keyword.lower() in product_text:
-                    scores[style_code] += weight
+                    product_score += weight
+
+            # 한 제품이 특정 StyleChip에 지나치게
+            # 많은 점수를 주는 것을 방지
+            product_score = min(
+                product_score,
+                MAX_SCORE_PER_PRODUCT,
+            )
+
+            scores[style_code] += product_score
 
     return scores
 
