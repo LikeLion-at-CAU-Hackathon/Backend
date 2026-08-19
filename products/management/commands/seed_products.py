@@ -7,25 +7,23 @@ from products.models import *
 leather_careguide = {
     "LEATHER": "가죽 제품이 젖거나 얼룩지지 않도록 주의해 주세요.",
     "CLEANING": "표면이 젖거나 오염되었을 경우 보풀이 없는 밝은색의 흡수성 천으로 닦아 말려주세요.",
-    "CAUTION": "제품 표면에 비누나 솔벤트를 사용하지 마세요.",
-    "CAUTION": "제품이 거친 표면에 긁히거나 마찰되지 않도록 주의해 주세요.",
+    "SOAP": "제품 표면에 비누나 솔벤트를 사용하지 마세요.",
+    "FRICTION": "제품이 거친 표면에 긁히거나 마찰되지 않도록 주의해 주세요.",
     "STORAGE": "더스트 백에 넣어 직사광선이나 밝은 빛을 피해 서늘하고 건조한 곳에 보관해 주세요.",
 }
 
 metal_careguide = {
     "METAL": "습기와 물에 장시간 노출되지 않도록 주의해 주세요.",
     "CLEANING": "부드럽고 마른 천으로 표면을 관리해 주세요.",
-    "CAUTION": "거친 표면과의 마찰을 피해주세요.",
+    "FRICTION": "거친 표면과의 마찰을 피해주세요.",
 }
-
 
 visetos_careguide = {
     "CARE": "지속적인 직사광선을 피해 주세요.",
-    "CAUTION": "제품이 거친 표면에 긁히거나 마찰되지 않도록 주의해 주세요.",
+    "FRICTION": "제품이 거친 표면에 긁히거나 마찰되지 않도록 주의해 주세요.",
     "STORAGE": "더스트 백에 넣어 직사광선이나 밝은 빛을 피해 서늘하고 건조한 곳에 보관해 주세요.",
-    "CAUTION": "제품 표면에 비누나 솔벤트를 사용하지 마세요.",
+    "SOAP": "제품 표면에 비누나 솔벤트를 사용하지 마세요.",
 }
-
 
 fabric_careguide = {
     "CLEANING": "오염 시 부드러운 천으로 가볍게 관리해 주세요.",
@@ -94,19 +92,6 @@ COMMON_MATERIALS = {
         "careguide": fabric_careguide,
     },
 
-    "Organic Cotton Jersey": {
-        "description": (
-            "오가닉 코튼을 사용한 저지 소재로 "
-            "부드럽고 편안한 착용감을 제공합니다."
-        ),
-        "careguide": {
-            "CLEANING": "손세탁 또는 드라이클리닝으로 관리해 주세요.",
-            "BLEACH": "표백제를 사용하지 마세요.",
-            "DRYING": "건조기 사용을 피해주세요.",
-            "IRONING": "다림질할 때는 천을 대고 다림질해 주세요.",
-        },
-    },
-
     "Metallic Lurex Denim": {
         "description": (
             "메탈릭 루렉스 섬유를 직조한 데님 소재로 "
@@ -115,10 +100,10 @@ COMMON_MATERIALS = {
             "11% 금속 코팅 섬유로 구성되어 있습니다."
         ),
         "careguide": {
-            "01": "손세탁 또는 드라이클리닝으로 관리해 주세요.",
-            "02": "표백제를 사용하지 마세요.",
-            "03": "건조기 사용을 피해주세요.",
-            "04": "제품의 형태와 디테일이 손상되지 않도록 주의해 주세요.",
+            "CARE": "손세탁 또는 드라이클리닝으로 관리해 주세요.",
+            "BLEACH": "표백제를 사용하지 마세요.",
+            "DRYING": "건조기 사용을 피해주세요.",
+            "CAUTION": "제품의 형태와 디테일이 손상되지 않도록 주의해 주세요.",
         },
     },
 
@@ -128,8 +113,8 @@ COMMON_MATERIALS = {
             "쿠셔닝과 편안한 착화감을 제공합니다."
         ),
         "careguide": {
-            "01": "오염 시 부드러운 천으로 가볍게 관리해 주세요.",
-            "02": "세척 후에는 실온에서 충분히 건조해 주세요.",
+            "CLEANING": "오염 시 부드러운 천으로 가볍게 관리해 주세요.",
+            "DRYING": "세척 후에는 실온에서 충분히 건조해 주세요.",
         },
     },
 
@@ -138,8 +123,8 @@ COMMON_MATERIALS = {
             "러버 아웃솔을 사용해 안정적인 접지력과 내구성을 제공합니다."
         ),
         "careguide": {
-            "01": "부드러운 브러시를 사용해 표면을 관리해 주세요.",
-            "02": "세척 후에는 실온에서 충분히 건조해 주세요.",
+            "CLEANING": "부드러운 브러시를 사용해 표면을 관리해 주세요.",
+            "DRYING": "세척 후에는 실온에서 충분히 건조해 주세요.",
         },
     },
 
@@ -1201,40 +1186,80 @@ def seed_product_8():
     # 3. Material
     # =========================
 
-    italian_silk, _ = Material.objects.update_or_create(
-        name="100% Italian Silk",
+    scarf_careguide = {
+        "CARE": (
+            "드라이클리닝 전용. 스카프는 드라이클리닝으로만 "
+            "관리해 주세요."
+        ),
+        "CLEANING": (
+            "물세탁은 피하고 제품의 소재 특성에 맞는 방식으로 "
+            "관리하는 것을 권장합니다."
+        ),
+        "STORAGE": (
+            "제공된 보호용 더스트 백에 넣어 직사광선이나 "
+            "밝은 조명을 피해 서늘하고 건조한 곳에 보관해 주세요."
+        ),
+        "WATER": (
+            "제품이 젖거나 오염되지 않도록 주의해 주세요."
+        ),
+        "WIPE": (
+            "표면이 젖거나 오염되었을 경우 보풀이 없는 "
+            "밝은 색상의 흡수성 천으로 닦아 말려주세요."
+        ),
+        "SOAP": (
+            "비누 또는 솔벤트를 사용하지 마세요."
+        ),
+        "FRICTION": (
+            "제품이 거친 표면에 긁히거나 마찰되지 않도록 "
+            "주의해 주세요."
+        ),
+    }
+    
+    body, _ = Material.objects.update_or_create(
+        name="Body",
         defaults={
             "description": (
-                "100% 이탈리아 실크를 사용해 부드러운 촉감과 "
-                "은은한 광택을 완성했습니다. "
-                "가볍고 유연한 소재감이 자연스러운 드레이프를 만들어 "
-                "다양한 연출이 가능합니다."
+                "스카프 전체 바디에 100% 실크 소재를 사용해 "
+                "가볍고 부드러운 착용감을 완성했습니다."
             ),
             "order": 1,
-            "careguide": {
-                "CARE": (
-                    "드라이클리닝 전용. 스카프는 드라이클리닝으로만 "
-                    "관리해 주세요."
-                ),
-                "CLEANING": (
-                    "물세탁은 피하고 제품의 소재 특성에 맞는 방식으로 "
-                    "관리하는 것을 권장합니다."
-                ),
-                "STORAGE": (
-                    "제공된 보호용 더스트 백에 넣어 직사광선이나 "
-                    "밝은 조명을 피해 서늘하고 건조한 곳에 보관해 주세요."
-                ),
-                "CAUTION": "제품이 젖거나 오염되지 않도록 주의해 주세요.",
-                "CLEANING": (
-                    "표면이 젖거나 오염되었을 경우 보풀이 없는 "
-                    "밝은 색상의 흡수성 천으로 닦아 말려주세요."
-                ),
-                "CAUTION": "비누 또는 솔벤트를 사용하지 마세요.",
-                "CAUTION": (
-                    "제품이 거친 표면에 긁히거나 마찰되지 않도록 "
-                    "주의해 주세요."
-                ),
-            },
+            "careguide": scarf_careguide,
+        },
+    )
+
+    fabric, _ = Material.objects.update_or_create(
+        name="Fabric",
+        defaults={
+            "description": (
+                "은은한 광택과 매끄러운 촉감의 실크 패브릭으로 "
+                "자연스러운 드레이프를 연출할 수 있습니다."
+            ),
+            "order": 2,
+            "careguide": scarf_careguide,
+        },
+    )
+
+    elastic, _ = Material.objects.update_or_create(
+        name="Elastic",
+        defaults={
+            "description": (
+                "가볍고 유연한 소재감으로 목, 헤어, 가방 핸들 등 "
+                "다양한 스타일링에 편안하게 활용할 수 있습니다."
+            ),
+            "order": 3,
+            "careguide": scarf_careguide,
+        },
+    )
+    
+    embroidery, _ = Material.objects.update_or_create(
+        name="Embroidery",
+        defaults={
+            "description": (
+                "비세토스 모노그램과 MCM 로고 스트라이프 모티프를 "
+                "섬세하게 표현해 브랜드의 아이덴티티를 강조했습니다."
+            ),
+            "order": 4,
+            "careguide": scarf_careguide,
         },
     )
 
@@ -1245,7 +1270,10 @@ def seed_product_8():
     connect_materials(
         product,
         [
-            italian_silk,
+            body,
+            fabric,
+            elastic,
+            embroidery,
         ],
     )
 
@@ -1445,12 +1473,75 @@ def seed_product_10():
     # 3. Material
     # =========================
 
-    organic_cotton_jersey = get_common_material(
-        "Organic Cotton Jersey",
-        order=1,
+    tshirt_careguide = {
+        "CARE": (
+            "손세탁 또는 드라이클리닝으로 관리해 주세요."
+        ),
+        "BLEACH": (
+            "표백제를 사용하지 마세요."
+        ),
+        "DRYING": (
+            "건조기 사용을 피해주세요."
+        ),
+        "IRONING": (
+            "다림질할 때는 천을 대고 다림질해 주세요."
+        ),
+        "CAUTION": (
+            "프린트, 자수, 밴드 디테일이 손상되지 않도록 "
+            "강한 마찰을 피해주세요."
+        ),
+        "STORAGE": (
+            "직사광선과 습기를 피해 서늘하고 건조한 곳에 보관해 주세요."
+        ),
+    }
+
+    body, _ = Material.objects.update_or_create(
+        name="Body",
+        defaults={
+            "description": (
+                "티셔츠 바디에 100% 오가닉 코튼을 사용해 "
+                "부드럽고 편안한 착용감을 완성했습니다."
+            ),
+            "order": 1,
+            "careguide": tshirt_careguide,
+        },
     )
 
+    fabric, _ = Material.objects.update_or_create(
+        name="Fabric",
+        defaults={
+            "description": (
+                "부드러운 코튼 저지 소재를 사용해 "
+                "일상적인 착용에 적합한 가볍고 유연한 소재감을 제공합니다."
+            ),
+            "order": 2,
+            "careguide": tshirt_careguide,
+        },
+    )
 
+    elastic, _ = Material.objects.update_or_create(
+        name="Elastic",
+        defaults={
+            "description": (
+                "밑단에 비세토스 모노그램 자카드 신축성 밴드를 적용해 "
+                "크롭 실루엣에 시그니처 포인트를 더했습니다."
+            ),
+            "order": 3,
+            "careguide": tshirt_careguide,
+        },
+    )
+
+    embroidery, _ = Material.objects.update_or_create(
+        name="Embroidery",
+        defaults={
+            "description": (
+                "가슴 부분에 톤온톤 라우렐 로고 자수를 더해 "
+                "절제된 방식으로 MCM의 브랜드 아이덴티티를 표현했습니다."
+            ),
+            "order": 4,
+            "careguide": tshirt_careguide,
+        },
+    )
 
     # =========================
     # 4. MaterialProduct
@@ -1458,10 +1549,13 @@ def seed_product_10():
 
     connect_materials(
         product,
-        [organic_cotton_jersey],
+        [
+            body,
+            fabric,
+            elastic,
+            embroidery,
+        ],
     )
-    
-    return product
 
 def seed_product_11():
 
