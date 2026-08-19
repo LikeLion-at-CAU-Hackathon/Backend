@@ -38,8 +38,12 @@ def seed_product_1():
                     "아이코닉한 MCM 로고와 헤리티지 하드웨어를 통해 "
                     "MCM의 디자인 아이덴티티를 보여줍니다."
                 ),
-                "collection": "Visetos",
-                "design": "Aren 비세토스 3단 지갑",
+                "design_details": {
+                    "01": "VISETOS MONOGRAM 비세토스 모노그램 캔버스",
+                    "02": "LOGO BRASS PLATE MCM 로고 브라스 장식 플레이트",
+                    "03": "SNAP CLOSURE 스냅 클로저",
+                    "04": "TRI-FOLD 트라이폴드 구조",
+                },
             },
         },
     )
@@ -796,11 +800,12 @@ def seed_product_6():
             },
             "background": {
                 "description": (
-                    "하나의 벨트로 두 가지 시그니처한 면을 선보이는 "
-                    "리버서블 디자인입니다. 아이코닉한 M 버클은 탈착이 가능하며, "
+                    "하나의 벨트로 두 가지 시그니처한 면을 선보이는 디자인. "
+                    "한쪽 면은 시그니처 모노그램 코티드 캔버스, "
+                    "다른 한쪽은 솔리드 레더로 구성된 리버서블 벨트입니다. "
+                    "아이코닉한 M 버클은 탈착이 가능하며, "
                     "스트랩을 잘라 원하는 길이로 조절할 수 있습니다."
                 ),
-    
                 "design_details": {
                     "01": "REVERSIBLE Monogram Coated Canvas · Solid Leather",
                     "02": "BUCKLE Detachable M Buckle",
@@ -921,12 +926,12 @@ def seed_product_7():
             },
             "background": {
                 "description": (
-                    "비세토스 모노그램으로 완성한 로우탑 실루엣의 "
-                    "비세토스 모노그램 스니커즈입니다. "
-                    "가죽으로 완성된 옆면과 후면, 바이올렛 다이아몬드를 참고한 "
-                    "루버 패치가 디자인에 포인트를 더합니다."
+                    "비세토스 모노그램으로 완성한 로우탑 실루엣. "
+                    "클래식한 비세토스 모노그램이 새겨진 "
+                    "이탈리안 송아지 가죽 어퍼로 완성한 로우탑 스니커즈입니다. "
+                    "바이에른 다이아몬드를 참고한 우븐 텅 라벨과 "
+                    "가죽 힐 패치가 디자인에 포인트를 더합니다."
                 ),
-    
                 "design_details": {
                     "01": "MONOGRAM Embossed Visetos Monogram",
                     "02": "TONGUE Laurel Logo Label",
@@ -1172,20 +1177,21 @@ def seed_product_9():
             },
             "background": {
                 "description": (
-                    "클래식한 호보 실루엣을 현대적으로 재해석한 Aren Hobo는 "
-                    "부드러움과 구조감의 이상적인 균형을 보여줍니다. "
+                    "클래식한 호보 실루엣을 현대적으로 재해석한 Aren Hobo In Visetos. "
+                    "부드러움과 구조감의 이상적인 균형을 보여주는 디자인입니다. "
                     "MCM 헤리티지 러기지에서 가져온 디자인 요소인 탈부착 가능한 "
-                    "가죽 행택과 로고가 각인된 패드락을 더했습니다. "
+                    "가죽 행택과 로고가 각인된 패드락을 더해 Aren Hobo만의 "
+                    "디자인을 완성했습니다. "
                     "조절 가능한 가죽 스트랩이 적용된 비세토스 호보백으로, "
                     "클래식한 실루엣과 MCM의 헤리티지 러기지 디테일을 "
-                    "현대적으로 담아낸 디자인입니다."
+                    "현대적으로 담아낸 제품입니다."
                 ),
-                "collection": "Visetos Collection",
                 "design_details": {
-                    "01": "DESIGN Softness & Structure",
-                    "02": "SIGNATURE Leather Hang Tag",
-                    "03": "HERITAGE MCM Luggage",
-                    "04": "SILHOUETTE Classic Hobo",
+                    "01": "Visetos Collection",
+                    "02": "DESIGN Softness & Structure",
+                    "03": "SIGNATURE Leather Hang Tag",
+                    "04": "HERITAGE MCM Luggage",
+                    "05": "SILHOUETTE Classic Hobo",
                 },
             },
         },
