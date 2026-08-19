@@ -92,6 +92,19 @@ COMMON_MATERIALS = {
         "careguide": fabric_careguide,
     },
 
+    "Organic Cotton Jersey": {
+        "description": (
+            "오가닉 코튼을 사용한 저지 소재로 "
+            "부드럽고 편안한 착용감을 제공합니다."
+        ),
+        "careguide": {
+            "CARE": "손세탁 또는 드라이클리닝으로 관리해 주세요.",
+            "BLEACH": "표백제를 사용하지 마세요.",
+            "DRYING": "건조기 사용을 피해주세요.",
+            "IRONING": "다림질할 때는 천을 대고 다림질해 주세요.",
+        },
+    },
+
     "Metallic Lurex Denim": {
         "description": (
             "메탈릭 루렉스 섬유를 직조한 데님 소재로 "
@@ -1556,6 +1569,8 @@ def seed_product_10():
             embroidery,
         ],
     )
+
+    return product
 
 def seed_product_11():
 
