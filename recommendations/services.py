@@ -1315,11 +1315,15 @@ Rules:
 16. subtitle must be written in English
     and should be concise and natural.
 
-17. description must be written in Korean
-    and must be one short sentence.
+17. description must be written in Korean,
+    must be one short sentence,
+    and must not exceed 31 characters,
+    including spaces and punctuation.
 
-18. reason must be written in Korean
-    and must be one or two short sentences.
+18. reason must be written in Korean,
+    must be one short sentence,
+    and must not exceed 31 characters,
+    including spaces and punctuation.
 
 19. Keep title, subtitle, description, and reason concise and natural.
 """
