@@ -4271,6 +4271,78 @@ def seed_stocks(products, branches):
                     },
                 )
 
+PRODUCT_IMAGES = {
+    1: "products/1.png",
+    2: "products/2.png",
+    3: "products/3.png",
+    4: "products/4.png",
+    5: "products/5.png",
+    6: "products/6.png",
+    7: "products/7.png",
+    8: "products/8.png",
+    9: "products/9.png",
+    10: "products/10.png",
+    11: "products/11.png",
+    12: "products/12.png",
+    13: "products/13.png",
+    14: "products/14.png",
+    15: "products/15.png",
+    16: "products/16.png",
+    17: "products/17.png",
+    18: "products/18.png",
+    19: "products/19.png",
+    20: "products/20.png",
+    21: "products/21.png",
+    22: "products/22.png",
+    23: "products/23.png",
+    24: "products/24.png",
+    25: "products/25.png",
+    26: "products/26.png",
+    27: "products/27.png",
+    28: "products/28.png",
+    29: "products/29.png",
+    30: "products/30.png",
+    31: "products/31.png",
+    32: "products/32.png",
+    33: "products/33.png",
+}
+
+def seed_product_images(products):
+
+    for product_number, product in enumerate(
+        products,
+        start=1,
+    ):
+        image_path = PRODUCT_IMAGES.get(
+            product_number
+        )
+
+        if not image_path:
+            continue
+
+        # 해당 제품의 첫 번째 ProductDetail을
+        # 대표 Detail로 사용
+        detail = (
+            product.details
+            .order_by("id")
+            .first()
+        )
+
+        if not detail:
+            print(
+                f"[WARNING] Product {product_number}: "
+                "ProductDetail이 없습니다."
+            )
+            continue
+
+        ProductImage.objects.update_or_create(
+            detail=detail,
+            order=0,
+            defaults={
+                "image": image_path,
+            },
+        )
+
 class Command(BaseCommand):
     help = "제품, 지점, 재고 seed 데이터 생성"
 
@@ -4311,6 +4383,9 @@ class Command(BaseCommand):
             seed_product_32(),
             seed_product_33(),
         ]
+
+        # 제품 이미지 DB 연결
+        seed_product_images(products)
 
         branches = seed_branches()
 
