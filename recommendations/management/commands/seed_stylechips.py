@@ -6,51 +6,51 @@ from recommendations.models import StyleChip
 STYLE_CHIPS = [
     {
         "code": "CLASSIC",
-        "label": "클래식",
+        "label": "Classic",
     },
     {
         "code": "HERITAGE",
-        "label": "헤리티지",
+        "label": "Heritage",
     },
     {
         "code": "REFINED",
-        "label": "세련된",
+        "label": "Refined",
     },
     {
         "code": "MINIMAL",
-        "label": "미니멀",
+        "label": "Minimal",
     },
     {
         "code": "CONTEMPORARY",
-        "label": "컨템포러리",
+        "label": "Contemporary",
     },
     {
         "code": "FEMININE",
-        "label": "페미닌",
+        "label": "Feminine",
     },
     {
         "code": "BOLD",
-        "label": "볼드",
+        "label": "Bold",
     },
     {
         "code": "PLAYFUL",
-        "label": "플레이풀",
+        "label": "Playful",
     },
     {
         "code": "CASUAL",
-        "label": "캐주얼",
+        "label": "Casual",
     },
     {
         "code": "URBAN",
-        "label": "어반",
+        "label": "Urban",
     },
     {
         "code": "LUXURIOUS",
-        "label": "럭셔리",
+        "label": "Luxurious",
     },
     {
         "code": "SPORTY",
-        "label": "스포티",
+        "label": "Sporty",
     },
 ]
 
