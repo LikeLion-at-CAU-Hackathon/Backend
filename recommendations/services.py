@@ -17,6 +17,8 @@ from .models import (
 )
 from .schemas import LOOK_RESPONSE_SCHEMA
 
+from celery import group
+
 client = OpenAI()
 
 
@@ -737,9 +739,9 @@ def analyze_visit_session(visit_session):
 
     # 2. StyleProfile 생성
     profile_result = create_style_profile(
-    visit_session,
-    visited_products
-)
+        visit_session,
+        visited_products
+    )
 
     style_profile = profile_result["profile"]
 
@@ -769,17 +771,23 @@ def analyze_visit_session(visit_session):
         visited_products=visited_products
     )
 
-    # 8. 각 Look 이미지 생성
-    for look in looks:
-        try:
-            generate_look_image(look)
-        except Exception as e:
-            print(
-                f"[LOOK IMAGE ERROR] "
-                f"look_id={look.id}: {e}"
-            )
+    # 8. 이미지 생성 task 등록
+    look_ids = [look.id for look in looks]
+
+    def enqueue_image_tasks():
+        from .tasks import generate_look_image_task
+
+        group(
+            generate_look_image_task.s(look_id)
+            for look_id in look_ids
+        ).apply_async()
+
+    transaction.on_commit(
+        enqueue_image_tasks
+    )
 
     return {
+        "status": "PROCESSING",
         "profile": style_profile,
         "products": visited_products,
         "looks": looks,

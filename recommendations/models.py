@@ -76,6 +76,13 @@ class StyleProfile(models.Model):
 
 
 class Look(models.Model):
+
+    class ImageStatus(models.TextChoices):
+            PENDING = "PENDING", "Pending"
+            PROCESSING = "PROCESSING", "Processing"
+            COMPLETED = "COMPLETED", "Completed"
+            FAILED = "FAILED", "Failed"
+
     style_profile = models.ForeignKey(
         StyleProfile,
         on_delete=models.CASCADE,
@@ -105,6 +112,12 @@ class Look(models.Model):
         upload_to="looks/",
         null=True,
         blank=True
+    )
+
+    image_status = models.CharField(
+        max_length=20,
+        choices=ImageStatus.choices,
+        default=ImageStatus.PENDING,
     )
 
     class Meta:

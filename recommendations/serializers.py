@@ -121,6 +121,7 @@ class LookSerializer(serializers.ModelSerializer):
             "description",
             "reason",
             "image",
+            "image_status",
             "style_chip",
             "products",
         ]
