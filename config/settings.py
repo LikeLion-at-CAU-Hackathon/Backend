@@ -192,14 +192,14 @@ CORS_ALLOW_CREDENTIALS = True
 # 추후 프론트엔드에서 웹 페이지 배포 후 도메인 매핑했다면 해당 도메인 추가 필요
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
-    "https://frontend-zeta-eight-2ecx6xkvfm.vercel.app",
     "https://mcm.p-e.kr",
+    "https://frontend-cntjdus1.vercel.app"
 ]
 
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:5173",
-    "https://frontend-zeta-eight-2ecx6xkvfm.vercel.app",
     "https://mcm.p-e.kr",
+    "https://frontend-cntjdus1.vercel.app"
 ]
 
 # drf-yasg (Swagger) 설정: Swagger UI에서 Bearer 토큰으로 인증 가능하도록 함
