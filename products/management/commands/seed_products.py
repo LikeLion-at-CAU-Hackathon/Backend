@@ -4119,40 +4119,34 @@ PRODUCT_IMAGES = {
 }
 
 def seed_product_images(products):
-
     for product_number, product in enumerate(
         products,
         start=1,
     ):
-        image_path = PRODUCT_IMAGES.get(
-            product_number
-        )
+        image_path = PRODUCT_IMAGES.get(product_number)
 
         if not image_path:
             continue
 
-        # 해당 제품의 첫 번째 ProductDetail을
-        # 대표 Detail로 사용
-        detail = (
-            product.details
-            .order_by("id")
-            .first()
-        )
+        # 해당 Product의 모든 ProductDetail에
+        # 기본 대표 이미지를 연결
+        details = product.details.order_by("id")
 
-        if not detail:
+        if not details.exists():
             print(
                 f"[WARNING] Product {product_number}: "
                 "ProductDetail이 없습니다."
             )
             continue
 
-        ProductImage.objects.update_or_create(
-            detail=detail,
-            order=0,
-            defaults={
-                "image": image_path,
-            },
-        )
+        for detail in details:
+            ProductImage.objects.get_or_create(
+                detail=detail,
+                order=0,
+                defaults={
+                    "image": image_path,
+                },
+            )
 
 class Command(BaseCommand):
     help = "제품, 지점, 재고 seed 데이터 생성"

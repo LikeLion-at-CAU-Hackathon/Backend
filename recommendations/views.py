@@ -3,6 +3,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.permissions import AllowAny
 
 from products.models import Product
 
@@ -28,11 +29,15 @@ from .serializers import (
 from .utils import get_or_create_visit_session
 
 
+class PublicVisitAPIView(APIView):
+    authentication_classes = []
+    permission_classes = [AllowAny]
+
 # ==========================================
 # 스타일 분석 실행
 # ==========================================
 
-class StyleAnalysisAPIView(APIView):
+class StyleAnalysisAPIView(PublicVisitAPIView):
 
     def post(self, request):
 
@@ -71,7 +76,7 @@ class StyleAnalysisAPIView(APIView):
 # 스타일 분석 결과 조회
 # ==========================================
 
-class StyleResultAPIView(APIView):
+class StyleResultAPIView(PublicVisitAPIView):
 
     def get(self, request):
 
@@ -115,7 +120,7 @@ class StyleResultAPIView(APIView):
 # 개별 Look 상세 조회
 # ==========================================
 
-class LookDetailAPIView(APIView):
+class LookDetailAPIView(PublicVisitAPIView):
 
     def get(self, request, look_id):
 
@@ -148,7 +153,7 @@ class LookDetailAPIView(APIView):
 # 테스트용 또는 세션 확인용으로 남겨둘 수 있음.
 # ==========================================
 
-class VisitSessionCreateAPIView(APIView):
+class VisitSessionCreateAPIView(PublicVisitAPIView):
 
     def post(self, request):
 
@@ -171,7 +176,7 @@ class VisitSessionCreateAPIView(APIView):
 # 방문 기록 조회 / 추가
 # ==========================================
 
-class VisitHistoryAPIView(APIView):
+class VisitHistoryAPIView(PublicVisitAPIView):
 
     def get(self, request):
 
@@ -281,7 +286,7 @@ class VisitHistoryAPIView(APIView):
 # 저장 제품 추가 / 삭제
 # ==========================================
 
-class SavedProductAPIView(APIView):
+class SavedProductAPIView(PublicVisitAPIView):
 
     def post(
         self,
@@ -345,7 +350,7 @@ class SavedProductAPIView(APIView):
 # 저장 제품 전체 조회
 # ==========================================
 
-class SavedProductListAPIView(APIView):
+class SavedProductListAPIView(PublicVisitAPIView):
 
     def get(self, request):
 
@@ -379,7 +384,7 @@ class SavedProductListAPIView(APIView):
 # 저장 제품의 분석 결과 조회
 # ==========================================
 
-class SavedProductAnalysisAPIView(APIView):
+class SavedProductAnalysisAPIView(PublicVisitAPIView):
 
     def get(
         self,
