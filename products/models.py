@@ -25,7 +25,7 @@ class Product(BaseModel):
     background = models.JSONField(default=dict, blank=True)
 
     def __str__(self):
-        return self.name
+        return f"{self.id} / {self.name}"
 
 class ProductDetail(BaseModel):
     size = models.CharField(max_length=50)
@@ -37,6 +37,8 @@ class ProductDetail(BaseModel):
         on_delete=models.CASCADE,
         related_name="details"
     )
+    def __str__(self):
+        return f"{self.product.id} / {self.product.name} / {self.size} / {self.color}"
     
 class ProductImage(BaseModel):
     image = models.ImageField(upload_to='products/')
